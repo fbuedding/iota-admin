@@ -1,0 +1,64 @@
+package template
+
+import "github.com/fbuedding/iota-admin/pkg/iot-agent-sdk"
+import "fmt"
+
+templ Index(agents []iotagentsdk.IoTA) {
+	<!DOCTYPE html>
+	<html lang="en">
+		<head>
+			<meta charset="UTF-8"/>
+			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+			<meta http-equiv="X-UA-Compatible" content="ie=edge"/>
+			<title>IoTA-Admin</title>
+			<link rel="stylesheet" href="/assets/css/style.css"/>
+			<script src="/assets/js/htmx.min.js"></script>
+		</head>
+		<body>
+			<div>
+				{ ctx.Value("user").(string) }
+			</div>
+			if len(agents) > 0 {
+				for _, agent := range agents {
+					@IoTA(agent)
+				}
+			} else {
+				<div>No IoT-Agnets!</div>
+			}
+		</body>
+	</html>
+}
+
+templ IoTA(agent iotagentsdk.IoTA) {
+	<div class="container">
+		{ agent.Host }:{ fmt.Sprintf("%d",agent.Port) }
+		if htc, err := agent.Healthcheck(); err == nil {
+			<table class="table table-xs">
+				<tr>
+					<th>Lib-Version</th>
+					<td>{ htc.LibVersion }</td>
+				</tr>
+				<tr>
+					<th>Base root</th>
+					<td>{ htc.BaseRoot }</td>
+				</tr>
+				<tr>
+					<th>Version</th>
+					<td>{ htc.Version }</td>
+				</tr>
+			</table>
+		} else {
+			<div class="alert alert-error">
+				<svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+				<span>IoT Agent is not reachable!</span>
+			</div>
+		}
+	</div>
+}
+
+func getUser(ctx context.Context) string {
+	if user, ok := ctx.Value("user").(string); ok {
+		return user
+	}
+	return "Invalid User"
+}

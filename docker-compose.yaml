@@ -1,0 +1,58 @@
+version: "3"
+services:
+  iota-admin:
+    environment:
+      - APP_ENV=development
+      - COOKIE_SECRET=d60285f2976fa1f7e5fb654ea4c774d6fbb7482f2fe116bf38c53307e6587e51
+      - TZ:"Europe/Berlin"
+    build:
+      dockerfile: Dockerfile
+      context: ./
+    volumes:
+      - ./:/app
+    ports:
+    - 8080:8080  
+  iot-agent:
+    image: fiware/iotagent-ul
+    hostname: iot-agent
+    container_name: fiware-iot-agent
+    depends_on:
+        - mongodb
+    expose:
+        - "4061"
+        - "7896"
+    ports:
+        - "4061:4061"
+        - "7896:7896"
+    environment:
+        - "IOTA_CB_HOST=orion"
+        - "IOTA_CB_PORT=1026"
+        - "IOTA_NORTH_PORT=4061"
+        - "IOTA_REGISTRY_TYPE=mongodb"
+        - "IOTA_MONGO_HOST=mongodb"
+        - "IOTA_MONGO_PORT=27017"
+        - "IOTA_MONGO_DB=iotagent-ul"
+        - "IOTA_HTTP_PORT=7896"
+        - "IOTA_PROVIDER_URL=http://iot-agent:4061"
+
+  mongodb:
+    image: mongo:4.2
+    hostname: mongodb
+    container_name: db-mongo
+    ports:
+        - "27017:27017"
+    command: --bind_ip_all 
+    volumes:
+        - ./data:/data
+
+  orion:
+    image: fiware/orion
+    hostname: orion
+    container_name: fiware-orion
+    depends_on:
+        - mongodb
+    expose:
+        - "1026"
+    ports:
+        - "1026:1026"
+    command: -dbhost mongodb

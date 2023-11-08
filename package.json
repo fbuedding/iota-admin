@@ -1,0 +1,14 @@
+{
+  "name": "iota-admin",
+  "version": "1.0.0",
+  "description": "IoT-Agent Admin Tool",
+  "main": "none",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "daisyui": "^3.9.4"
+  }
+}
