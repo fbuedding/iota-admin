@@ -7,11 +7,18 @@ import (
 	"net/http"
 )
 
-const urlHealthcheck = "http://%v:%d/iot/about"
-
+const (
+  urlBase = "http://%v:%d"
+  urlHealthcheck = urlBase + "/iot/about"
+)
 type IoTA struct {
 	Host string
 	Port int
+}
+
+type FiwareService struct {
+  Service string
+  ServicePath string
 }
 
 type RespHealthcheck struct {
