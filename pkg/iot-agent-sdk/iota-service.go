@@ -127,6 +127,16 @@ func (i IoTA) ReadServiceGroup(fs FiwareService, r Resource, a Apikey) (*RespRea
 	}
 	defer res.Body.Close()
 
+	if res.StatusCode != http.StatusOK {
+    resData, err := io.ReadAll(res.Body)
+		if err != nil {
+			return nil, fmt.Errorf("Error while eding response body %w", err)
+		}
+    var apiError ApiError
+    json.Unmarshal(resData, &apiError)
+    return nil, apiError
+	}
+
 	responseData, err := io.ReadAll(res.Body)
 	if err != nil {
 		return nil, fmt.Errorf("Error while getting service: %w", err)
@@ -157,6 +167,16 @@ func (i IoTA) ListServiceGroups(fs FiwareService) (*RespReadServiceGroup, error)
 		return nil, fmt.Errorf("Error while getting service: %w", err)
 	}
 	defer res.Body.Close()
+
+	if res.StatusCode != http.StatusOK {
+    resData, err := io.ReadAll(res.Body)
+		if err != nil {
+			return nil, fmt.Errorf("Error while eding response body %w", err)
+		}
+    var apiError ApiError
+    json.Unmarshal(resData, &apiError)
+    return nil, apiError
+	}
 
 	responseData, err := io.ReadAll(res.Body)
 	if err != nil {
@@ -212,10 +232,15 @@ func (i IoTA) CreateServiceGroups(fs FiwareService, sgs []ServiceGroup) error {
 	}
 	defer res.Body.Close()
 
-	_, err = io.ReadAll(res.Body)
-	if err != nil {
-		return fmt.Errorf("Error while eding response body %w", err)
+	if res.StatusCode != http.StatusOK {
+    resData, err := io.ReadAll(res.Body)
+		if err != nil {
+			return fmt.Errorf("Error while eding response body %w", err)
+		}
+    var apiError ApiError
+    json.Unmarshal(resData, &apiError)
+    return apiError
 	}
-	//################
+
 	return nil
 }

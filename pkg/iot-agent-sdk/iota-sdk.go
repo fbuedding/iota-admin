@@ -8,17 +8,18 @@ import (
 )
 
 const (
-  urlBase = "http://%v:%d"
-  urlHealthcheck = urlBase + "/iot/about"
+	urlBase        = "http://%v:%d"
+	urlHealthcheck = urlBase + "/iot/about"
 )
+
 type IoTA struct {
 	Host string
 	Port int
 }
 
 type FiwareService struct {
-  Service string
-  ServicePath string
+	Service     string
+	ServicePath string
 }
 
 type RespHealthcheck struct {
@@ -26,6 +27,14 @@ type RespHealthcheck struct {
 	Port       string `json:"port"`
 	BaseRoot   string `json:"baseRoot"`
 	Version    string `json:"version"`
+}
+type ApiError struct {
+	Name    string `json:"name"`
+	Message string `json:"message"`
+}
+
+func (e ApiError) Error() string {
+  return fmt.Sprintf("%s: %s", e.Name, e.Message)
 }
 
 func (i IoTA) Healthcheck() (*RespHealthcheck, error) {
@@ -40,7 +49,7 @@ func (i IoTA) Healthcheck() (*RespHealthcheck, error) {
 	if err != nil {
 		return nil, fmt.Errorf("Error while Healthcheck: %w", err)
 	}
-  var respHealth RespHealthcheck
-  json.Unmarshal(responseData, &respHealth)
-  return &respHealth, nil
+	var respHealth RespHealthcheck
+	json.Unmarshal(responseData, &respHealth)
+	return &respHealth, nil
 }
