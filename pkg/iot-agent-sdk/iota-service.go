@@ -169,3 +169,12 @@ func (i IoTA) ServiceGroupExists(fs FiwareService, r Resource, a Apikey) (bool, 
 	}
   return tmp.Count > 0, nil
 }
+
+
+func (i IoTA) CreateServiceGroup(fs FiwareService, sg ServiceGroup) error {
+    err := sg.Validate()
+    if err != nil {
+      return err
+    }
+    return nil
+}
