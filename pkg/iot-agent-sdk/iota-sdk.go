@@ -33,6 +33,7 @@ func (i IoTA) Healthcheck() (*RespHealthcheck, error) {
 	if err != nil {
 		return nil, fmt.Errorf("Error while Healthcheck: %w", err)
 	}
+	defer response.Body.Close()
 
 	responseData, err := io.ReadAll(response.Body)
 
