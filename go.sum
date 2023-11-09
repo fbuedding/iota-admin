@@ -8,3 +8,5 @@ github.com/google/uuid v1.4.0 h1:MtMxsa51/r9yyhkyLsVeVt0B+BGQZzpQiTQ4eHZ8bc4=
 github.com/google/uuid v1.4.0/go.mod h1:TIyPZe4MgqvfeYDBFedMoGGpEw/LqOeaOT+nhxU+yHo=
 github.com/gorilla/schema v1.2.0 h1:YufUaxZYCKGFuAq3c96BOhjgd5nmXiOY9NGzF247Tsc=
 github.com/gorilla/schema v1.2.0/go.mod h1:kgLaKoK1FELgZqMAVxx/5cbj0kT+57qxUrAlIO2eleU=
+github.com/niemeyer/golang v0.0.0-20110826170342-f8c0f811cb19 h1:HDsKR+rtTZD+ey3J3U+UWJLko6XJkNWaRp0+yn1u0FQ=
+github.com/niemeyer/golang v0.0.0-20110826170342-f8c0f811cb19/go.mod h1:vOsSoNMQygvjuK93uIN1lif16OAgfRDlVu7hHS96lPg=
