@@ -1,11 +1,13 @@
 package iotagentsdk
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/niemeyer/golang/src/pkg/container/vector"
 	"io"
 	"net/http"
+
+	"github.com/niemeyer/golang/src/pkg/container/vector"
 )
 
 const (
@@ -100,6 +102,10 @@ type RespReadServiceGroup struct {
 	Services []ServiceGroup `json:"services"`
 }
 
+type ReqCreateServiceGroup struct {
+	Services []ServiceGroup `json:"services"`
+}
+
 func (i IoTA) ReadServiceGroup(fs FiwareService, r Resource, a Apikey) (*RespReadServiceGroup, error) {
 	url := urlService + fmt.Sprintf("?r=%s&a=%s", r, a)
 
@@ -167,14 +173,49 @@ func (i IoTA) ServiceGroupExists(fs FiwareService, r Resource, a Apikey) (bool, 
 	if err != nil {
 		return false, err
 	}
-  return tmp.Count > 0, nil
+	return tmp.Count > 0, nil
 }
 
-
 func (i IoTA) CreateServiceGroup(fs FiwareService, sg ServiceGroup) error {
-    err := sg.Validate()
-    if err != nil {
-      return err
-    }
-    return nil
+	sgs := [1]ServiceGroup{sg}
+	return i.CreateServiceGroups(fs, sgs[:])
+}
+func (i IoTA) CreateServiceGroups(fs FiwareService, sgs []ServiceGroup) error {
+	for _, sg := range sgs {
+		err := sg.Validate()
+		if err != nil {
+			return err
+		}
+	}
+	reqCreateServiceGroup := ReqCreateServiceGroup{} //#################
+	reqCreateServiceGroup.Services = sgs[:]
+	method := "POST"
+
+	payload, err := json.Marshal(reqCreateServiceGroup)
+	if err != nil {
+		fmt.Println("Could not Marshal struct")
+		panic(1)
+	}
+	client := &http.Client{}
+	req, err := http.NewRequest(method, fmt.Sprintf(urlService, i.Host, i.Port), bytes.NewBuffer(payload))
+
+	if err != nil {
+		return fmt.Errorf("Error while creating Request %w", err)
+	}
+	req.Header.Add("fiware-service", fs.Service)
+	req.Header.Add("fiware-servicepath", fs.ServicePath)
+	req.Header.Add("Content-Type", "application/json")
+
+	res, err := client.Do(req)
+	if err != nil {
+		return fmt.Errorf("Error while requesting resource %w", err)
+	}
+	defer res.Body.Close()
+
+	_, err = io.ReadAll(res.Body)
+	if err != nil {
+		return fmt.Errorf("Error while eding response body %w", err)
+	}
+	//################
+	return nil
 }
