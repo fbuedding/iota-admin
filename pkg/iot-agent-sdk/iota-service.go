@@ -71,7 +71,7 @@ type MissingFields struct {
 }
 
 func (e *MissingFields) Error() string {
-	return fmt.Sprintf("Error %v: %s", e.Fields, e.Message)
+	return fmt.Sprintf("Error %s: %s", e.Message, e.Fields)
 }
 
 func (sg ServiceGroup) Validate() error {
@@ -129,5 +129,43 @@ func (i IoTA) ReadServiceGroup(fs FiwareService, r Resource, a Apikey) (*RespRea
 	var respReadServiceGroup RespReadServiceGroup
 	json.Unmarshal(responseData, &respReadServiceGroup)
 	return &respReadServiceGroup, nil
+}
 
+func (i IoTA) ListServiceGroups(fs FiwareService) (*RespReadServiceGroup, error) {
+	url := urlService
+
+	method := "GET"
+
+	client := &http.Client{}
+	req, err := http.NewRequest(method, fmt.Sprintf(url, i.Host, i.Port), nil)
+
+	if err != nil {
+		return nil, fmt.Errorf("Error while getting service: %w", err)
+	}
+	req.Header.Add("fiware-service", fs.Service)
+	req.Header.Add("fiware-servicepath", fs.ServicePath)
+	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+
+	res, err := client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("Error while getting service: %w", err)
+	}
+	defer res.Body.Close()
+
+	responseData, err := io.ReadAll(res.Body)
+	if err != nil {
+		return nil, fmt.Errorf("Error while getting service: %w", err)
+	}
+
+	var respReadServiceGroup RespReadServiceGroup
+	json.Unmarshal(responseData, &respReadServiceGroup)
+	return &respReadServiceGroup, nil
+}
+
+func (i IoTA) ServiceGroupExists(fs FiwareService, r Resource, a Apikey) (bool, error) {
+	tmp, err := i.ReadServiceGroup(fs, r, a)
+	if err != nil {
+		return false, err
+	}
+  return tmp.Count > 0, nil
 }
