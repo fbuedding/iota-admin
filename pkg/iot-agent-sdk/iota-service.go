@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"strings"
 
 	"github.com/niemeyer/golang/src/pkg/container/vector"
 )
@@ -51,11 +52,13 @@ type Attribute struct {
 	Type     string              `json:"type"`
 	Metadata map[string]Metadata `json:"metadata,omitempty"`
 }
+
 type LazyAttribute struct {
 	Name     string              `json:"name"`
 	Type     string              `json:"type"`
 	Metadata map[string]Metadata `json:"metadata,omitempty"`
 }
+
 type StaticAttribute struct {
 	Name     string              `json:"name"`
 	Type     string              `json:"type"`
@@ -200,6 +203,7 @@ func (i IoTA) CreateServiceGroup(fs FiwareService, sg ServiceGroup) error {
 	sgs := [1]ServiceGroup{sg}
 	return i.CreateServiceGroups(fs, sgs[:])
 }
+
 func (i IoTA) CreateServiceGroups(fs FiwareService, sgs []ServiceGroup) error {
 	for _, sg := range sgs {
 		err := sg.Validate()
@@ -207,7 +211,7 @@ func (i IoTA) CreateServiceGroups(fs FiwareService, sgs []ServiceGroup) error {
 			return err
 		}
 	}
-	reqCreateServiceGroup := ReqCreateServiceGroup{} //#################
+	reqCreateServiceGroup := ReqCreateServiceGroup{}
 	reqCreateServiceGroup.Services = sgs[:]
 	method := "POST"
 
@@ -232,7 +236,7 @@ func (i IoTA) CreateServiceGroups(fs FiwareService, sgs []ServiceGroup) error {
 	}
 	defer res.Body.Close()
 
-	if res.StatusCode != http.StatusOK {
+	if res.StatusCode != http.StatusCreated {
     resData, err := io.ReadAll(res.Body)
 		if err != nil {
 			return fmt.Errorf("Error while eding response body %w", err)
@@ -243,4 +247,80 @@ func (i IoTA) CreateServiceGroups(fs FiwareService, sgs []ServiceGroup) error {
 	}
 
 	return nil
+}
+
+
+func (i IoTA) UpdateServiceGroup(fs FiwareService, r Resource, a Apikey, sg ServiceGroup) error {
+  err := sg.Validate()
+  if err != nil {
+    return err
+  }
+	url := urlService + fmt.Sprintf("?r=%s&a=%s", r, a)
+	method := "PUT"
+
+	payload, err := json.Marshal(sg)
+	if err != nil {
+		fmt.Println("Could not Marshal struct")
+		panic(1)
+	}
+	client := &http.Client{}
+	req, err := http.NewRequest(method, fmt.Sprintf(url, i.Host, i.Port), bytes.NewBuffer(payload))
+
+	if err != nil {
+		return fmt.Errorf("Error while creating Request %w", err)
+	}
+	req.Header.Add("fiware-service", fs.Service)
+	req.Header.Add("fiware-servicepath", fs.ServicePath)
+	req.Header.Add("Content-Type", "application/json")
+
+	res, err := client.Do(req)
+	if err != nil {
+		return fmt.Errorf("Error while requesting resource %w", err)
+	}
+	defer res.Body.Close()
+
+	if res.StatusCode != http.StatusNoContent {
+    resData, err := io.ReadAll(res.Body)
+		if err != nil {
+			return fmt.Errorf("Error while eding response body %w", err)
+		}
+    var apiError ApiError
+    json.Unmarshal(resData, &apiError)
+    return apiError
+	}
+
+  return nil
+}
+func (i IoTA) DeleteServiceGroup(fs FiwareService, r Resource, a Apikey) error {
+	url := urlService + fmt.Sprintf("?r=%s&a=%s", r, a)
+
+  method := http.MethodDelete
+  
+  client := http.Client{}
+  req, err := http.NewRequest(method, fmt.Sprintf(url, r, a), strings.NewReader(""))
+
+	if err != nil {
+		return fmt.Errorf("Error while creating Request %w", err)
+	}
+
+	req.Header.Add("fiware-service", fs.Service)
+	req.Header.Add("fiware-servicepath", fs.ServicePath)
+  
+	res, err := client.Do(req)
+	if err != nil {
+		return fmt.Errorf("Error while requesting resource %w", err)
+	}
+	defer res.Body.Close()
+
+	if res.StatusCode != http.StatusNoContent {
+    resData, err := io.ReadAll(res.Body)
+		if err != nil {
+			return fmt.Errorf("Error while eding response body %w", err)
+		}
+    var apiError ApiError
+    json.Unmarshal(resData, &apiError)
+    return apiError
+	}
+
+  return nil
 }
