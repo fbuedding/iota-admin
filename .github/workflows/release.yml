@@ -10,13 +10,18 @@ jobs:
     name: Create Release
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - name: Create a Release
-        uses: elgohr/Github-Release-Action@v5
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - uses: "marvinpinto/action-automatic-releases@latest"
         with:
-          title: ${{github.ref_name}}
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          prerelease: true
+
+      #- uses: actions/checkout@v3
+      #- name: Create a Release
+      #  uses: elgohr/Github-Release-Action@v5
+      #  env:
+      #    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #  with:
+      #    title: ${{github.ref_name}}
       #- name: Latest tag
       #  # You may pin to the exact commit or the version.
       #  uses: EndBug/latest-tag@v1.6.1
