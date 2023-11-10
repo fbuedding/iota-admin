@@ -15,7 +15,6 @@ const (
 	urlService = urlBase + "/iot/services"
 )
 
-
 func (e *MissingFields) Error() string {
 	return fmt.Sprintf("Error %s: %s", e.Message, e.Fields)
 }

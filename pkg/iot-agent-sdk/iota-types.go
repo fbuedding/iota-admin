@@ -1,5 +1,7 @@
 package iotagentsdk
 
+import "github.com/niemeyer/golang/src/pkg/container/vector"
+
 type IoTA struct {
 	Host string
 	Port int
@@ -29,8 +31,8 @@ type Attribute struct {
 	Metadata   map[string]Metadata `json:"metadata,omitempty"`
 	Expression string              `json:"expression,omitempty"`
 	SkipValue  string              `json:"skipValue,omitempty"`
-	EntityName string              `json:"entity_name,omitempty"` 
-	EntityType string              `json:"entity_type,omitempty"` 
+	EntityName string              `json:"entity_name,omitempty"`
+	EntityType string              `json:"entity_type,omitempty"`
 }
 
 type LazyAttribute struct {
@@ -62,6 +64,9 @@ type Metadata struct {
 	Value string `json:"value"`
 }
 
+type Apikey string
+type Resource string
+
 // see https://iotagent-node-lib.readthedocs.io/en/latest/api.html#service-group-datamodel
 type ServiceGroup struct {
 	Resource                     Resource          `json:"resource"`
@@ -82,9 +87,6 @@ type ServiceGroup struct {
 	DefaultEntityNameConjunction string            `json:"defaultEntityNameConjunction,omitempty"`
 	Autoprovision                bool              `json:"autoprovision,omitempty"`
 }
-
-type Apikey string
-type Resource string
 
 type MissingFields struct {
 	Fields  vector.StringVector

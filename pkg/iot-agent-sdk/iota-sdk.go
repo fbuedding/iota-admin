@@ -12,9 +12,8 @@ const (
 	urlHealthcheck = urlBase + "/iot/about"
 )
 
-
 func (e ApiError) Error() string {
-  return fmt.Sprintf("%s: %s", e.Name, e.Message)
+	return fmt.Sprintf("%s: %s", e.Name, e.Message)
 }
 
 func (i IoTA) Healthcheck() (*RespHealthcheck, error) {
