@@ -15,7 +15,7 @@ jobs:
       - name: Create a Release
         uses: elgohr/Github-Release-Action@v5
         env:
-          GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Latest tag
         # You may pin to the exact commit or the version.
         # uses: EndBug/latest-tag@e0ddffc96ee234d64d4888764828a54dd02bdd2e
