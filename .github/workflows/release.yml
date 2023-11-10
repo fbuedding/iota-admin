@@ -17,11 +17,11 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           title: ${{github.ref_name}}
-      - name: Latest tag
-        # You may pin to the exact commit or the version.
-        uses: EndBug/latest-tag@v1.6.1
-        with:
-          # Name of the tag or branch to update
-          ref: ${{ github.ref }}
-          # Tag name
-          #tag-name: # optional
+      #- name: Latest tag
+      #  # You may pin to the exact commit or the version.
+      #  uses: EndBug/latest-tag@v1.6.1
+      #  with:
+      #    # Name of the tag or branch to update
+      #    ref: ${{ github.ref }}
+      #    # Tag name
+      #    #tag-name: # optional
