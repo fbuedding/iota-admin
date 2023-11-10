@@ -15,65 +15,6 @@ const (
 	urlService = urlBase + "/iot/services"
 )
 
-// see https://iotagent-node-lib.readthedocs.io/en/latest/api.html#service-group-datamodel
-type ServiceGroup struct {
-	Resource                     Resource          `json:"resource"`
-	Apikey                       Apikey            `json:"apikey"`
-	Timestamp                    *bool             `json:"timestamp,omitempty"`
-	Type                         string            `json:"type,omitempty"`
-	EntityType                   string            `json:"entity_type,omitempty"` //both type and EntityType work and are used both in documentation
-	Trust                        string            `json:"trust,omitempty"`
-	CbHost                       string            `json:"cbHost,omitempty"`
-	Lazy                         []LazyAttribute   `json:"lazy,omitempty"`
-	Commands                     []Command         `json:"commands,omitempty"`
-	Attributes                   []Attribute       `json:"attributes,omitempty"`
-	StaticAttributes             []StaticAttribute `json:"static_attributes,omitempty"`
-	InternalAttributes           []interface{}     `json:"internal_attributes,omitempty"`
-	ExplicitAttrs                string            `json:"explicitAttrs,omitempty"`
-	EntityNameExp                string            `json:"entityNameExp,omitempty"`
-	NgsiVersion                  string            `json:"ngsiVersion,omitempty"`
-	DefaultEntityNameConjunction string            `json:"defaultEntityNameConjunction,omitempty"`
-	Autoprovision                bool              `json:"autoprovision,omitempty"`
-}
-
-type Apikey string
-type Resource string
-
-// these are all the same, but for typesafety differnt structs
-
-type Command struct {
-	Name     string              `json:"name"`
-	Type     string              `json:"type"`
-	Metadata map[string]Metadata `json:"metadata,omitempty"`
-}
-
-type Attribute struct {
-	Name     string              `json:"name"`
-	Type     string              `json:"type"`
-	Metadata map[string]Metadata `json:"metadata,omitempty"`
-}
-
-type LazyAttribute struct {
-	Name     string              `json:"name"`
-	Type     string              `json:"type"`
-	Metadata map[string]Metadata `json:"metadata,omitempty"`
-}
-
-type StaticAttribute struct {
-	Name     string              `json:"name"`
-	Type     string              `json:"type"`
-	Metadata map[string]Metadata `json:"metadata,omitempty"`
-}
-
-type Metadata struct {
-	Type  string `json:"type"`
-	Value string `json:"value"`
-}
-
-type MissingFields struct {
-	Fields  vector.StringVector
-	Message string
-}
 
 func (e *MissingFields) Error() string {
 	return fmt.Sprintf("Error %s: %s", e.Message, e.Fields)
