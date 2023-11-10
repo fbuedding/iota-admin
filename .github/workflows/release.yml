@@ -18,5 +18,4 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Latest tag
         # You may pin to the exact commit or the version.
-        # uses: EndBug/latest-tag@e0ddffc96ee234d64d4888764828a54dd02bdd2e
         uses: EndBug/latest-tag@v1.6.1
