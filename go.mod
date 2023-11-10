@@ -10,5 +10,5 @@ require (
 	github.com/niemeyer/golang v0.0.0-20110826170342-f8c0f811cb19
 )
 
-//wrongly published v1.6.0
-retract v1.6.0
+//wrongly published v1.4.0
+retract v1.4.0
