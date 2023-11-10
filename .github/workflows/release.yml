@@ -21,4 +21,4 @@ jobs:
           # Name of the tag or branch to update
           ref: ${{ github.ref }}
           # Tag name
-          tag-name: # optional
+          #tag-name: # optional
