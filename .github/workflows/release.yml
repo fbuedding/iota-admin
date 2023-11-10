@@ -5,8 +5,9 @@ on:
 
 name: Create Release
 jobs:
-  release:
-    permissions: write-all
+  build:
+    permissions:
+      contents: write
     name: Create Release
     runs-on: ubuntu-latest
     steps:
