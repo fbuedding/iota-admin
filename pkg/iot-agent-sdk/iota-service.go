@@ -46,7 +46,7 @@ type ReqCreateServiceGroup struct {
 }
 
 func (i IoTA) ReadServiceGroup(fs FiwareService, r Resource, a Apikey) (*RespReadServiceGroup, error) {
-	url := urlService + fmt.Sprintf("?r=%s&a=%s", r, a)
+	url := urlService + fmt.Sprintf("?resource=%s&apikey=%s", r, a)
 
 	method := "GET"
 
@@ -190,7 +190,7 @@ func (i IoTA) UpdateServiceGroup(fs FiwareService, r Resource, a Apikey, sg Serv
 	if err != nil {
 		return err
 	}
-	url := urlService + fmt.Sprintf("?r=%s&a=%s", r, a)
+	url := urlService + fmt.Sprintf("?resource=%s&apikey=%s", r, a)
   fmt.Println(url)
 	method := "PUT"
 
@@ -228,7 +228,7 @@ func (i IoTA) UpdateServiceGroup(fs FiwareService, r Resource, a Apikey, sg Serv
 	return nil
 }
 func (i IoTA) DeleteServiceGroup(fs FiwareService, r Resource, a Apikey) error {
-	url := urlService + fmt.Sprintf("?r=%s&a=%s", r, a)
+	url := urlService + fmt.Sprintf("?resource=%s&apikey=%s", r, a)
 
 	method := http.MethodDelete
 
