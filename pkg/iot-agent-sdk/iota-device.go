@@ -11,8 +11,8 @@ import (
 	"github.com/niemeyer/golang/src/pkg/container/vector"
 )
 
-var (
-	urlDevice, _ = u.JoinPath(urlBase, "/iot/services")
+const (
+	urlDevice = urlBase + "/iot/services"
 )
 
 type reqCreateDevice struct {
@@ -34,7 +34,7 @@ func (d Device) Validate() error {
 }
 
 func (i IoTA) ReadDevice(fs FiwareService, id DeciveId) (*Device, error) {
-	url, err := u.JoinPath(urlDevice, u.PathEscape(string(id)))
+	url, err := u.JoinPath(fmt.Sprintf(urlDevice, i.Host, i.Port), u.PathEscape(string(id)))
 
 	if err != nil {
 		return nil, err
@@ -42,7 +42,7 @@ func (i IoTA) ReadDevice(fs FiwareService, id DeciveId) (*Device, error) {
 	method := "GET"
 
 	client := &http.Client{}
-	req, err := http.NewRequest(method, fmt.Sprintf(url, i.Host, i.Port), nil)
+	req, err := http.NewRequest(method, url), nil)
 
 	if err != nil {
 		return nil, fmt.Errorf("Error while getting service: %w", err)
