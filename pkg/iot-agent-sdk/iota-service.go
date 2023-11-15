@@ -6,13 +6,14 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	u "net/url"
 	"strings"
 
 	"github.com/niemeyer/golang/src/pkg/container/vector"
 )
 
-const (
-	urlService = urlBase + "/iot/services"
+var (
+	urlService, _ = u.JoinPath(urlBase, "/iot/services")
 )
 
 func (e *MissingFields) Error() string {
@@ -22,10 +23,6 @@ func (e *MissingFields) Error() string {
 func (sg ServiceGroup) Validate() error {
 
 	mF := &MissingFields{make(vector.StringVector, 0), "Missing fields"}
-
-	if sg.Resource == "" {
-		mF.Fields.Push("Resource")
-	}
 	if sg.Apikey == "" {
 		mF.Fields.Push("Apikey")
 	}
@@ -131,12 +128,12 @@ func (i IoTA) ListServiceGroups(fs FiwareService) (*RespReadServiceGroup, error)
 	return &respReadServiceGroup, nil
 }
 
-func (i IoTA) ServiceGroupExists(fs FiwareService, r Resource, a Apikey) (bool, error) {
+func (i IoTA) ServiceGroupExists(fs FiwareService, r Resource, a Apikey) bool {
 	tmp, err := i.ReadServiceGroup(fs, r, a)
 	if err != nil {
-		return false, err
+		return false
 	}
-	return tmp.Count > 0, nil
+	return tmp.Count > 0
 }
 
 func (i IoTA) CreateServiceGroup(fs FiwareService, sg ServiceGroup) error {

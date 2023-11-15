@@ -69,6 +69,8 @@ type Resource string
 
 // see https://iotagent-node-lib.readthedocs.io/en/latest/api.html#service-group-datamodel
 type ServiceGroup struct {
+	Service                      string            `json:"service"`
+	ServicePath                  string            `json:"subservice"`
 	Resource                     Resource          `json:"resource"`
 	Apikey                       Apikey            `json:"apikey"`
 	Timestamp                    *bool             `json:"timestamp,omitempty"`
@@ -86,6 +88,30 @@ type ServiceGroup struct {
 	NgsiVersion                  string            `json:"ngsiVersion,omitempty"`
 	DefaultEntityNameConjunction string            `json:"defaultEntityNameConjunction,omitempty"`
 	Autoprovision                bool              `json:"autoprovision,omitempty"`
+}
+
+type DeciveId string
+
+type Device struct {
+	Id                 DeciveId          `json:"device_id"`
+	Service            string            `json:"service"`
+	ServicePath        string            `json:"service_path"`
+	EntityName         string            `json:"enitity_name"`
+	Type               string            `json:"type,omitempty"`
+	EntityType         string            `json:"entity_type,omitempty"` //both type and EntityType work and are used both in documentation
+	Timezone           string            `json:"timezon,omitempty"`
+	Timestamp          *bool             `json:"timestamp,omitempty"`
+	Apikey             Apikey            `json:"apikey"`
+	Endpoint           string            `json:"endpoint,omitempty"`
+	Protocol           string            `json:"protocol,omitempty"`
+	Transport          string            `json:"transport,omitempty"`
+	Attributes         []Attribute       `json:"attributes,omitempty"`
+	Commands           []Command         `json:"commands,omitempty"`
+	Lazy               []LazyAttribute   `json:"lazy,omitempty"`
+	StaticAttributes   []StaticAttribute `json:"static_attributes,omitempty"`
+	InternalAttributes []interface{}     `json:"internal_attributes,omitempty"`
+	ExplicitAttrs      string            `json:"explicitAttrs,omitempty"`
+	NgsiVersion        string            `json:"ngsiVersion,omitempty"`
 }
 
 type MissingFields struct {
