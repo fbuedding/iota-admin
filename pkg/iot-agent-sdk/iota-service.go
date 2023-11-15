@@ -185,7 +185,7 @@ func (i IoTA) CreateServiceGroups(fs FiwareService, sgs []ServiceGroup) error {
 	return nil
 }
 
-func (i IoTA) UpdateServiceGroup(fs FiwareService, a Apikey, r Resource,sg ServiceGroup) error {
+func (i IoTA) UpdateServiceGroup(fs FiwareService, r Resource, a Apikey, sg ServiceGroup) error {
 	err := sg.Validate()
 	if err != nil {
 		return err
