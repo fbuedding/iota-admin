@@ -42,7 +42,7 @@ func (i IoTA) ReadDevice(fs FiwareService, id DeciveId) (*Device, error) {
 	method := "GET"
 
 	client := &http.Client{}
-	req, err := http.NewRequest(method, url), nil)
+	req, err := http.NewRequest(method, url, nil)
 
 	if err != nil {
 		return nil, fmt.Errorf("Error while getting service: %w", err)
