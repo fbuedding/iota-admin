@@ -6,14 +6,13 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	u "net/url"
 	"strings"
 
 	"github.com/niemeyer/golang/src/pkg/container/vector"
 )
 
-var (
-	urlService, _ = u.JoinPath(urlBase, "/iot/services")
+const (
+	urlService = urlBase + "/iot/services"
 )
 
 func (e *MissingFields) Error() string {
