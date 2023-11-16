@@ -22,8 +22,8 @@ type reqCreateDevice struct {
 func (d Device) Validate() error {
 
 	mF := &MissingFields{make(vector.StringVector, 0), "Missing fields"}
-	if d.EntityType == "" && d.Type == "" {
-		mF.Fields.Push("EntityType|Type")
+	if d.Id == "" {
+		mF.Fields.Push("Id")
 	}
 
 	if mF.Fields.Len() == 0 {
@@ -133,3 +133,47 @@ func (i IoTA) CreateDevice(fs FiwareService, d Device) error {
 	ds := [1]Device{d}
 	return i.CreateDevices(fs, ds[:])
 }
+
+
+func (i IoTA) UpdateDevice(fs FiwareService, d Device)  error {
+	err := d.Validate()
+	if err != nil {
+		return err
+	}
+	url, err := u.JoinPath(fmt.Sprintf(urlDevice, i.Host, i.Port), u.PathEscape(string(d.Id)))
+  fmt.Println(url)
+	method := "PUT"
+
+	payload, err := json.Marshal(d)
+	if err != nil {
+		fmt.Println("Could not Marshal struct")
+		panic(1)
+	}
+	client := &http.Client{}
+	req, err := http.NewRequest(method, fmt.Sprintf(url, i.Host, i.Port), bytes.NewBuffer(payload))
+
+	if err != nil {
+		return fmt.Errorf("Error while creating Request %w", err)
+	}
+	req.Header.Add("fiware-service", fs.Service)
+	req.Header.Add("fiware-servicepath", fs.ServicePath)
+	req.Header.Add("Content-Type", "application/json")
+
+	res, err := client.Do(req)
+	if err != nil {
+		return fmt.Errorf("Error while requesting resource %w", err)
+	}
+	defer res.Body.Close()
+
+	if res.StatusCode != http.StatusNoContent {
+		resData, err := io.ReadAll(res.Body)
+		if err != nil {
+			return fmt.Errorf("Error while eding response body %w", err)
+		}
+		var apiError ApiError
+		json.Unmarshal(resData, &apiError)
+		return apiError
+	}
+  return nil
+}
+

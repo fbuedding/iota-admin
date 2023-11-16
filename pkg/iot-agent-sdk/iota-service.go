@@ -25,9 +25,6 @@ func (sg ServiceGroup) Validate() error {
 	if sg.Apikey == "" {
 		mF.Fields.Push("Apikey")
 	}
-	if sg.EntityType == "" && sg.Type == "" {
-		mF.Fields.Push("EntityType|Type")
-	}
 
 	if mF.Fields.Len() == 0 {
 		return nil
