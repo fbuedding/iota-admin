@@ -12,7 +12,7 @@ import (
 )
 
 const (
-	urlDevice = urlBase + "/iot/services"
+	urlDevice = urlBase + "/iot/devices"
 )
 
 type reqCreateDevice struct {

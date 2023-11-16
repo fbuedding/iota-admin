@@ -96,12 +96,12 @@ type Device struct {
 	Id                 DeciveId          `json:"device_id"`
 	Service            string            `json:"service,omitempty"`
 	ServicePath        string            `json:"service_path,omitempty"`
-	EntityName         string            `json:"enitity_name"`
+	EntityName         string            `json:"enitity_name,omitempty"`
 	Type               string            `json:"type,omitempty"`
 	EntityType         string            `json:"entity_type,omitempty"` //both type and EntityType work and are used both in documentation
 	Timezone           string            `json:"timezon,omitempty"`
 	Timestamp          *bool             `json:"timestamp,omitempty"`
-	Apikey             Apikey            `json:"apikey"`
+	Apikey             Apikey            `json:"apikey,omitempty"`
 	Endpoint           string            `json:"endpoint,omitempty"`
 	Protocol           string            `json:"protocol,omitempty"`
 	Transport          string            `json:"transport,omitempty"`
