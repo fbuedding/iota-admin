@@ -134,14 +134,17 @@ func (i IoTA) CreateDevice(fs FiwareService, d Device) error {
 	return i.CreateDevices(fs, ds[:])
 }
 
-
-func (i IoTA) UpdateDevice(fs FiwareService, d Device)  error {
+func (i IoTA) UpdateDevice(fs FiwareService, d Device) error {
 	err := d.Validate()
 	if err != nil {
 		return err
 	}
+
+	fmt.Printf("urlDevice:'%s'\n", urlDevice)
 	url, err := u.JoinPath(fmt.Sprintf(urlDevice, i.Host, i.Port), u.PathEscape(string(d.Id)))
-  fmt.Println(url)
+  //Ensure ID is not set
+  d.Id = ""
+	fmt.Printf("url:'%s'\n", url)
 	method := "PUT"
 
 	payload, err := json.Marshal(d)
@@ -150,7 +153,7 @@ func (i IoTA) UpdateDevice(fs FiwareService, d Device)  error {
 		panic(1)
 	}
 	client := &http.Client{}
-	req, err := http.NewRequest(method, fmt.Sprintf(url, i.Host, i.Port), bytes.NewBuffer(payload))
+	req, err := http.NewRequest(method, url, bytes.NewBuffer(payload))
 
 	if err != nil {
 		return fmt.Errorf("Error while creating Request %w", err)
@@ -174,6 +177,39 @@ func (i IoTA) UpdateDevice(fs FiwareService, d Device)  error {
 		json.Unmarshal(resData, &apiError)
 		return apiError
 	}
-  return nil
+	return nil
 }
+func (i IoTA) DeleteDevice(fs FiwareService, id DeciveId) error {
+	url, err := u.JoinPath(fmt.Sprintf(urlDevice, i.Host, i.Port), u.PathEscape(string(id)))
 
+	if err != nil {
+		return err
+	}
+	method := "DELETE"
+
+	client := &http.Client{}
+	req, err := http.NewRequest(method, url, nil)
+
+	if err != nil {
+		return fmt.Errorf("Error while getting service: %w", err)
+	}
+	req.Header.Add("fiware-service", fs.Service)
+	req.Header.Add("fiware-servicepath", fs.ServicePath)
+
+	res, err := client.Do(req)
+	if err != nil {
+		return fmt.Errorf("Error while getting service: %w", err)
+	}
+	defer res.Body.Close()
+
+	if res.StatusCode != http.StatusNoContent {
+		resData, err := io.ReadAll(res.Body)
+		if err != nil {
+			return fmt.Errorf("Error while eding response body %w", err)
+		}
+		var apiError ApiError
+		json.Unmarshal(resData, &apiError)
+		return apiError
+	}
+	return nil
+}

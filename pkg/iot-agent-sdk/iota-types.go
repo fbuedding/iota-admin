@@ -74,8 +74,7 @@ type ServiceGroup struct {
 	Resource                     Resource          `json:"resource"`
 	Apikey                       Apikey            `json:"apikey"`
 	Timestamp                    *bool             `json:"timestamp,omitempty"`
-	Type                         string            `json:"type,omitempty"`
-	EntityType                   string            `json:"entity_type,omitempty"` //both type and EntityType work and are used both in documentation
+	EntityType                   string            `json:"entity_type,omitempty"` 
 	Trust                        string            `json:"trust,omitempty"`
 	CbHost                       string            `json:"cbHost,omitempty"`
 	Lazy                         []LazyAttribute   `json:"lazy,omitempty"`
@@ -93,12 +92,11 @@ type ServiceGroup struct {
 type DeciveId string
 
 type Device struct {
-	Id                 DeciveId          `json:"device_id"`
+	Id                 DeciveId          `json:"device_id,omitempty"`
 	Service            string            `json:"service,omitempty"`
 	ServicePath        string            `json:"service_path,omitempty"`
-	EntityName         string            `json:"enitity_name,omitempty"`
-	Type               string            `json:"type,omitempty"`
-	EntityType         string            `json:"entity_type,omitempty"` //both type and EntityType work and are used both in documentation
+	EntityName         string            `json:"entity_name,omitempty"`
+	EntityType         string            `json:"entity_type,omitempty"` 
 	Timezone           string            `json:"timezon,omitempty"`
 	Timestamp          *bool             `json:"timestamp,omitempty"`
 	Apikey             Apikey            `json:"apikey,omitempty"`
