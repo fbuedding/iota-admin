@@ -69,8 +69,8 @@ type Resource string
 
 // see https://iotagent-node-lib.readthedocs.io/en/latest/api.html#service-group-datamodel
 type ServiceGroup struct {
-	Service                      string            `json:"service"`
-	ServicePath                  string            `json:"subservice"`
+	Service                      string            `json:"service,omitempty"`
+	ServicePath                  string            `json:"subservice,omitempty"`
 	Resource                     Resource          `json:"resource"`
 	Apikey                       Apikey            `json:"apikey"`
 	Timestamp                    *bool             `json:"timestamp,omitempty"`
