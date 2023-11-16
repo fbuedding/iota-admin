@@ -94,8 +94,8 @@ type DeciveId string
 
 type Device struct {
 	Id                 DeciveId          `json:"device_id"`
-	Service            string            `json:"service"`
-	ServicePath        string            `json:"service_path"`
+	Service            string            `json:"service,omitempty"`
+	ServicePath        string            `json:"service_path,omitempty"`
 	EntityName         string            `json:"enitity_name"`
 	Type               string            `json:"type,omitempty"`
 	EntityType         string            `json:"entity_type,omitempty"` //both type and EntityType work and are used both in documentation
