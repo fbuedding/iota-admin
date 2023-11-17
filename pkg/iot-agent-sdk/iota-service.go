@@ -196,6 +196,9 @@ func (i IoTA) UpdateServiceGroup(fs FiwareService, r Resource, a Apikey, sg Serv
 		fmt.Println("Could not Marshal struct")
 		panic(1)
 	}
+  if string(payload) == "{}" {
+    return nil
+  }
 	client := &http.Client{}
 	req, err := http.NewRequest(method, fmt.Sprintf(url, i.Host, i.Port), bytes.NewBuffer(payload))
 
