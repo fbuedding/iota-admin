@@ -185,7 +185,6 @@ func (i IoTA) UpdateDevice(fs FiwareService, d Device) error {
 		return err
 	}
 
-	fmt.Printf("urlDevice:'%s'\n", urlDevice)
   
 	url, err := u.JoinPath(fmt.Sprintf(urlDevice, i.Host, i.Port), u.PathEscape(string(d.Id)))
 
@@ -193,7 +192,6 @@ func (i IoTA) UpdateDevice(fs FiwareService, d Device) error {
 	d.Id = ""
 	d.Transport = ""
 
-	fmt.Printf("url:'%s'\n", url)
 	method := "PUT"
 
 	payload, err := json.Marshal(d)

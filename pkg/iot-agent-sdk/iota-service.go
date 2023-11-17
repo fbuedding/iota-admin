@@ -188,7 +188,6 @@ func (i IoTA) UpdateServiceGroup(fs FiwareService, r Resource, a Apikey, sg Serv
 		return err
 	}
 	url := urlService + fmt.Sprintf("?resource=%s&apikey=%s", r, a)
-  fmt.Println(url)
 	method := "PUT"
 
 	payload, err := json.Marshal(sg)
