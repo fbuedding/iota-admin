@@ -186,6 +186,7 @@ func (i IoTA) UpdateDevice(fs FiwareService, d Device) error {
 	}
 
 	fmt.Printf("urlDevice:'%s'\n", urlDevice)
+  
 	url, err := u.JoinPath(fmt.Sprintf(urlDevice, i.Host, i.Port), u.PathEscape(string(d.Id)))
 
 	//Ensure these fields are not set
@@ -200,6 +201,9 @@ func (i IoTA) UpdateDevice(fs FiwareService, d Device) error {
 		fmt.Println("Could not Marshal struct")
 		panic(1)
 	}
+  if string(payload) == "{}" {
+    return nil
+  }
 	client := &http.Client{}
 	req, err := http.NewRequest(method, url, bytes.NewBuffer(payload))
 
