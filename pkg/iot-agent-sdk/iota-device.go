@@ -19,6 +19,11 @@ type reqCreateDevice struct {
 	Devices []Device `json:"devices"`
 }
 
+type respListDevices struct {
+	Count   int      `json:"count"`
+	Devices []Device `json:"devices"`
+}
+
 func (d Device) Validate() error {
 
 	mF := &MissingFields{make(vector.StringVector, 0), "Missing fields"}
@@ -83,6 +88,46 @@ func (i IoTA) DeviceExists(fs FiwareService, id DeciveId) bool {
 	}
 	return true
 }
+func (i IoTA) ListDevices(fs FiwareService) (*respListDevices, error) {
+  url := fmt.Sprintf(urlDevice, i.Host, i.Port)
+
+	method := "GET"
+
+	client := &http.Client{}
+	req, err := http.NewRequest(method, url, nil)
+
+	if err != nil {
+		return nil, fmt.Errorf("Error while getting service: %w", err)
+	}
+	req.Header.Add("fiware-service", fs.Service)
+	req.Header.Add("fiware-servicepath", fs.ServicePath)
+
+	res, err := client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("Error while getting service: %w", err)
+	}
+	defer res.Body.Close()
+
+	if res.StatusCode != http.StatusOK {
+		resData, err := io.ReadAll(res.Body)
+		if err != nil {
+			return nil, fmt.Errorf("Error while eding response body %w", err)
+		}
+		var apiError ApiError
+		json.Unmarshal(resData, &apiError)
+		return nil, apiError
+	}
+
+	responseData, err := io.ReadAll(res.Body)
+	if err != nil {
+		return nil, fmt.Errorf("Error while getting service: %w", err)
+	}
+
+	var respDevices respListDevices
+	json.Unmarshal(responseData, &respDevices)
+	return &respDevices, nil
+}
+
 
 func (i IoTA) CreateDevices(fs FiwareService, ds []Device) error {
 
@@ -142,8 +187,11 @@ func (i IoTA) UpdateDevice(fs FiwareService, d Device) error {
 
 	fmt.Printf("urlDevice:'%s'\n", urlDevice)
 	url, err := u.JoinPath(fmt.Sprintf(urlDevice, i.Host, i.Port), u.PathEscape(string(d.Id)))
-  //Ensure ID is not set
-  d.Id = ""
+
+	//Ensure these fields are not set
+	d.Id = ""
+	d.Transport = ""
+
 	fmt.Printf("url:'%s'\n", url)
 	method := "PUT"
 
