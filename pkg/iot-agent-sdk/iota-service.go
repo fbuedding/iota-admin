@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/niemeyer/golang/src/pkg/container/vector"
+	"github.com/rs/zerolog/log"
 )
 
 const (
@@ -150,8 +151,7 @@ func (i IoTA) CreateServiceGroups(fs FiwareService, sgs []ServiceGroup) error {
 
 	payload, err := json.Marshal(reqCreateServiceGroup)
 	if err != nil {
-		fmt.Println("Could not Marshal struct")
-		panic(1)
+    log.Panic().Err(err).Msg("Could not Marshal struct")
 	}
 	client := &http.Client{}
 	req, err := http.NewRequest(method, fmt.Sprintf(urlService, i.Host, i.Port), bytes.NewBuffer(payload))
@@ -192,8 +192,7 @@ func (i IoTA) UpdateServiceGroup(fs FiwareService, r Resource, a Apikey, sg Serv
 
 	payload, err := json.Marshal(sg)
 	if err != nil {
-		fmt.Println("Could not Marshal struct")
-		panic(1)
+    log.Panic().Err(err).Msg("Could not Marshal struct")
 	}
   if string(payload) == "{}" {
     return nil
@@ -232,7 +231,7 @@ func (i IoTA) DeleteServiceGroup(fs FiwareService, r Resource, a Apikey) error {
 	method := http.MethodDelete
 
 	client := http.Client{}
-	req, err := http.NewRequest(method, fmt.Sprintf(url, r, a), strings.NewReader(""))
+	req, err := http.NewRequest(method, fmt.Sprintf(url, i.Host, i.Port), strings.NewReader(""))
 
 	if err != nil {
 		return fmt.Errorf("Error while creating Request %w", err)

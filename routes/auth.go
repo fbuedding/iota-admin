@@ -72,16 +72,14 @@ func AuthMiddleware(st sessionStore.SessionStore) func(next http.Handler) http.H
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			sessionToken, err := cookies.ReadSigned(r, "session_token", getCookieSecret())
 			if err != nil {
-				w.Header().Add("HX-Redirect", "/login")
 				switch {
 				case errors.Is(err, http.ErrNoCookie):
-					http.Error(w, "cookie not found", http.StatusBadRequest)
+					http.Redirect(w, r, "/login", http.StatusSeeOther)
 				case errors.Is(err, cookies.ErrInvalidValue):
-					http.Error(w, "invalid cookie", http.StatusBadRequest)
+					http.Redirect(w, r, "/login", http.StatusSeeOther)
 				default:
-					http.Error(w, "server error", http.StatusInternalServerError)
+					http.Redirect(w, r, "/login", http.StatusSeeOther)
 				}
-
 				return
 			}
 

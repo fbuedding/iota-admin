@@ -1,10 +1,10 @@
 package iotagentsdktest_test
 
 import (
-	"log"
 	"testing"
 
 	i "github.com/fbuedding/iota-admin/pkg/iot-agent-sdk"
+	"github.com/rs/zerolog/log"
 )
 
 var (
@@ -25,7 +25,7 @@ func init() {
 	d = i.Device{Id: deviceId, EntityName: entityName}
 	err := iota.CreateDevice(fs, d)
 	if err != nil {
-		log.Fatal(err.Error())
+		log.Fatal().Err(err).Msg("Could not create device")
 	}
 }
 

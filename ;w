@@ -1,0 +1,51 @@
+package fiwareservicerepository
+
+import (
+	"database/sql"
+	"sync"
+	"time"
+
+	i "github.com/fbuedding/iota-admin/pkg/iot-agent-sdk"
+	"github.com/google/uuid"
+)
+
+const file string = "db/sqlite/fiware.db"
+
+type SqliteRepo struct {
+	mu sync.Mutex
+	db *sql.DB
+}
+
+func (sr *SqliteRepo) Add(service string) error {
+	sr.mu.Lock()
+	defer sr.mu.Unlock()
+	insert, err := sr.db.Prepare(`INSERT INTO "main"."services"("name","id","created_at","updated_at") VALUES ('?','?','?','?');`)
+	if err != nil {
+		return err
+	}
+  _, err := insert.Exec(service, uuid.NewString(), time.Now(), time.Now())
+	return nil
+}
+
+func (sr *SqliteRepo) Get(string) (i.FiwareService, error) {
+	sr.mu.Lock()
+	defer sr.mu.Unlock()
+	return i.FiwareService{}, nil
+}
+
+func (sr *SqliteRepo) List() ([]i.FiwareService, error) {
+	sr.mu.Lock()
+	defer sr.mu.Unlock()
+	return []i.FiwareService{}, nil
+
+}
+func (sr *SqliteRepo) Update() error {
+	sr.mu.Lock()
+	defer sr.mu.Unlock()
+	return nil
+}
+func (sr *SqliteRepo) Delete(string) error {
+	sr.mu.Lock()
+	defer sr.mu.Unlock()
+	return nil
+}

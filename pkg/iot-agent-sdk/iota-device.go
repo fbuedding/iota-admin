@@ -9,6 +9,7 @@ import (
 	u "net/url"
 
 	"github.com/niemeyer/golang/src/pkg/container/vector"
+	log "github.com/rs/zerolog/log"
 )
 
 const (
@@ -143,8 +144,7 @@ func (i IoTA) CreateDevices(fs FiwareService, ds []Device) error {
 
 	payload, err := json.Marshal(rcd)
 	if err != nil {
-		fmt.Println("Could not Marshal struct")
-		panic(1)
+    log.Panic().Err(err).Msg("Could not Marshal struct")
 	}
 	client := &http.Client{}
 	req, err := http.NewRequest(method, fmt.Sprintf(urlDevice, i.Host, i.Port), bytes.NewBuffer(payload))
@@ -196,8 +196,7 @@ func (i IoTA) UpdateDevice(fs FiwareService, d Device) error {
 
 	payload, err := json.Marshal(d)
 	if err != nil {
-		fmt.Println("Could not Marshal struct")
-		panic(1)
+    log.Panic().Err(err).Msg("Could not Marshal struct")
 	}
   if string(payload) == "{}" {
     return nil
