@@ -14,6 +14,7 @@ import (
 	"github.com/fbuedding/iota-admin/internal/pkg/sessionStore"
 	"github.com/go-chi/chi/v5"
 	"github.com/gorilla/schema"
+	"github.com/rs/zerolog/log"
 )
 
 var decoder = schema.NewDecoder()
@@ -42,6 +43,7 @@ func Auth(a auth.Authenticator, st sessionStore.SessionStore) chi.Router {
 		}
 		usr, err := a.Login(auth.Username(cred.Username), auth.Password(cred.Password))
 		if err != nil {
+			log.Error().Err(err).Msg("Could not log in user")
 			w.WriteHeader(http.StatusUnauthorized)
 			return
 		}
@@ -61,9 +63,27 @@ func Auth(a auth.Authenticator, st sessionStore.SessionStore) chi.Router {
 		w.Header().Add("HX-Redirect", "/index")
 
 		w.Write([]byte(fmt.Sprintf("<div>Hallo %v</div>", cred.Username)))
-
 	})
 
+	r.Delete("/login", func(w http.ResponseWriter, r *http.Request) {
+
+		sessionToken, err := cookies.ReadSigned(r, "session_token", getCookieSecret())
+		cookies.Delete(w, "session_token")
+		if err != nil {
+			switch {
+			case errors.Is(err, http.ErrNoCookie):
+				http.Redirect(w, r, "/login", http.StatusSeeOther)
+			case errors.Is(err, cookies.ErrInvalidValue):
+				http.Redirect(w, r, "/login", http.StatusSeeOther)
+			default:
+				http.Redirect(w, r, "/login", http.StatusSeeOther)
+			}
+			return
+		}
+		st.Remove(sessionStore.SessionToken(sessionToken))
+		http.Redirect(w, r, "/login", http.StatusSeeOther)
+		return
+	})
 	return r
 }
 
@@ -72,13 +92,14 @@ func AuthMiddleware(st sessionStore.SessionStore) func(next http.Handler) http.H
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			sessionToken, err := cookies.ReadSigned(r, "session_token", getCookieSecret())
 			if err != nil {
+				cookies.Delete(w, "session_token")
 				switch {
 				case errors.Is(err, http.ErrNoCookie):
-					http.Redirect(w, r, "/login", http.StatusSeeOther)
+					handleUnauthorized(w, r)
 				case errors.Is(err, cookies.ErrInvalidValue):
-					http.Redirect(w, r, "/login", http.StatusSeeOther)
+					handleUnauthorized(w, r)
 				default:
-					http.Redirect(w, r, "/login", http.StatusSeeOther)
+					handleUnauthorized(w, r)
 				}
 				return
 			}
@@ -87,12 +108,13 @@ func AuthMiddleware(st sessionStore.SessionStore) func(next http.Handler) http.H
 			session, err := st.Get(sessionStore.SessionToken(sessionToken))
 			if err != nil {
 				cookies.Delete(w, "session_token")
+				handleUnauthorized(w, r)
 				return
 			}
 			if session.IsExpired() {
-				http.Error(w, "Unauthorized", http.StatusUnauthorized)
 				st.Remove(sessionStore.SessionToken(sessionToken))
 				cookies.Delete(w, "session_token")
+				handleUnauthorized(w, r)
 				return
 			}
 			session.Refresh(time.Now().Add(2 * time.Minute))
@@ -120,4 +142,12 @@ func getCookieSecret() []byte {
 		panic(err)
 	}
 	return secretKey
+}
+
+func handleUnauthorized(w http.ResponseWriter, r *http.Request) {
+	if w.Header().Get("HX-Request") == "true" {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+	} else {
+		http.Redirect(w, r, "/login", http.StatusSeeOther)
+	}
 }
