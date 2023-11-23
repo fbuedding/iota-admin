@@ -262,28 +262,33 @@ func (i IoTA) DeleteDevice(fs FiwareService, id DeciveId) error {
 	return nil
 }
 
-func (i IoTA) UpsertDevice(fs FiwareService, d Device) {
+func (i IoTA) UpsertDevice(fs FiwareService, d Device) error {
 	exists := i.DeviceExists(fs, d.Id)
 	if !exists {
 		log.Debug().Msg("Creating device...")
 		err := i.CreateDevice(fs, d)
 		if err != nil {
-			log.Fatal().Err(err).Msg("Could not create device")
+      return err
 		}
 	} else {
 		log.Debug().Msg("Update device...")
 		dTmp, err := i.ReadDevice(fs, d.Id)
-		if err != nil || dTmp.EntityName == "" {
-			log.Fatal().Err(err).Msg("Can not update device, no entity_name")
+		if err != nil  {
+      return err 
 		}
+
+    if dTmp.EntityName == ""{
+      return errors.New("Error before getting updating device: No entity_name")
+    }
 
 		d.Transport = ""
 		d.EntityName = dTmp.EntityName
 		err = i.UpdateDevice(fs, d)
 		if err != nil {
-			log.Fatal().Err(err).Msg("Could not update device")
+      return err
 		}
 	}
+  return nil
 }
 // Creates a device an updates the
 func (i IoTA) CreateDeviceWSE(fs FiwareService, d *Device) error {

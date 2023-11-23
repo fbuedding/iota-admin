@@ -27,6 +27,9 @@ func (sg ServiceGroup) Validate() error {
 	if sg.Apikey == "" {
 		mF.Fields.Push("Apikey")
 	}
+	if sg.Resource == "" {
+		mF.Fields.Push("Resource")
+	}
 
 	if mF.Fields.Len() == 0 {
 		return nil
@@ -260,21 +263,22 @@ func (i IoTA) DeleteServiceGroup(fs FiwareService, r Resource, a Apikey) error {
 	return nil
 }
 
-func (i IoTA) UpsertServiceGroup(fs FiwareService, sg ServiceGroup) {
+func (i IoTA) UpsertServiceGroup(fs FiwareService, sg ServiceGroup) error{
 	exists := i.ServiceGroupExists(fs, sg.Resource, sg.Apikey)
 	if !exists {
 		log.Debug().Msg("Creating service group...")
 		err := i.CreateServiceGroup(fs, sg)
 		if err != nil {
-			log.Fatal().Err(err).Msg("Could not create service group")
+      return err
 		}
 	} else {
 		log.Debug().Msg("Update service group...")
 		err := i.UpdateServiceGroup(fs, sg.Resource, sg.Apikey, sg)
 		if err != nil {
-			log.Fatal().Err(err).Msg("Could not update service group")
+      return err
 		}
 	}
+  return nil
 }
 
 func (i IoTA) CreateServiceGroupWSE(fs FiwareService, sg *ServiceGroup) error {
