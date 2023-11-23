@@ -2,11 +2,10 @@ package iotagentsdktest_test
 
 import (
 	"testing"
-
 )
 
 func TestReadServiceGroup(t *testing.T) {
-  t.Log("Testing ReadServiceGroup")
+	t.Log("Testing ReadServiceGroup")
 	respD, err := iota.ReadServiceGroup(fs, resource, apiKey)
 	if err != nil {
 		t.Error(err)
@@ -16,7 +15,7 @@ func TestReadServiceGroup(t *testing.T) {
 	}
 }
 func TestListServiceGroup(t *testing.T) {
-  t.Log("Testing ListServiceGroup")
+	t.Log("Testing ListServiceGroup")
 
 	respD, err := iota.ReadServiceGroup(fs, resource, apiKey)
 	if err != nil {
@@ -28,7 +27,7 @@ func TestListServiceGroup(t *testing.T) {
 }
 
 func TestUpdateServiceGroup(t *testing.T) {
-  t.Log("Testing UpdateServiceGroup")
+	t.Log("Testing UpdateServiceGroup")
 	sgtmp := sg
 	sgtmp.Autoprovision = true
 	err := iota.UpdateServiceGroup(fs, resource, apiKey, sgtmp)
@@ -42,7 +41,7 @@ func TestUpdateServiceGroup(t *testing.T) {
 }
 
 func TestDeleteServiceGroup(t *testing.T) {
-  t.Log("Testing deleteServiceGroup")
+	t.Log("Testing deleteServiceGroup")
 	err := iota.DeleteServiceGroup(fs, resource, apiKey)
 	if err != nil {
 		t.Error(err)
@@ -50,15 +49,24 @@ func TestDeleteServiceGroup(t *testing.T) {
 }
 
 func TestUpsertServiceGroup(t *testing.T) {
-  t.Log("Testing UpsertServiceGroup")
+	t.Log("Testing UpsertServiceGroup")
 
 	err := iota.UpsertServiceGroup(fs, sg)
 	if err != nil {
 		t.Error(err)
 	}
-  t.Log("Testing UpsertServiceGroup again")
+	t.Log("Testing UpsertServiceGroup again")
 	err = iota.UpsertServiceGroup(fs, sg)
 	if err != nil {
 		t.Error(err)
 	}
+	iota.DeleteServiceGroup(fs, resource, apiKey)
+}
+func TestCreatServiceGroupWSE(t *testing.T) {
+  sgtemp := sg
+  err := iota.CreateServiceGroupWSE(fs, &sgtemp)
+  if err != nil {
+    t.Error(err)
+  }
+  t.Log(sgtemp)
 }
