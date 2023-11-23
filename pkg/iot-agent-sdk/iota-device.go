@@ -69,7 +69,10 @@ func (i IoTA) ReadDevice(fs FiwareService, id DeciveId) (*Device, error) {
 			return nil, fmt.Errorf("Error while eding response body %w", err)
 		}
 		var apiError ApiError
-		json.Unmarshal(resData, &apiError)
+		err = json.Unmarshal(resData, &apiError)
+		if err != nil {
+			log.Panic().Err(err).Msg("Could not Marshal struct")
+		}
 		return nil, apiError
 	}
 
@@ -80,6 +83,9 @@ func (i IoTA) ReadDevice(fs FiwareService, id DeciveId) (*Device, error) {
 
 	var device Device
 	json.Unmarshal(responseData, &device)
+	if err != nil {
+		log.Panic().Err(err).Msg("Could not Marshal struct")
+	}
 	return &device, nil
 }
 
@@ -117,6 +123,9 @@ func (i IoTA) ListDevices(fs FiwareService) (*respListDevices, error) {
 		}
 		var apiError ApiError
 		json.Unmarshal(resData, &apiError)
+		if err != nil {
+			log.Panic().Err(err).Msg("Could not Marshal struct")
+		}
 		return nil, apiError
 	}
 
@@ -268,33 +277,34 @@ func (i IoTA) UpsertDevice(fs FiwareService, d Device) error {
 		log.Debug().Msg("Creating device...")
 		err := i.CreateDevice(fs, d)
 		if err != nil {
-      return err
+			return err
 		}
 	} else {
 		log.Debug().Msg("Update device...")
 		dTmp, err := i.ReadDevice(fs, d.Id)
-		if err != nil  {
-      return err 
+		if err != nil {
+			return err
 		}
 
-    if dTmp.EntityName == ""{
-      return errors.New("Error before getting updating device: No entity_name")
-    }
+		if dTmp.EntityName == "" {
+			return errors.New("Error before getting updating device: No entity_name")
+		}
 
 		d.Transport = ""
 		d.EntityName = dTmp.EntityName
 		err = i.UpdateDevice(fs, d)
 		if err != nil {
-      return err
+			return err
 		}
 	}
-  return nil
+	return nil
 }
+
 // Creates a device an updates the
 func (i IoTA) CreateDeviceWSE(fs FiwareService, d *Device) error {
-  if d == nil {
-    return errors.New("Device reference cannot be nil")
-  }
+	if d == nil {
+		return errors.New("Device reference cannot be nil")
+	}
 	err := i.CreateDevice(fs, *d)
 	if err != nil {
 		return err
@@ -303,6 +313,6 @@ func (i IoTA) CreateDeviceWSE(fs FiwareService, d *Device) error {
 	if err != nil {
 		return err
 	}
-  *d = *dTmp
+	*d = *dTmp
 	return nil
 }

@@ -2,18 +2,22 @@ package fiwareservicerepository
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 	"sync"
 	"time"
-
-	"github.com/google/uuid"
 )
 
 const file string = "db/sqlite/fiware.db"
 
 type SqliteRepo struct {
-	mu sync.Mutex
-	db *sql.DB
+	mu    sync.Mutex
+	db    *sql.DB
+	genId func() string
+}
+
+func (sr *SqliteRepo) SetIdGen(f func() string) {
+	sr.genId = f
 }
 
 func (sr *SqliteRepo) AddFiwareService(service string) error {
@@ -23,7 +27,7 @@ func (sr *SqliteRepo) AddFiwareService(service string) error {
 	if err != nil {
 		return err
 	}
-	res, err := insert.Exec(service, uuid.NewString(), time.Now(), time.Now())
+	res, err := insert.Exec(service, sr.genId(), time.Now(), time.Now())
 	if err != nil {
 		return nil
 	}
@@ -77,13 +81,49 @@ func (sr *SqliteRepo) ListFiwareServices() (FiwareServiceRows, error) {
 	return services, nil
 
 }
-func (sr *SqliteRepo) UpdateFiwareService() error {
+func (sr *SqliteRepo) UpdateFiwareService(id string, name string) error {
 	sr.mu.Lock()
 	defer sr.mu.Unlock()
+	update, err := sr.db.Prepare(`UPDATE services SET name = ?, updated_at = ? WHERE id = ?;`)
+
+	if err != nil {
+		return err
+	}
+
+	res, err := update.Exec(name, time.Now(), id)
+
+	if err != nil {
+		return err
+	}
+	c, err := res.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if c == 0 {
+		return errors.New("No row affected")
+	}
 	return nil
 }
-func (sr *SqliteRepo) DeleteFiwareService(string) error {
+func (sr *SqliteRepo) DeleteFiwareService(id string) error {
 	sr.mu.Lock()
 	defer sr.mu.Unlock()
+	delete, err := sr.db.Prepare(`DELETE FROM services WHERE id = ?;`)
+
+	if err != nil {
+		return err
+	}
+
+	res, err := delete.Exec(id)
+
+	if err != nil {
+		return err
+	}
+	c, err := res.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if c == 0 {
+		return errors.New("No row affected")
+	}
 	return nil
 }
