@@ -95,7 +95,7 @@ func AuthMiddleware(st sessionStore.SessionStore) func(next http.Handler) http.H
 				cookies.Delete(w, "session_token")
 				return
 			}
-			session.Refresh(time.Now().Add(123 * time.Second))
+			session.Refresh(time.Now().Add(2 * time.Minute))
 			cookies.WriteSigned(w, &http.Cookie{
 				Name:     "session_token",
 				Value:    string(sessionToken),

@@ -3,6 +3,7 @@ package iotagentsdk
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -151,7 +152,7 @@ func (i IoTA) CreateServiceGroups(fs FiwareService, sgs []ServiceGroup) error {
 
 	payload, err := json.Marshal(reqCreateServiceGroup)
 	if err != nil {
-    log.Panic().Err(err).Msg("Could not Marshal struct")
+		log.Panic().Err(err).Msg("Could not Marshal struct")
 	}
 	client := &http.Client{}
 	req, err := http.NewRequest(method, fmt.Sprintf(urlService, i.Host, i.Port), bytes.NewBuffer(payload))
@@ -192,11 +193,11 @@ func (i IoTA) UpdateServiceGroup(fs FiwareService, r Resource, a Apikey, sg Serv
 
 	payload, err := json.Marshal(sg)
 	if err != nil {
-    log.Panic().Err(err).Msg("Could not Marshal struct")
+		log.Panic().Err(err).Msg("Could not Marshal struct")
 	}
-  if string(payload) == "{}" {
-    return nil
-  }
+	if string(payload) == "{}" {
+		return nil
+	}
 	client := &http.Client{}
 	req, err := http.NewRequest(method, fmt.Sprintf(url, i.Host, i.Port), bytes.NewBuffer(payload))
 
@@ -255,6 +256,46 @@ func (i IoTA) DeleteServiceGroup(fs FiwareService, r Resource, a Apikey) error {
 		json.Unmarshal(resData, &apiError)
 		return apiError
 	}
+
+	return nil
+}
+
+func (i IoTA) UpsertServiceGroup(fs FiwareService, sg ServiceGroup) {
+	exists := i.ServiceGroupExists(fs, sg.Resource, sg.Apikey)
+	if !exists {
+		log.Debug().Msg("Creating service group...")
+		err := i.CreateServiceGroup(fs, sg)
+		if err != nil {
+			log.Fatal().Err(err).Msg("Could not create service group")
+		}
+	} else {
+		log.Debug().Msg("Update service group...")
+		err := i.UpdateServiceGroup(fs, sg.Resource, sg.Apikey, sg)
+		if err != nil {
+			log.Fatal().Err(err).Msg("Could not update service group")
+		}
+	}
+}
+
+func (i IoTA) CreateServiceGroupWSE(fs FiwareService, sg *ServiceGroup) error {
+	if sg == nil {
+		return errors.New("Service group reference cannot be nil")
+	}
+
+	err := i.CreateServiceGroup(fs, *sg)
+	if err != nil {
+    return err
+	}
+
+  sgTmp, err := i.ReadServiceGroup(fs, sg.Resource, sg.Apikey)
+	if err != nil {
+    return err
+	}
+
+  if sgTmp.Count == 0 {
+    return errors.New("No service group created")
+  }
+  *sg = *&sgTmp.Services[0]
 
 	return nil
 }
