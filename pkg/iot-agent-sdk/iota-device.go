@@ -3,6 +3,7 @@ package iotagentsdk
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -90,7 +91,7 @@ func (i IoTA) DeviceExists(fs FiwareService, id DeciveId) bool {
 	return true
 }
 func (i IoTA) ListDevices(fs FiwareService) (*respListDevices, error) {
-  url := fmt.Sprintf(urlDevice, i.Host, i.Port)
+	url := fmt.Sprintf(urlDevice, i.Host, i.Port)
 
 	method := "GET"
 
@@ -129,7 +130,6 @@ func (i IoTA) ListDevices(fs FiwareService) (*respListDevices, error) {
 	return &respDevices, nil
 }
 
-
 func (i IoTA) CreateDevices(fs FiwareService, ds []Device) error {
 
 	for _, sg := range ds {
@@ -144,7 +144,7 @@ func (i IoTA) CreateDevices(fs FiwareService, ds []Device) error {
 
 	payload, err := json.Marshal(rcd)
 	if err != nil {
-    log.Panic().Err(err).Msg("Could not Marshal struct")
+		log.Panic().Err(err).Msg("Could not Marshal struct")
 	}
 	client := &http.Client{}
 	req, err := http.NewRequest(method, fmt.Sprintf(urlDevice, i.Host, i.Port), bytes.NewBuffer(payload))
@@ -185,7 +185,6 @@ func (i IoTA) UpdateDevice(fs FiwareService, d Device) error {
 		return err
 	}
 
-  
 	url, err := u.JoinPath(fmt.Sprintf(urlDevice, i.Host, i.Port), u.PathEscape(string(d.Id)))
 
 	//Ensure these fields are not set
@@ -196,11 +195,11 @@ func (i IoTA) UpdateDevice(fs FiwareService, d Device) error {
 
 	payload, err := json.Marshal(d)
 	if err != nil {
-    log.Panic().Err(err).Msg("Could not Marshal struct")
+		log.Panic().Err(err).Msg("Could not Marshal struct")
 	}
-  if string(payload) == "{}" {
-    return nil
-  }
+	if string(payload) == "{}" {
+		return nil
+	}
 	client := &http.Client{}
 	req, err := http.NewRequest(method, url, bytes.NewBuffer(payload))
 
@@ -260,5 +259,45 @@ func (i IoTA) DeleteDevice(fs FiwareService, id DeciveId) error {
 		json.Unmarshal(resData, &apiError)
 		return apiError
 	}
+	return nil
+}
+
+func (i IoTA) UpsertDevice(fs FiwareService, d Device) {
+	exists := i.DeviceExists(fs, d.Id)
+	if !exists {
+		log.Debug().Msg("Creating device...")
+		err := i.CreateDevice(fs, d)
+		if err != nil {
+			log.Fatal().Err(err).Msg("Could not create device")
+		}
+	} else {
+		log.Debug().Msg("Update device...")
+		dTmp, err := i.ReadDevice(fs, d.Id)
+		if err != nil || dTmp.EntityName == "" {
+			log.Fatal().Err(err).Msg("Can not update device, no entity_name")
+		}
+
+		d.Transport = ""
+		d.EntityName = dTmp.EntityName
+		err = i.UpdateDevice(fs, d)
+		if err != nil {
+			log.Fatal().Err(err).Msg("Could not update device")
+		}
+	}
+}
+// Creates a device an updates the
+func (i IoTA) CreateDeviceWSE(fs FiwareService, d *Device) error {
+  if d == nil {
+    return errors.New("Device reference cannot be nil")
+  }
+	err := i.CreateDevice(fs, *d)
+	if err != nil {
+		return err
+	}
+	dTmp, err := i.ReadDevice(fs, d.Id)
+	if err != nil {
+		return err
+	}
+  *d = *dTmp
 	return nil
 }

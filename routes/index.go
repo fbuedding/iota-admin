@@ -13,10 +13,9 @@ func Index() chi.Router {
   r.Get("/", func(w http.ResponseWriter, r *http.Request) {
     http.Redirect(w, r, "/index", http.StatusSeeOther)
   })
-  r.Get("/index", func(w http.ResponseWriter, r *http.Request) {
-    template.Index([]iotagentsdk.IoTA{iotagentsdk.IoTA{Host: "iot-agent", Port: 4061 }}).Render(r.Context(), w)
-    //http.ServeFile(w, r, "web/static/index.html")
 
+  r.Get("/index", func(w http.ResponseWriter, r *http.Request) {
+    template.Index([]iotagentsdk.IoTA{{Host: "iot-agent", Port: 4061 }}).Render(r.Context(), w)
 	})
   
 	return r
