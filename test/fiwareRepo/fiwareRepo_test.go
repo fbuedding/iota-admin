@@ -11,44 +11,72 @@ import (
 	_ "github.com/fbuedding/iota-admin/test/testing_init"
 )
 
-
 func TestMain(m *testing.M) {
-  fmt.Println("Starting tests")
-  code := m.Run()
-  os.Exit(code)
+	fmt.Println("Starting tests")
+	code := m.Run()
+	os.Exit(code)
 }
 
 func TestInitIntegrations(t *testing.T) {
-    t.Log("TestMigrations")
+	t.Log("TestMigrations")
 	is := r.GetMigrations()
 	if len(is) == 0 {
-    t.Log("No migrations found")
+		t.Log("No migrations found")
 		t.Fail()
 	}
 }
 
 func TestCreateSqlite(t *testing.T) {
-	_, err := r.NewFiwareServiceRepo(r.Sqlite)
+	_, err := r.NewFiwareRepo(r.Sqlite)
 	if err != nil {
 		t.Error(err)
 	}
 }
-func TestAdd(t *testing.T) {
-	repo, err := r.NewFiwareServiceRepo(r.Sqlite)
+func TestAddFiwareService(t *testing.T) {
+	repo, err := r.NewFiwareRepo(r.Sqlite)
 	if err != nil {
 		t.Error(err)
 	}
+	repo.SetIdGen(func() string { return "testId" })
 	err = repo.AddFiwareService("test")
 	if err != nil {
 		t.Error(err)
 	}
 }
-func TestList(t *testing.T) {
-	repo, err := r.NewFiwareServiceRepo(r.Sqlite)
+func TestListFiwareService(t *testing.T) {
+	repo, err := r.NewFiwareRepo(r.Sqlite)
 	if err != nil {
 		t.Error(err)
 	}
-	_, err = repo.ListFiwareServices()
+	rows, err := repo.ListFiwareServices()
+	if err != nil {
+		t.Error(err)
+	}
+	if len(rows) == 0 {
+		t.Log("There should be atleast one row")
+		t.Fail()
+	}
+}
+
+func TestUpdateFiwareService(t *testing.T) {
+	repo, err := r.NewFiwareRepo(r.Sqlite)
+	if err != nil {
+		t.Error(err)
+	}
+	err = repo.UpdateFiwareService("testId", "updatedName")
+
+	if err != nil {
+		t.Error(err)
+	}
+}
+
+func TestDeleteFiwareService(t *testing.T) {
+	repo, err := r.NewFiwareRepo(r.Sqlite)
+	if err != nil {
+		t.Error(err)
+	}
+	err = repo.DeleteFiwareService("testId")
+
 	if err != nil {
 		t.Error(err)
 	}

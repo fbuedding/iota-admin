@@ -9,6 +9,7 @@ import (
 	"time"
 
 	i "github.com/fbuedding/iota-admin/pkg/iot-agent-sdk"
+	"github.com/google/uuid"
 
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/rs/zerolog/log"
@@ -42,8 +43,9 @@ type FiwareRepo interface {
 	AddFiwareService(string) error
 	GetFiwareService(string) (*FiwareServiceRow, error)
 	ListFiwareServices() (FiwareServiceRows, error)
-	UpdateFiwareService() error
+	UpdateFiwareService(string, string) error
 	DeleteFiwareService(string) error
+	SetIdGen(func() string)
 }
 
 const (
@@ -84,7 +86,7 @@ func GetMigrations() []string {
 	return migrations
 }
 
-func NewFiwareServiceRepo(i RepoType) (FiwareRepo, error) {
+func NewFiwareRepo(i RepoType) (FiwareRepo, error) {
 	switch i {
 	case Sqlite:
 		repo, err := newSqliteRepo()
@@ -109,5 +111,5 @@ func newSqliteRepo() (*SqliteRepo, error) {
 			return nil, err
 		}
 	}
-	return &SqliteRepo{db: db}, nil
+	return &SqliteRepo{db: db, genId: uuid.NewString}, nil
 }
