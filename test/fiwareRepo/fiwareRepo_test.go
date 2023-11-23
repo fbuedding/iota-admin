@@ -1,26 +1,28 @@
-package fiwareservicerepotest_test
+package fiwarerepo_test
 
 import (
+	"fmt"
 	"os"
 	"testing"
 
 	//i "github.com/fbuedding/iota-admin/pkg/iot-agent-sdk"
-	"github.com/rs/zerolog"
-	"github.com/rs/zerolog/log"
 
-	r "github.com/fbuedding/iota-admin/internal/pkg/fiwareServiceRepository"
+	r "github.com/fbuedding/iota-admin/internal/pkg/fiwareRepository"
 	_ "github.com/fbuedding/iota-admin/test/testing_init"
 )
 
-func init() {
-	zerolog.SetGlobalLevel(zerolog.DebugLevel)
-	d, _ := os.Getwd()
-	log.Debug().Str("workingDirect", d).Msg("Init Fiware Service Repo tests")
+
+func TestMain(m *testing.M) {
+  fmt.Println("Starting tests")
+  code := m.Run()
+  os.Exit(code)
 }
 
 func TestInitIntegrations(t *testing.T) {
-	is := r.GetIntegrations()
+    t.Log("TestMigrations")
+	is := r.GetMigrations()
 	if len(is) == 0 {
+    t.Log("No migrations found")
 		t.Fail()
 	}
 }
@@ -28,27 +30,26 @@ func TestInitIntegrations(t *testing.T) {
 func TestCreateSqlite(t *testing.T) {
 	_, err := r.NewFiwareServiceRepo(r.Sqlite)
 	if err != nil {
-		t.Fail()
+		t.Error(err)
 	}
 }
 func TestAdd(t *testing.T) {
 	repo, err := r.NewFiwareServiceRepo(r.Sqlite)
 	if err != nil {
-		t.Fail()
+		t.Error(err)
 	}
-	err = repo.Add("test")
+	err = repo.AddFiwareService("test")
 	if err != nil {
-		t.Fail()
+		t.Error(err)
 	}
 }
 func TestList(t *testing.T) {
 	repo, err := r.NewFiwareServiceRepo(r.Sqlite)
 	if err != nil {
-		t.Fail()
+		t.Error(err)
 	}
-	_, err = repo.List()
+	_, err = repo.ListFiwareServices()
 	if err != nil {
-		log.Error().Err(err).Send()
-		t.Fail()
+		t.Error(err)
 	}
 }

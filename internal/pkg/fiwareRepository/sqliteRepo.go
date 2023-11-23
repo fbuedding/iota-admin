@@ -6,7 +6,6 @@ import (
 	"sync"
 	"time"
 
-	i "github.com/fbuedding/iota-admin/pkg/iot-agent-sdk"
 	"github.com/google/uuid"
 )
 
@@ -17,7 +16,7 @@ type SqliteRepo struct {
 	db *sql.DB
 }
 
-func (sr *SqliteRepo) Add(service string) error {
+func (sr *SqliteRepo) AddFiwareService(service string) error {
 	sr.mu.Lock()
 	defer sr.mu.Unlock()
 	insert, err := sr.db.Prepare(`INSERT INTO services VALUES (?,?,?,?);`)
@@ -38,7 +37,7 @@ func (sr *SqliteRepo) Add(service string) error {
 	return nil
 }
 
-func (sr *SqliteRepo) Get(id string) (*FiwareServiceRow, error) {
+func (sr *SqliteRepo) GetFiwareService(id string) (*FiwareServiceRow, error) {
 	sr.mu.Lock()
 	defer sr.mu.Unlock()
 	get, err := sr.db.Prepare(`SELECT id, name, created_at, updated_at FROM services WHERE id = ?`)
@@ -53,7 +52,7 @@ func (sr *SqliteRepo) Get(id string) (*FiwareServiceRow, error) {
 	return &row, nil
 }
 
-func (sr *SqliteRepo) List() ([]FiwareServiceRow, error) {
+func (sr *SqliteRepo) ListFiwareServices() (FiwareServiceRows, error) {
 
 	sr.mu.Lock()
 	defer sr.mu.Unlock()
@@ -66,7 +65,7 @@ func (sr *SqliteRepo) List() ([]FiwareServiceRow, error) {
 		return nil, err
 	}
 	defer rows.Close()
-	services := []FiwareServiceRow{}
+	services := FiwareServiceRows{}
 	for rows.Next() {
 		row := FiwareServiceRow{}
 		err = rows.Scan(&row.Id, &row.Name, &row.CreatedAt, &row.UpdatedAt)
@@ -78,12 +77,12 @@ func (sr *SqliteRepo) List() ([]FiwareServiceRow, error) {
 	return services, nil
 
 }
-func (sr *SqliteRepo) Update() error {
+func (sr *SqliteRepo) UpdateFiwareService() error {
 	sr.mu.Lock()
 	defer sr.mu.Unlock()
 	return nil
 }
-func (sr *SqliteRepo) Delete(string) error {
+func (sr *SqliteRepo) DeleteFiwareService(string) error {
 	sr.mu.Lock()
 	defer sr.mu.Unlock()
 	return nil
