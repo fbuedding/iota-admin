@@ -6,7 +6,6 @@ import (
 	i "github.com/fbuedding/iota-admin/pkg/iot-agent-sdk"
 )
 
-
 func TestReadDevice(t *testing.T) {
 	respD, err := iota.ReadDevice(fs, deviceId)
 	if err != nil {
@@ -69,4 +68,14 @@ func TestUpsertDevice(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
+	iota.DeleteDevice(fs, d.Id)
+}
+
+func TestCreateDeviceWSE(t *testing.T) {
+  dtemp := d
+	err := iota.CreateDeviceWSE(fs, &dtemp)
+	if err != nil {
+    t.Error(err)
+	}
+  t.Log(dtemp)
 }
