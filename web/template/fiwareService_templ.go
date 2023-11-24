@@ -12,6 +12,10 @@ import "bytes"
 
 import (
 	fr "github.com/fbuedding/iota-admin/internal/pkg/fiwareRepository"
+	"math"
+	"strconv"
+	"strings"
+	"time"
 )
 
 func Services(rs fr.FiwareServiceRows) templ.Component {
@@ -69,12 +73,24 @@ func Service(s fr.FiwareServiceRow) templ.Component {
 			templ_7745c5c3_Var3 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div id=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Var4 := `Name: `
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var4)
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString("i" + s.Id))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" class=\"card bg-base-100 shadow-xl indicator\"><div class=\"badge badge-outline indicator-item indicator-top indicator-center\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var4 string = TimeElapsed(time.Now(), s.UpdatedAt, false)
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div><div class=\"card-body\"><h2 class=\"card-title\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -83,7 +99,21 @@ func Service(s fr.FiwareServiceRow) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" <button hx-delete=\"")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</h2><p>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Var6 := `Service was created on `
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var6)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var7 string = s.CreatedAt.Format("02.01.2006")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</p><div class=\"card-actions justify-end\"><button class=\"btn btn-outline btn-sm\" hx-delete=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -91,25 +121,24 @@ func Service(s fr.FiwareServiceRow) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-target=\"body\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-target=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Var6 := `Delete`
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var6)
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString("#i" + s.Id))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</button><div class=\"badge badge-outline\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-swap=\"outerHTML\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var7 string = s.UpdatedAt.Local().String()
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
+		templ_7745c5c3_Var8 := `delete`
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var8)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></div>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</button></div></div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -118,4 +147,89 @@ func Service(s fr.FiwareServiceRow) templ.Component {
 		}
 		return templ_7745c5c3_Err
 	})
+}
+
+func RoundTime(input float64) int {
+	var result float64
+
+	if input < 0 {
+		result = math.Ceil(input - 0.5)
+	} else {
+		result = math.Floor(input + 0.5)
+	}
+
+	// only interested in integer, ignore fractional
+	i, _ := math.Modf(result)
+
+	return int(i)
+}
+
+func s(x float64) string {
+	if int(x) == 1 {
+		return ""
+	}
+	return "s"
+}
+
+func TimeElapsed(now time.Time, then time.Time, full bool) string {
+	var parts []string
+	var text string
+
+	year2, month2, day2 := now.Date()
+	hour2, minute2, second2 := now.Clock()
+
+	year1, month1, day1 := then.Date()
+	hour1, minute1, second1 := then.Clock()
+
+	year := math.Abs(float64(int(year2 - year1)))
+	month := math.Abs(float64(int(month2 - month1)))
+	day := math.Abs(float64(int(day2 - day1)))
+	hour := math.Abs(float64(int(hour2 - hour1)))
+	minute := math.Abs(float64(int(minute2 - minute1)))
+	second := math.Abs(float64(int(second2 - second1)))
+
+	week := math.Floor(day / 7)
+
+	if year > 0 {
+		parts = append(parts, strconv.Itoa(int(year))+" year"+s(year))
+	}
+
+	if month > 0 {
+		parts = append(parts, strconv.Itoa(int(month))+" month"+s(month))
+	}
+
+	if week > 0 {
+		parts = append(parts, strconv.Itoa(int(week))+" week"+s(week))
+	}
+
+	if day > 0 {
+		parts = append(parts, strconv.Itoa(int(day))+" day"+s(day))
+	}
+
+	if hour > 0 {
+		parts = append(parts, strconv.Itoa(int(hour))+" hour"+s(hour))
+	}
+
+	if minute > 0 {
+		parts = append(parts, strconv.Itoa(int(minute))+" minute"+s(minute))
+	}
+
+	if second > 0 {
+		parts = append(parts, strconv.Itoa(int(second))+" second"+s(second))
+	}
+
+	if now.After(then) {
+		text = " ago"
+	} else {
+		text = " after"
+	}
+
+	if len(parts) == 0 {
+		return "just now"
+	}
+
+	if full {
+		return strings.Join(parts, ", ") + text
+	}
+	return parts[0] + text
 }

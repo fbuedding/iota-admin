@@ -21,10 +21,10 @@
     </div>
   </header>
   <div class="p-5">
-    <form hx-post="auth/login" hx-target="#response">
-      <input type="text" name="username" placeholder="username" required />
-      <input type="password" name="password" placeholder="password" required />
-      <input type="submit">
+    <form hx-post="auth/login" hx-target="#response" class="join">
+      <input type="text" name="username" placeholder="username" required class="input input-bordered w-full max-w-xs join-item"/>
+      <input type="password" name="password" placeholder="password" required class="input input-bordered w-full max-w-xs join-item"/>
+      <input type="submit" class="btn btn-primary join-item">
     </form>
     <div id="response">
     </div>

@@ -46,6 +46,7 @@ type FiwareRepo interface {
 	UpdateFiwareService(string, string) error
 	DeleteFiwareService(string) error
 	SetIdGen(func() string)
+	FindFiwareServiceByName(string) (FiwareServiceRows, error)
 }
 
 const (
@@ -62,6 +63,12 @@ var (
 	//go:embed migrations/*.sql
 	migrations_files embed.FS
 	migrations       []string
+)
+
+var (
+	ErrNotFound      = errors.New("not found")
+	ErrCouldNotQuery = errors.New("couldn't query")
+	ErrCouldNotExec  = errors.New("couldn't Exec")
 )
 
 func init() {
