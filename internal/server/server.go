@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/fbuedding/iota-admin/internal/pkg/auth"
+	fr "github.com/fbuedding/iota-admin/internal/pkg/fiwareRepository"
 	"github.com/fbuedding/iota-admin/internal/pkg/sessionStore"
 	"github.com/fbuedding/iota-admin/routes"
 	"github.com/go-chi/chi/v5"
@@ -20,7 +21,7 @@ type Server struct {
 	R             chi.Router
 }
 
-func New(a auth.Authenticator, st sessionStore.SessionStore, port int) *Server {
+func New(a auth.Authenticator, st sessionStore.SessionStore, repo fr.FiwareRepo, port int) *Server {
 
 	var s Server
 
@@ -36,16 +37,16 @@ func New(a auth.Authenticator, st sessionStore.SessionStore, port int) *Server {
 	r.Group(func(r chi.Router) {
 		r.Mount("/login", routes.Login())
 		r.Mount("/auth", routes.Auth(s.Authenticator, s.SessionStore))
-    r.Mount("/assets", routes.StaticAssets())
+		r.Mount("/assets", routes.StaticAssets())
 	})
 
 	//Private Routes, require authentication
 	r.Group(func(r chi.Router) {
 		r.Use(routes.AuthMiddleware(s.SessionStore))
 		r.Mount("/", routes.Index())
+		r.Mount("/fiwareService", routes.FiwareService(repo))
 	})
 
-   
 	s.R = r
 
 	return &s
@@ -55,4 +56,3 @@ func (s Server) Start() error {
 	fmt.Printf("Server listening on %d \n", s.Port)
 	return http.ListenAndServe(fmt.Sprintf(":%d", s.Port), s.R)
 }
-

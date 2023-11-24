@@ -17,18 +17,18 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-var decoder = schema.NewDecoder()
-
 type Credentials struct {
-	Username string
-	Password string
+	Username string `schema:"username,required"`
+	Password string `schema:"password,required"`
 }
 
 func Auth(a auth.Authenticator, st sessionStore.SessionStore) chi.Router {
 	r := chi.NewRouter()
 	r.Post("/login", func(w http.ResponseWriter, r *http.Request) {
+		var decoder = schema.NewDecoder()
 		err := r.ParseForm()
 		if err != nil {
+			log.Error().Err(err).Msg("Could not parse form")
 			w.WriteHeader(400)
 			w.Write([]byte("Bad Request"))
 			return
@@ -37,6 +37,7 @@ func Auth(a auth.Authenticator, st sessionStore.SessionStore) chi.Router {
 		var cred Credentials
 		err = decoder.Decode(&cred, r.PostForm)
 		if err != nil {
+			log.Error().Err(err).Msg("Could not decode form")
 			w.WriteHeader(400)
 			w.Write([]byte("Bad Request"))
 			return
@@ -145,7 +146,9 @@ func getCookieSecret() []byte {
 }
 
 func handleUnauthorized(w http.ResponseWriter, r *http.Request) {
-	if w.Header().Get("HX-Request") == "true" {
+	log.Debug().Str("HX-Request", r.Header.Get("HX-Request")).Msg("Handling Auth")
+	if r.Header.Get("HX-Request") == "true" {
+
 		http.Error(w, "Unauthorized", http.StatusUnauthorized)
 	} else {
 		http.Redirect(w, r, "/login", http.StatusSeeOther)

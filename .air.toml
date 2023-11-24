@@ -4,7 +4,7 @@ tmp_dir = "tmp"
 [build]
   bin = "./tmp/main"
 #  pre_cmd = ["npx tailwindcss -i ./input.css -o ./assets/css/output.css"]
-  cmd = "templ generate && go build -o ./tmp/main ./cmd/iota-admin/main.go"
+  cmd = "templ generate && CGO_ENABLED=1 go build -o ./tmp/main ./cmd/iota-admin/main.go"
   delay = 1000
   exclude_dir = ["assets", "tmp", "vendor", "node_modules"]
   exclude_file = []

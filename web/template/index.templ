@@ -29,21 +29,22 @@ templ Index(agents []iotagentsdk.IoTA) {
 					</button>
 				</div>
 			</header>
-			<div class="p-5">
+			<div class="p-5 flex flex-row gap-5">
 				if len(agents) > 0 {
 					for _, agent := range agents {
-						@IoTA(agent)
+					@IoTA(agent)
 					}
 				} else {
 					<div>No IoT-Agnets!</div>
 				}
 			</div>
+
 		</body>
 	</html>
 }
 
 templ IoTA(agent iotagentsdk.IoTA) {
-	<div class="container">
+	<div class="w-fit">
 		{ agent.Host }:{ fmt.Sprintf("%d",agent.Port) }
 		if htc, err := agent.Healthcheck(); err == nil {
 			<table class="table table-xs">
