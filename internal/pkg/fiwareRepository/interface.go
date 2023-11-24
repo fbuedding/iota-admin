@@ -1,4 +1,4 @@
-package fiwareservicerepository
+package fiwareRepository
 
 import (
 	"database/sql"

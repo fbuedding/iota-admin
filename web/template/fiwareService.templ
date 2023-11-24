@@ -1,0 +1,25 @@
+package template 
+
+import (
+	fr "github.com/fbuedding/iota-admin/internal/pkg/fiwareRepository"
+)
+
+templ Services(rs fr.FiwareServiceRows) {
+	if len(rs) != 0 {
+		for _, s := range rs {
+			@Service(s)
+		}
+	} else {
+    <div>No Fiware Services</div>
+  }
+}
+
+templ Service(s fr.FiwareServiceRow) {
+	<div>
+		Name: { s.Name }
+		<button hx-delete={ "/fiwareService/" + s.Id } hx-target="body">
+			Delete
+		</button>
+		<div class="badge badge-outline">{ s.UpdatedAt.Local().String() }</div>
+	</div>
+}
