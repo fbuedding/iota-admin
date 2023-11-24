@@ -2,10 +2,11 @@ package fiwareRepository
 
 import (
 	"database/sql"
-	"errors"
 	"fmt"
 	"sync"
 	"time"
+
+	"github.com/rs/zerolog/log"
 )
 
 const file string = "db/sqlite/fiware.db"
@@ -100,7 +101,8 @@ func (sr *SqliteRepo) UpdateFiwareService(id string, name string) error {
 		return err
 	}
 	if c == 0 {
-		return errors.New("No row affected")
+
+		return ErrNotFound
 	}
 	return nil
 }
@@ -116,14 +118,41 @@ func (sr *SqliteRepo) DeleteFiwareService(id string) error {
 	res, err := delete.Exec(id)
 
 	if err != nil {
-		return err
+		return ErrCouldNotExec
 	}
 	c, err := res.RowsAffected()
 	if err != nil {
 		return err
 	}
 	if c == 0 {
-		return errors.New("No row affected")
+		return ErrNotFound
 	}
 	return nil
+}
+func (sr *SqliteRepo) FindFiwareServiceByName(name string) (FiwareServiceRows, error) {
+	sr.mu.Lock()
+	defer sr.mu.Unlock()
+	find, err := sr.db.Prepare(`SELECT id, name, created_at, updated_at FROM services WHERE LOWER(name) LIKE CONCAT( '%',?,'%')`)
+
+	if err != nil {
+		return FiwareServiceRows{}, err
+	}
+
+	rows, err := find.Query(name)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	services := FiwareServiceRows{}
+	for rows.Next() {
+		row := FiwareServiceRow{}
+		err = rows.Scan(&row.Id, &row.Name, &row.CreatedAt, &row.UpdatedAt)
+		if err != nil {
+			return nil, err
+		}
+		services = append(services, row)
+	}
+	log.Debug().Any("services", services).Send()
+	return services, nil
+
 }

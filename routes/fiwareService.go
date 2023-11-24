@@ -17,11 +17,18 @@ type FiwareServicePost struct {
 func FiwareService(repo fr.FiwareRepo) chi.Router {
 	r := chi.NewRouter()
 	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
-		services, err := repo.ListFiwareServices()
+		var services fr.FiwareServiceRows
+		var err error
+		name := r.URL.Query().Get("name")
+		if name == "" {
+			services, err = repo.ListFiwareServices()
+		} else {
+			services, err = repo.FindFiwareServiceByName(name)
+		}
 
 		if err != nil {
-			log.Error().Err(err).Msg("Could get fiware services")
-			http.Error(w, "Could get fiware services", http.StatusInternalServerError)
+			log.Error().Err(err).Msg("Could not get fiware services")
+			http.Error(w, "Could not get fiware services", http.StatusInternalServerError)
 			return
 		}
 		template.Services(services).Render(r.Context(), w)
@@ -63,6 +70,32 @@ func FiwareService(repo fr.FiwareRepo) chi.Router {
 			return
 		}
 		template.Services(services).Render(r.Context(), w)
+	})
+
+	r.Delete("/{id}", func(w http.ResponseWriter, r *http.Request) {
+		id := chi.URLParam(r, "id")
+		err := repo.DeleteFiwareService(id)
+		if err != nil {
+			log.Error().Err(err).Send()
+			switch err {
+			case fr.ErrNotFound:
+				http.Error(w, "Service not fount", http.StatusNotFound)
+			default:
+				http.Error(w, "Something went wrong", http.StatusInternalServerError)
+			}
+			return
+		}
+		w.WriteHeader(http.StatusOK)
+		/*
+			services, err := repo.ListFiwareServices()
+
+			if err != nil {
+				log.Error().Err(err).Msg("Could get fiware services")
+				http.Error(w, "Could get fiware services", http.StatusInternalServerError)
+				return
+			}
+			template.Services(services).Render(r.Context(), w)
+		*/
 	})
 
 	return r

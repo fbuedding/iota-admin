@@ -29,16 +29,36 @@ templ Index(agents []iotagentsdk.IoTA) {
 					</button>
 				</div>
 			</header>
-			<div class="p-5 flex flex-row gap-5">
-				if len(agents) > 0 {
-					for _, agent := range agents {
-					@IoTA(agent)
+			<div class="p-5 flex flex-col gap-5 max-w-6xl m-auto">
+				<div class="p-5 flex flex-row gap-5">
+					if len(agents) > 0 {
+						for _, agent := range agents {
+							@IoTA(agent)
+						}
+					} else {
+						<div>No IoT-Agnets!</div>
 					}
-				} else {
-					<div>No IoT-Agnets!</div>
-				}
+				</div>
+				<div class="divider"></div>
+				<div>
+					<input
+ 						class="input input-bordered join-item"
+ 						type="search"
+ 						name="name"
+ 						placeholder="Search Fiware Services..."
+ 						hx-get="/fiwareService"
+ 						hx-trigger="input changed delay:250ms, name"
+ 						hx-target="#fiware-services"
+					/>
+				</div>
+				<div id="fiware-services" class="grid grid-cols-3 gap-4" hx-trigger="load" hx-get="/fiwareService"></div>
+				<div class="flex flex-row gap-5">
+					<form hx-post="/fiwareService" hx-target="#fiware-services" hx-swap="innerHTML" hx-on::after-request=" if(event.detail.successful) this.reset()" class="join">
+						<input type="text" name="name" placeholder="Fiware Service" required class="input input-bordered join-item"/>
+						<button type="submit" class="btn btn-outline join-item">Add</button>
+					</form>
+				</div>
 			</div>
-
 		</body>
 	</html>
 }
