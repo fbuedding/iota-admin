@@ -1,0 +1,36 @@
+package template
+
+import (
+	i "github.com/fbuedding/iota-admin/pkg/iot-agent-sdk"
+)
+
+templ ServiceGroup(sg i.ServiceGroup) {
+	<div class="container flex-col gap-5">
+		<p>
+			Api-Key: { string(sg.Apikey) } Resource: { string(sg.Resource) }
+		</p>
+		<p>
+			Service Path: { sg.ServicePath }
+		</p>
+	</div>
+}
+
+templ FiwareServiceServiveGroups(service string, sgs [] i.ServiceGroup, checked bool) {
+	<div class="collapse collapse-plus bg-base-200">
+		<input type="radio" name="fiware-services" checked?={ checked }/>
+		<div class="collapse-title text-xl font-medium">
+			{ service }
+		</div>
+		<div class="collapse-content">
+			for _, v := range sgs {
+				@ServiceGroup(v)
+			}
+		</div>
+	</div>
+}
+
+templ FiwareServices(fssgs map[string][]i.ServiceGroup, openedService string) {
+	for k, v := range fssgs {
+		@FiwareServiceServiveGroups(k,v,k==openedService)
+	}
+}

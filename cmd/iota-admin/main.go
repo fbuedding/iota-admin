@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/fbuedding/iota-admin/internal/globals"
 	"github.com/fbuedding/iota-admin/internal/pkg/auth"
 	fr "github.com/fbuedding/iota-admin/internal/pkg/fiwareRepository"
 	"github.com/fbuedding/iota-admin/internal/pkg/sessionStore"
@@ -9,6 +10,11 @@ import (
 )
 
 func main() {
+
+	if globals.Conf.BypassAuth {
+		log.Warn().Msg("Authentication bypass is active")
+	}
+
 	repo, err := fr.NewFiwareRepo(fr.Sqlite)
 
 	if err != nil {

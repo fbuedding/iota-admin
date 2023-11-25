@@ -53,7 +53,7 @@ func Index(agents []iotagentsdk.IoTA) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</a></div><div class=\"flex flex-row gap-5\"><a>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</a></div><div class=\"flex flex-row gap-5\" hx-boost=\"true\"><a href=\"/serviceGroups\" hx-target=\"#views\" hx-swap=\"innerHTML\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -90,7 +90,7 @@ func Index(agents []iotagentsdk.IoTA) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</button></div></header><div class=\"p-5 flex flex-col gap-5 max-w-6xl m-auto\"><div class=\"p-5 flex flex-row gap-5\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</button></div></header><div id=\"views\" class=\"p-5 flex flex-col gap-5 max-w-6xl m-auto\"><div class=\"p-5 flex flex-row gap-5\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

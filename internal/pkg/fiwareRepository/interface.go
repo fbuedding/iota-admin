@@ -35,7 +35,7 @@ func (rs FiwareServiceRows) ToFiwareServices() []*i.FiwareService {
 func (r FiwareServiceRow) ToFiwareService() *i.FiwareService {
 	return &i.FiwareService{
 		Service:     r.Name,
-		ServicePath: "/#",
+		ServicePath: "/*",
 	}
 }
 

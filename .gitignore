@@ -3,4 +3,5 @@ node_modules
 tmp/
 tmp/build-errors.log
 tmp/main
-tmp/main
+
+**/*_templ.go 

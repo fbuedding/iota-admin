@@ -19,8 +19,8 @@ templ Index(agents []iotagentsdk.IoTA) {
 				<div class="w-fit">
 					<a href="index" class="text-4xl leaading-normal">IoTA-Admin</a>
 				</div>
-				<div class="flex flex-row gap-5">
-					<a>Service Groups</a>
+				<div class="flex flex-row gap-5" hx-boost="true">
+					<a href="/serviceGroups" hx-target="#views" hx-swap="innerHTML">Service Groups</a>
 					<a>Devices</a>
 				</div>
 				<div class="ml-auto">
@@ -29,7 +29,7 @@ templ Index(agents []iotagentsdk.IoTA) {
 					</button>
 				</div>
 			</header>
-			<div class="p-5 flex flex-col gap-5 max-w-6xl m-auto">
+			<div id="views" class="p-5 flex flex-col gap-5 max-w-6xl m-auto">
 				<div class="p-5 flex flex-row gap-5">
 					if len(agents) > 0 {
 						for _, agent := range agents {
