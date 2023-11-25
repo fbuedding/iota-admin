@@ -10,6 +10,7 @@ import (
 	"github.com/fbuedding/iota-admin/routes"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/rs/zerolog/log"
 )
 
 var ()
@@ -45,6 +46,7 @@ func New(a auth.Authenticator, st sessionStore.SessionStore, repo fr.FiwareRepo,
 		r.Use(routes.AuthMiddleware(s.SessionStore))
 		r.Mount("/", routes.Index())
 		r.Mount("/fiwareService", routes.FiwareService(repo))
+		r.Mount("/serviceGroups", routes.ServiceGroups(repo))
 	})
 
 	s.R = r
@@ -53,6 +55,6 @@ func New(a auth.Authenticator, st sessionStore.SessionStore, repo fr.FiwareRepo,
 }
 
 func (s Server) Start() error {
-	fmt.Printf("Server listening on %d \n", s.Port)
+	log.Info().Int("Port", s.Port).Msg("Server starting")
 	return http.ListenAndServe(fmt.Sprintf(":%d", s.Port), s.R)
 }

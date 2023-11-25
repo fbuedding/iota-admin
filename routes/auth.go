@@ -9,6 +9,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/fbuedding/iota-admin/internal/globals"
 	"github.com/fbuedding/iota-admin/internal/pkg/auth"
 	"github.com/fbuedding/iota-admin/internal/pkg/cookies"
 	"github.com/fbuedding/iota-admin/internal/pkg/sessionStore"
@@ -48,7 +49,6 @@ func Auth(a auth.Authenticator, st sessionStore.SessionStore) chi.Router {
 			w.WriteHeader(http.StatusUnauthorized)
 			return
 		}
-		// @TODO
 		session := sessionStore.Session{
 			Username: usr.Username,
 			Expiry:   time.Now().Add(120 * time.Second),
@@ -91,7 +91,14 @@ func Auth(a auth.Authenticator, st sessionStore.SessionStore) chi.Router {
 func AuthMiddleware(st sessionStore.SessionStore) func(next http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			sessionToken, err := cookies.ReadSigned(r, "session_token", getCookieSecret())
+			if globals.Conf.BypassAuth {
+				ctx := context.WithValue(r.Context(), "user", "fbuedding")
+
+				next.ServeHTTP(w, r.WithContext(ctx))
+				return
+			}
+
+			sessionToken, err := cookies.ReadSigned(r, "session_token", []byte(globals.Conf.CookieSecret))
 			if err != nil {
 				cookies.Delete(w, "session_token")
 				switch {
@@ -105,7 +112,6 @@ func AuthMiddleware(st sessionStore.SessionStore) func(next http.Handler) http.H
 				return
 			}
 
-			//TODO: fix session not found
 			session, err := st.Get(sessionStore.SessionToken(sessionToken))
 			if err != nil {
 				cookies.Delete(w, "session_token")

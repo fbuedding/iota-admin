@@ -86,16 +86,6 @@ func FiwareService(repo fr.FiwareRepo) chi.Router {
 			return
 		}
 		w.WriteHeader(http.StatusOK)
-		/*
-			services, err := repo.ListFiwareServices()
-
-			if err != nil {
-				log.Error().Err(err).Msg("Could get fiware services")
-				http.Error(w, "Could get fiware services", http.StatusInternalServerError)
-				return
-			}
-			template.Services(services).Render(r.Context(), w)
-		*/
 	})
 
 	return r

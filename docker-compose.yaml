@@ -5,6 +5,7 @@ services:
       - APP_ENV=development
       - COOKIE_SECRET=d60285f2976fa1f7e5fb654ea4c774d6fbb7482f2fe116bf38c53307e6587e51
       - LOG_LEVEL=DEBUG
+      - BYPASS_AUTH=true
       - TZ:"Europe/Berlin"
     build:
       dockerfile: Dockerfile
