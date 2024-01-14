@@ -15,7 +15,7 @@ var (
 type Config struct {
 	LogLevel     string `env:"LOG_LEVEL,required=true"`
 	CookieSecret string `env:"COOKIE_SECRET,required=true"`
-	AppEnv       string `env:"APP_ENV,defaul=development"`
+	AppEnv       string `env:"APP_ENV,default=development"`
 	BypassAuth   bool   `env:"BYPASS_AUTH"`
 	IoTAHost     string `env:"IOTA_HOST,default=iot-agent"`
 	IoTAPort     int    `env:"IOTA_PORT,default=4061"`

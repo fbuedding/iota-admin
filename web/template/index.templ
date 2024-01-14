@@ -4,63 +4,34 @@ import "github.com/fbuedding/iota-admin/pkg/iot-agent-sdk"
 import "fmt"
 
 templ Index(agents []iotagentsdk.IoTA) {
-	<!DOCTYPE html>
-	<html lang="en">
-		<head>
-			<meta charset="UTF-8"/>
-			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-			<meta http-equiv="X-UA-Compatible" content="ie=edge"/>
-			<title>IoTA-Admin</title>
-			<link rel="stylesheet" href="/assets/css/style.css"/>
-			<script src="/assets/js/htmx.min.js"></script>
-		</head>
-		<body>
-			<header class="p-5 w-full flex flex-row gap-5 items-end bg-primary text-primary-content">
-				<div class="w-fit">
-					<a href="index" class="text-4xl leaading-normal">IoTA-Admin</a>
-				</div>
-				<div class="flex flex-row gap-5" hx-boost="true">
-					<a href="/serviceGroups" hx-target="#views" hx-swap="innerHTML">Service Groups</a>
-					<a>Devices</a>
-				</div>
-				<div class="ml-auto">
-					<button hx-delete="/auth/login" hx-target="body">
-						Logout ({ ctx.Value("user").(string) })
-					</button>
-				</div>
-			</header>
-			<div id="views" class="p-5 flex flex-col gap-5 max-w-6xl m-auto">
-				<div class="p-5 flex flex-row gap-5">
-					if len(agents) > 0 {
-						for _, agent := range agents {
-							@IoTA(agent)
-						}
-					} else {
-						<div>No IoT-Agnets!</div>
-					}
-				</div>
-				<div class="divider"></div>
-				<div>
-					<input
- 						class="input input-bordered join-item"
- 						type="search"
- 						name="name"
- 						placeholder="Search Fiware Services..."
- 						hx-get="/fiwareService"
- 						hx-trigger="input changed delay:250ms, name"
- 						hx-target="#fiware-services"
-					/>
-				</div>
-				<div id="fiware-services" class="grid grid-cols-3 gap-4" hx-trigger="load" hx-get="/fiwareService"></div>
-				<div class="flex flex-row gap-5">
-					<form hx-post="/fiwareService" hx-target="#fiware-services" hx-swap="innerHTML" hx-on::after-request=" if(event.detail.successful) this.reset()" class="join">
-						<input type="text" name="name" placeholder="Fiware Service" required class="input input-bordered join-item"/>
-						<button type="submit" class="btn btn-outline join-item">Add</button>
-					</form>
-				</div>
-			</div>
-		</body>
-	</html>
+	<div class="p-5 flex flex-row gap-5">
+		if len(agents) > 0 {
+			for _, agent := range agents {
+				@IoTA(agent)
+			}
+		} else {
+			<div>No IoT-Agnets!</div>
+		}
+	</div>
+	<div class="divider"></div>
+	<div>
+		<input
+ 			class="input input-bordered join-item"
+ 			type="search"
+ 			name="name"
+ 			placeholder="Search Fiware Services..."
+ 			hx-get="/fiwareService"
+ 			hx-trigger="input changed delay:250ms, name"
+ 			hx-target="#fiware-services"
+		/>
+	</div>
+	<div id="fiware-services" class="grid grid-cols-3 gap-4" hx-trigger="load" hx-get="/fiwareService"></div>
+	<div class="flex flex-row gap-5">
+		<form hx-post="/fiwareService" hx-target="#fiware-services" hx-swap="innerHTML" hx-on::after-request=" if(event.detail.successful) this.reset()" class="join">
+			<input type="text" name="name" placeholder="Fiware Service" required class="input input-bordered join-item"/>
+			<button type="submit" class="btn btn-outline join-item">Add</button>
+		</form>
+	</div>
 }
 
 templ IoTA(agent iotagentsdk.IoTA) {

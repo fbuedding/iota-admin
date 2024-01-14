@@ -40,6 +40,7 @@ func FiwareService(repo fr.FiwareRepo) chi.Router {
 		if err != nil {
 			w.WriteHeader(400)
 			w.Write([]byte("Bad Request"))
+
 			return
 		}
 

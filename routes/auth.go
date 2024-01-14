@@ -154,7 +154,6 @@ func getCookieSecret() []byte {
 func handleUnauthorized(w http.ResponseWriter, r *http.Request) {
 	log.Debug().Str("HX-Request", r.Header.Get("HX-Request")).Msg("Handling Auth")
 	if r.Header.Get("HX-Request") == "true" {
-
 		http.Error(w, "Unauthorized", http.StatusUnauthorized)
 	} else {
 		http.Redirect(w, r, "/login", http.StatusSeeOther)
