@@ -1,0 +1,36 @@
+package template
+
+templ Main(content templ.Component) {
+	<!DOCTYPE html>
+	<html lang="en">
+		<head>
+			<meta charset="UTF-8"/>
+			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+			<meta http-equiv="X-UA-Compatible" content="ie=edge"/>
+			<title>IoTA-Admin</title>
+			<link rel="stylesheet" href="/assets/css/style.css"/>
+			<script src="/assets/js/htmx.min.js"></script>
+			@AddServiceGroupFormTemplate()
+		</head>
+		<body hx-boost="true">
+			<header class="p-5 w-full flex flex-row gap-5 items-end bg-primary text-primary-content">
+				<div class="w-fit" hx-boost="true">
+					<a href="index" class="text-4xl leaading-normal" hx-target="#views" hx-swap="innerHTML">IoTA-Admin</a>
+				</div>
+				<div class="flex flex-row gap-5">
+					<a href="/serviceGroups" hx-target="#views" hx-swap="innerHTML">Service Groups</a>
+					<a>Devices</a>
+				</div>
+				<div class="ml-auto">
+					<button hx-delete="/auth/login" hx-target="body">
+						Logout ({ ctx.Value("user").(string) })
+					</button>
+				</div>
+			</header>
+			<div id="views" class="p-5 flex flex-col gap-5 max-w-6xl m-auto">
+				// Content
+				@content
+			</div>
+		</body>
+	</html>
+}

@@ -10,15 +10,15 @@ import (
 )
 
 func Index() chi.Router {
-	r := chi.NewRouter()
-	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
+	router := chi.NewRouter()
+	router.Get("/", func(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/index", http.StatusSeeOther)
 	})
 
-	r.Get("/index", func(w http.ResponseWriter, r *http.Request) {
+	router.Get("/index", func(w http.ResponseWriter, r *http.Request) {
+		template.Prepare(r, template.Index([]iotagentsdk.IoTA{{Host: globals.Conf.IoTAHost, Port: globals.Conf.IoTAPort}})).Render(r.Context(), w)
 		// TODO add multiple IoT-Agent support
-		template.Index([]iotagentsdk.IoTA{{Host: globals.Conf.IoTAHost, Port: globals.Conf.IoTAPort}}).Render(r.Context(), w)
 	})
 
-	return r
+	return router
 }

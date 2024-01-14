@@ -30,7 +30,16 @@ templ FiwareServiceServiveGroups(service string, sgs [] i.ServiceGroup, checked 
 }
 
 templ FiwareServices(fssgs map[string][]i.ServiceGroup, openedService string) {
-	for k, v := range fssgs {
-		@FiwareServiceServiveGroups(k,v,k==openedService)
-	}
+	<div>
+		<a href="/addServiceGroup" hx-target="#views" hx-swap="innerHTML" class="btn">Add a Service Group</a>
+	</div>
+	<div>
+		for k, v := range fssgs {
+			@FiwareServiceServiveGroups(k,v,k==openedService)
+		}
+	</div>
+	<div>
+		<a href="/addServiceGroup" hx-target="#views" hx-swap="innerHTML" class="btn">Add a Service Group</a>
+	</div>
 }
+
