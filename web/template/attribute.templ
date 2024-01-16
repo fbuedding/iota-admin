@@ -1,0 +1,115 @@
+package template
+
+templ AttributeTemplate() {
+	<template id="attribute-template">
+		<div class="collapse collapse-arrow mt-5 border border-neutral-500/40">
+			<input type="checkbox" checked/>
+			<div id="attribute-title" class="collapse-title text-xl font-medium">
+				%index
+			</div>
+			<div class="collapse-content">
+				<label class="form-control">
+					<div class="label">
+						<span class="label-text">Object ID</span>
+					</div>
+					<input name="attributes[%index].object_id" type="text" placeholder="Type here" class="input input-bordered"/>
+				</label>
+				<label class="form-control">
+					<div class="label">
+						<span class="label-text">Name</span>
+					</div>
+					<input name="attributes[%index].name" type="text" placeholder="Type here" class="input input-bordered" required/>
+				</label>
+				<label class="form-control">
+					<div class="label">
+						<span class="label-text">Type</span>
+					</div>
+					<input name="attributes[%index].type" type="text" placeholder="Type here" class="input input-bordered" required/>
+				</label>
+				<div class="pl-5 pt-5">
+					<div>Metadata:</div>
+					<div id="metadata" class="pb-5"></div>
+					<input
+ 						id="add-metadata-btn"
+ 						type="button"
+ 						value="Add"
+ 						class="btn"
+					/>
+					<input
+ 						id="remove-metadata-btn"
+ 						type="button"
+ 						value="Remove"
+ 						class="btn"
+ 						disabled
+					/>
+				</div>
+			</div>
+		</div>
+	</template>
+	@AttributeScript()
+}
+
+script AttributeScript() {
+  // Create a class for the element
+  class Attribute extends HTMLElement {
+    static formAssociated = true;
+    static observedAttributes = ["index"];
+
+    constructor() {
+      // Always call super first in constructor
+      super();
+      this.internals_ = this.attachInternals();
+      this.state = {
+        index: 0,
+        metadataCount: 0,
+      };
+    }
+
+    connectedCallback() {
+      let template = document.getElementById("attribute-template");
+      this.appendChild(template.content.cloneNode(true));
+      if(!this.hasAttribute("index")){
+        throw("Attribute index not set");
+      }
+      this.state.index = Number(this.getAttribute("index"));
+      this.innerHTML = this.innerHTML.replaceAll("%index", this.state.index);
+
+      this.addMetadataBtn = this.querySelector("#add-metadata-btn");
+      this.addMetadataBtn.onclick = ()=>{ this.addMetadata() };
+
+      this.removeMetadataBtn = this.querySelector("#remove-metadata-btn");
+      this.removeMetadataBtn.onclick = () => { this.removeMetdata() };
+
+      this.metadata = this.querySelector("#metadata");
+    }
+
+    disconnectedCallback() {}
+
+    adoptedCallback() {}
+
+    attributeChangedCallback(name, oldValue, newValue) {}
+
+    addMetadata(){
+
+      let el = document.createElement('metadata-input');
+      el.setAttribute("index", this.state.metadataCount);
+      el.setAttribute("kind", "attributes");
+      this.metadata.appendChild(el);
+      el.scrollIntoView({behavior: "smooth",block:"center"});
+      this.state.metadataCount++;
+      if(this.state.metadataCount > 0){
+        this.removeMetadataBtn.disabled = false;
+      }
+    }
+
+    removeMetdata(){
+      this.metadata.removeChild(this.metadata.lastChild);
+      this.state.metadataCount--;
+      if(this.state.metadataCount < 1){
+        this.removeMetadataBtn.disabled = true;
+      }
+    }
+  }
+
+  customElements.define("attribute-input", Attribute);
+}
