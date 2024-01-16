@@ -37,12 +37,68 @@ templ AddServiceGroupFormTemplate() {
 				<input name="subservice" type="text" placeholder="Type here" class="input input-bordered" list="service-paths" autocomplete="off" required/>
 				<datalist id="service-paths"></datalist>
 			</label>
+			<label class="form-control">
+				<div class="label">
+					<span class="label-text">Resource</span>
+				</div>
+				<input name="resource" type="text" placeholder="Type here" class="input input-bordered" list="resources" autocomplete="off" required/>
+				<datalist id="resources">
+					<option>{ "/iot/d" } </option>
+				</datalist>
+			</label>
+			<label class="form-control">
+				<div class="label">
+					<span class="label-text">API Key</span>
+				</div>
+				<div class="join">
+					<input id="apikey-input" name="apikey" type="text" placeholder="Type here" class="input input-bordered join-item w-full" autocomplete="off" required/>
+					<input
+ 						type="button"
+ 						class="btn join-item"
+ 						value="Generate"
+ 						onclick={ uuidv4("apikey-input") }
+					/>
+				</div>
+			</label>
+			<div class="form-control pt-5">
+				<label class="label cursor-pointer">
+					<span class="label-text">Timestamp</span>
+					<input name="timestamp" type="checkbox" checked="checked" class="checkbox"/>
+				</label>
+			</div>
+			<label class="form-control">
+				<div class="label">
+					<span class="label-text">Entity type</span>
+				</div>
+				<input name="entity_type" type="text" placeholder="Type here" class="input input-bordered" autocomplete="off" required/>
+			</label>
+			<label class="form-control">
+				<div class="label">
+					<span class="label-text">Trust token</span>
+				</div>
+				<input name="trust" type="text" placeholder="Type here" class="input input-bordered" autocomplete="off"/>
+			</label>
+			<label class="form-control">
+				<div class="label">
+					<span class="label-text">Context Broker host</span>
+				</div>
+				<input name="cbHost" type="text" placeholder="Type here" class="input input-bordered" autocomplete="off"/>
+			</label>
 			<div class="pl-5 pt-5">
 				<div>Attributes:</div>
 				<div id="attributes" class=""></div>
 				<div class="pt-5">
-					<input id="attributes-add-btn" type="button" value="Add" class="btn" onclick={ call("addAttribute") }/>
-					<input id="attributes-rm-btn" type="button" value="Remove" class="btn" disabled onclick={ call("removeGenericAttribute", "attributes") }/>
+					<input id="attributes-add-btn" type="button" value="Add" class="btn" />
+					<input id="attributes-rm-btn" type="button" value="Remove" class="btn" disabled />
+				</div>
+			</div>
+      // TODO pack Attributes, Metadata and so on into selfcontained web component
+			<div class="pl-5 pt-5">
+				<div>Lazy Attributes:</div>
+				<div id="lazy-attributes" class=""></div>
+				<div class="pt-5">
+					<input id="attributes-add-btn" type="button" value="Add" class="btn" />
+					<input id="attributes-rm-btn" type="button" value="Remove" class="btn" disabled />
 				</div>
 			</div>
 			<p class="pt-5">
@@ -53,25 +109,24 @@ templ AddServiceGroupFormTemplate() {
 	@AddServiceGroupFormScript(TEMPLATE_ID, FORM_ID)
 }
 
-func call(f string, attrs ...any) templ.ComponentScript {
-	return callWithId(FORM_ID, f, attrs...)
-}
-
-script callWithId(id string, f string, attrs ...any) {
-  document.getElementById(id)[f](attrs);
+script uuidv4(id string) {
+  let el = document.getElementById(id);
+  const uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'
+    .replace(/[xy]/g, function (c) {
+      const r = Math.random() * 16 | 0, 
+        v = c == 'x' ? r : (r & 0x3 | 0x8);
+      return v.toString(16);
+    });
+  el.value = uuid;
 }
 
 script AddServiceGroupFormScript(templateId string, formId string) {
 
-  document.call = (f, ...attrs) => {
-    // TODO refactor
-    document.getElementById(formId)[f](...attrs);
-  }
-
-  function html(strings, ...values){return String.raw({ raw: strings }, ...values)};
   class AddServiceGroupForm extends HTMLElement {
+    static formAssociated = true;
     constructor() {
       super();
+      this.internals_ = this.attachInternals();
       this.state = {
         attributes : {
           count: 0,
@@ -81,23 +136,24 @@ script AddServiceGroupFormScript(templateId string, formId string) {
 
     }
     connectedCallback() {
-      console.log("Custom element added to page.");
       let template = document.getElementById(templateId);
       this.appendChild(template.content.cloneNode(true));
       this.id = formId;
       this.parseServices();
+
+      this.addBtn = document.getElementById("attributes-add-btn");
+      this.addBtn.onclick = () => { this.addAttribute() };
+      this.removeBtn = document.getElementById("attributes-rm-btn");
+      this.removeBtn.onclick = () => { this.removeGenericAttribute("attributes") };
     }
 
     disconnectedCallback() {
-      console.log("Custom element removed from page.");
     }
 
     adoptedCallback() {
-      console.log("Custom element moved to new page.");
     }
 
     attributeChangedCallback(name, oldValue, newValue) {
-      console.log(`Attribute ${name} has changed.`);
     }
     
     parseServices() {
@@ -116,132 +172,33 @@ script AddServiceGroupFormScript(templateId string, formId string) {
        }
      }
     }
-    metadataTemplate(id, index, count){
-      return html`
-        <div class="join pt-5 w-full">
-          <input  
-            class="input input-bordered join-item w-full" 
-            id="${id}-${index}-metadata-${count}-name" 
-            placeholder="Name" 
-            onchange="document.call('onChangeMetadataName', '${id}', ${index}, ${count})"
-            required/>
-          <input  
-            id="${id}-${index}-metadata-${count}-type" 
-            name="${id}.${index}.metadata.${count}.type" 
-            class="input input-bordered join-item w-full" 
-            placeholder="Type" 
-            required/>
-          <input 
-            id="${id}-${index}-metadata-${count}-value" 
-            name="${id}.${index}.metadata.${count}.value" 
-            class="input input-bordered join-item w-full" 
-            placeholder="Value"
-            required/>
-        </div>
-      `;
-    }
 
-    onChangeMetadataName(id, index, count) {
-      const type = document.getElementById(`${id}-${index}-metadata-${count}-type`)
-      const value = document.getElementById(`${id}-${index}-metadata-${count}-value`)
-      const name = document.getElementById(`${id}-${index}-metadata-${count}-name`).value
-      type.name =`${id}.${index}.metadata.${name}.type` 
-      value.name =`${id}.${index}.metadata.${name}.value` 
-    }
 
     addAttribute() {
       const countAttributes = this.state.attributes.count;
-      let template = html`
-        <input type="checkbox" checked/>
-        <div class="collapse-title text-xl font-medium">
-          ${ countAttributes + 1 } 
-        </div>
-        <div class="collapse-content">
-          <label class="form-control">
-            <div class="label">
-              <span class="label-text">Object ID</span>
-            </div>
-            <input name="attributes[${countAttributes}].object_id" type="text" placeholder="Type here" class="input input-bordered"/>
-          </label>
-          <label class="form-control">
-            <div class="label">
-              <span class="label-text">Name</span>
-            </div>
-            <input name="attributes.${countAttributes}.name" type="text" placeholder="Type here" class="input input-bordered" required/>
-          </label>
-          <label class="form-control">
-            <div class="label">
-              <span class="label-text">Type</span>
-            </div>
-            <input name="attributes.${countAttributes}.type" type="text" placeholder="Type here" class="input input-bordered" required/>
-          </label>
-          <div class="pl-5 pt-5">
-            <div>Metadata:</div>
-            <div id="attributes-${countAttributes}-metadata" class="pb-5"></div>
-            <input 
-              id="attributes-${countAttributes}-metadata-add-btn" 
-              type="button" 
-              value="Add" 
-              class="btn" 
-              onclick="document.call('addMetadata','attributes', ${countAttributes})"/>
-            <input 
-            id="attributes-${countAttributes}-metadata-rm-btn"
-            type="button"
-            value="Remove"
-            class="btn" 
-            onclick="call('removeMetadata','attributes', ${countAttributes})" disabled/>
-          </div>
-        </div>
-      `;
 
       let container = document.getElementById("attributes");
-      let div = document.createElement('div');
+      let el = document.createElement('attribute-input');
+      el.setAttribute("index", this.state.attributes.count);
+
+      container.appendChild(el);
+      el.scrollIntoView({behavior: "smooth", block:"center"});
+      
       document.getElementById("attributes-rm-btn").disabled = false;
-      div.className = "collapse collapse-arrow mt-5 border";
-      div.innerHTML = template;
       this.state.attributes.count++;
-      div.id = `attributes-${this.state.attributes.count}`;
-      container.appendChild(div);
-      div.scrollIntoView({behavior: "smooth",block:"center"});
-    }
 
-    addMetadata(id, index) {
-      let container = document.getElementById(`${id}-${index}-metadata`);
-      let div = document.createElement('div');
-
-      document.getElementById(`${id}-${index}-metadata-rm-btn`).disabled = false;
-      if(this.state[id].countMetadata[index] == undefined || this.state[id].countMetadata[index] < 0) {
-        this.state[id].countMetadata[index] = 0;
-      } else {
-        this.state[id].countMetadata[index]++;
-      }
-
-      //setting unique id
-
-      div.id = `${id}-${index}-metadata-${this.state[id].countMetadata[index]}`;
-
-      div.innerHTML = this.metadataTemplate(id, index, this.state[id].countMetadata[index]);
-      container.appendChild(div);
-      div.scrollIntoView({behavior: "smooth" ,block:"center"});
     }
 
     removeGenericAttribute(id) {
-      let element = document.getElementById(`${id}-${this.state[id].count}`);
-      element.parentNode.removeChild(element);
+
+      let element = document.getElementById(`${id}`);
+      element.removeChild(element.lastChild)
       this.state[id].count--;
       if(this.state[id].count <= 0) {
         document.getElementById(`${id}-rm-btn`).disabled = true;
       }
     }
 
-    removeMetadata(id, index){
-      let element = document.getElementById(`${id}-${index}-metadata-${this.state[id].countMetadata[index]}`);
-      element.parentNode.removeChild(element);
-      this.state[id].countMetadata[index]--;
-      if(this.state[id].countMetadata[index] < 0) {
-        document.getElementById(`${id}-${index}-metadata-rm-btn`).disabled = true;
-      }
-    }
   }
   customElements.define("add-service-group-form", AddServiceGroupForm);
 }
