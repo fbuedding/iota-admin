@@ -1,0 +1,106 @@
+
+package template
+
+templ LazyAttributes() {
+	<lazy-attributes-input></lazy-attributes-input>
+}
+
+templ LazyAttributeTemplate() {
+	<template id="lazy-attributes-container-template">
+		<div class="pl-5 pt-5">
+			<div>Lazy Attributes:</div>
+			<div id="lazy-attributes" class=""></div>
+			<div class="pt-5">
+				<input id="lazy-attributes-add-btn" type="button" value="Add" class="btn"/>
+				<input id="lazy-attributes-rm-btn" type="button" value="Remove" class="btn" disabled/>
+			</div>
+		</div>
+	</template>
+	<template id="lazy-attribute-template">
+		<div class="collapse collapse-arrow mt-5 border border-neutral-500/40">
+			<input type="checkbox" checked/>
+			<div id="lazy-attribute-title" class="collapse-title text-xl font-medium">
+				%index
+			</div>
+			<div class="collapse-content">
+				<label class="form-control">
+					<div class="label">
+						<span class="label-text">Object ID</span>
+					</div>
+					<input name="lazy[%index].object_id" type="text" placeholder="Type here" class="input input-bordered"/>
+				</label>
+				<label class="form-control">
+					<div class="label">
+						<span class="label-text">Name</span>
+					</div>
+					<input name="lazy[%index].name" type="text" placeholder="Type here" class="input input-bordered" required/>
+				</label>
+				<label class="form-control">
+					<div class="label">
+						<span class="label-text">Type</span>
+					</div>
+					<input name="lazy[%index].type" type="text" placeholder="Type here" class="input input-bordered" required/>
+				</label>
+				@Metdata("lazy")
+			</div>
+		</div>
+	</template>
+	@LazyAttributesScript()
+}
+
+script LazyAttributesScript() {
+  // Create a class for the element
+  class LazyAttribute extends HTMLElement {
+    static formAssociated = true;
+
+    constructor() {
+      // Always call super first in constructor
+      super();
+      this.internals_ = this.attachInternals();
+      this.state = {
+        count: 0,
+      };
+    }
+
+    connectedCallback() {
+      this.attributeTemplate = document.getElementById("lazy-attribute-template");
+      let template = document.getElementById("lazy-attributes-container-template");
+      this.appendChild(template.content.cloneNode(true));
+      this.attributesContainer = this.querySelector("#lazy-attributes");
+
+      this.addBtn = this.querySelector("#lazy-attributes-add-btn");
+      this.addBtn.onclick = () => { this.addAttribute() };
+      this.removeBtn = this.querySelector("#lazy-attributes-rm-btn");
+      this.removeBtn.onclick = () => { this.removeGenericAttribute() };
+
+      // Move this to metadata 
+      /*
+      */
+
+    }
+
+    disconnectedCallback() {}
+
+    adoptedCallback() {}
+
+    attributeChangedCallback(name, oldValue, newValue) {}
+    addAttribute() {
+      const el = this.attributeTemplate.content.cloneNode(true).firstElementChild;
+      el.innerHTML = el.innerHTML.replaceAll("%index", this.state.count);
+      this.attributesContainer.appendChild(el);
+      el.scrollIntoView({behavior: "smooth", block:"center"});
+      
+      this.state.count++;
+      this.removeBtn.disabled = (this.state.count < 1);
+
+    }
+
+    removeGenericAttribute() {
+      this.attributesContainer.removeChild(this.attributesContainer.lastChild)
+      this.state.count--;
+      this.removeBtn.disabled = (this.state.count < 1);
+    }
+  }
+
+  customElements.define("lazy-attributes-input", LazyAttribute);
+}

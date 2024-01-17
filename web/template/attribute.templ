@@ -1,6 +1,20 @@
 package template
 
+templ Attributes() {
+	<attributes-input></attributes-input>
+}
+
 templ AttributeTemplate() {
+	<template id="attributes-container-template">
+		<div class="pl-5 pt-5">
+			<div>Attributes:</div>
+			<div id="attributes" class=""></div>
+			<div class="pt-5">
+				<input id="attributes-add-btn" type="button" value="Add" class="btn"/>
+				<input id="attributes-rm-btn" type="button" value="Remove" class="btn" disabled/>
+			</div>
+		</div>
+	</template>
 	<template id="attribute-template">
 		<div class="collapse collapse-arrow mt-5 border border-neutral-500/40">
 			<input type="checkbox" checked/>
@@ -26,30 +40,38 @@ templ AttributeTemplate() {
 					</div>
 					<input name="attributes[%index].type" type="text" placeholder="Type here" class="input input-bordered" required/>
 				</label>
-				<div class="pl-5 pt-5">
-					<div>Metadata:</div>
-					<div id="metadata" class="pb-5"></div>
-					<input
- 						id="add-metadata-btn"
- 						type="button"
- 						value="Add"
- 						class="btn"
-					/>
-					<input
- 						id="remove-metadata-btn"
- 						type="button"
- 						value="Remove"
- 						class="btn"
- 						disabled
-					/>
-				</div>
+				<label class="form-control">
+					<div class="label">
+						<span class="label-text">Expression</span>
+					</div>
+					<input name="attributes[%index].expression" type="text" placeholder="Type here" class="input input-bordered"/>
+				</label>
+				<label class="form-control">
+					<div class="label">
+						<span class="label-text">Skip value</span>
+					</div>
+					<input name="attributes[%index].skipValue" type="text" placeholder="Type here" class="input input-bordered"/>
+				</label>
+				<label class="form-control">
+					<div class="label">
+						<span class="label-text">Entity Name</span>
+					</div>
+					<input name="attributes[%index].entity_name" type="text" placeholder="Type here" class="input input-bordered"/>
+				</label>
+				<label class="form-control">
+					<div class="label">
+						<span class="label-text">Entity Type</span>
+					</div>
+					<input name="attributes[%index].entity_type" type="text" placeholder="Type here" class="input input-bordered"/>
+				</label>
+        @Metdata("attributes")
 			</div>
 		</div>
 	</template>
-	@AttributeScript()
+	@AttributesScript()
 }
 
-script AttributeScript() {
+script AttributesScript() {
   // Create a class for the element
   class Attribute extends HTMLElement {
     static formAssociated = true;
@@ -60,27 +82,21 @@ script AttributeScript() {
       super();
       this.internals_ = this.attachInternals();
       this.state = {
-        index: 0,
-        metadataCount: 0,
+        count: 0,
       };
     }
 
     connectedCallback() {
-      let template = document.getElementById("attribute-template");
+      this.attributeTemplate = document.getElementById("attribute-template");
+      let template = document.getElementById("attributes-container-template");
       this.appendChild(template.content.cloneNode(true));
-      if(!this.hasAttribute("index")){
-        throw("Attribute index not set");
-      }
-      this.state.index = Number(this.getAttribute("index"));
-      this.innerHTML = this.innerHTML.replaceAll("%index", this.state.index);
+      this.attributesContainer = this.querySelector("#attributes");
 
-      this.addMetadataBtn = this.querySelector("#add-metadata-btn");
-      this.addMetadataBtn.onclick = ()=>{ this.addMetadata() };
+      this.addBtn = this.querySelector("#attributes-add-btn");
+      this.addBtn.onclick = () => { this.addAttribute() };
+      this.removeBtn = this.querySelector("#attributes-rm-btn");
+      this.removeBtn.onclick = () => { this.removeGenericAttribute() };
 
-      this.removeMetadataBtn = this.querySelector("#remove-metadata-btn");
-      this.removeMetadataBtn.onclick = () => { this.removeMetdata() };
-
-      this.metadata = this.querySelector("#metadata");
     }
 
     disconnectedCallback() {}
@@ -88,28 +104,24 @@ script AttributeScript() {
     adoptedCallback() {}
 
     attributeChangedCallback(name, oldValue, newValue) {}
+    addAttribute() {
+      const el = this.attributeTemplate.content.cloneNode(true).firstElementChild;
+      el.innerHTML = el.innerHTML.replaceAll("%index", this.state.count);
+      this.attributesContainer.appendChild(el);
+      el.scrollIntoView({behavior: "smooth", block:"center"});
+      
+      this.state.count++;
+      this.removeBtn.disabled = (this.state.count < 1);
 
-    addMetadata(){
-
-      let el = document.createElement('metadata-input');
-      el.setAttribute("index", this.state.metadataCount);
-      el.setAttribute("kind", "attributes");
-      this.metadata.appendChild(el);
-      el.scrollIntoView({behavior: "smooth",block:"center"});
-      this.state.metadataCount++;
-      if(this.state.metadataCount > 0){
-        this.removeMetadataBtn.disabled = false;
-      }
     }
 
-    removeMetdata(){
-      this.metadata.removeChild(this.metadata.lastChild);
-      this.state.metadataCount--;
-      if(this.state.metadataCount < 1){
-        this.removeMetadataBtn.disabled = true;
-      }
+    removeGenericAttribute() {
+      this.attributesContainer.removeChild(this.attributesContainer.lastChild)
+      this.state.count--;
+      this.removeBtn.disabled = (this.state.count < 1);
     }
+
   }
 
-  customElements.define("attribute-input", Attribute);
+  customElements.define("attributes-input", Attribute);
 }

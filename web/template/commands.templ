@@ -1,0 +1,124 @@
+package template
+
+
+templ Commands() {
+	<commands-input></commands-input>
+}
+
+templ CommandTemplate() {
+	<template id="commands-container-template">
+		<div class="pl-5 pt-5">
+			<div>Commands:</div>
+			<div id="commands" class=""></div>
+			<div class="pt-5">
+				<input id="add-btn" type="button" value="Add" class="btn"/>
+				<input id="rm-btn" type="button" value="Remove" class="btn" disabled/>
+			</div>
+		</div>
+	</template>
+	<template id="command-template">
+		<div class="collapse collapse-arrow mt-5 border border-neutral-500/40">
+			<input type="checkbox" checked/>
+			<div id="lazy-attribute-title" class="collapse-title text-xl font-medium">
+				%index
+			</div>
+			<div class="collapse-content">
+				<label class="form-control">
+					<div class="label">
+						<span class="label-text">Object ID</span>
+					</div>
+					<input name="commands[%index].object_id" type="text" placeholder="Type here" class="input input-bordered"/>
+				</label>
+				<label class="form-control">
+					<div class="label">
+						<span class="label-text">Name</span>
+					</div>
+					<input name="commands[%index].name" type="text" placeholder="Type here" class="input input-bordered" required/>
+				</label>
+				<label class="form-control">
+					<div class="label">
+						<span class="label-text">Type</span>
+					</div>
+					<input name="commands[%index].type" type="text" placeholder="Type here" class="input input-bordered" required/>
+				</label>
+				<label class="form-control">
+					<div class="label">
+						<span class="label-text">Expression</span>
+					</div>
+					<input name="commands[%index].expression" type="text" placeholder="Type here" class="input input-bordered"/>
+				</label>
+				<label class="form-control">
+					<div class="label">
+						<span class="label-text">Payload Type</span>
+					</div>
+					<input name="commands[%index].payloadType" type="text" placeholder="Type here" class="input input-bordered"/>
+				</label>
+				<label class="form-control">
+					<div class="label">
+						<span class="label-text">Content Type</span>
+					</div>
+					<input name="commands[%index].contentType" type="text" placeholder="Type here" class="input input-bordered"/>
+				</label>
+				@Metdata("commands")
+			</div>
+		</div>
+	</template>
+	@CommandScript()
+}
+
+script CommandScript() {
+  // Create a class for the element
+  class Command extends HTMLElement {
+    static formAssociated = true;
+
+    constructor() {
+      // Always call super first in constructor
+      super();
+      this.internals_ = this.attachInternals();
+      this.state = {
+        count: 0,
+      };
+    }
+
+    connectedCallback() {
+      this.commandTemplate = document.getElementById("command-template");
+      let template = document.getElementById("commands-container-template");
+      this.appendChild(template.content.cloneNode(true));
+      this.attributesContainer = this.querySelector("#commands");
+
+      this.addBtn = this.querySelector("#add-btn");
+      this.addBtn.onclick = () => { this.add() };
+      this.removeBtn = this.querySelector("#rm-btn");
+      this.removeBtn.onclick = () => { this.remove() };
+
+      // Move this to metadata 
+      /*
+      */
+
+    }
+
+    disconnectedCallback() {}
+
+    adoptedCallback() {}
+
+    attributeChangedCallback(name, oldValue, newValue) {}
+    add() {
+      const el = this.commandTemplate.content.cloneNode(true).firstElementChild;
+      el.innerHTML = el.innerHTML.replaceAll("%index", this.state.count);
+      this.attributesContainer.appendChild(el);
+      el.scrollIntoView({behavior: "smooth", block:"center"});
+      
+      this.state.count++;
+      this.removeBtn.disabled = (this.state.count < 1);
+
+    }
+
+    remove() {
+      this.attributesContainer.removeChild(this.attributesContainer.lastChild)
+      this.state.count--;
+      this.removeBtn.disabled = (this.state.count < 1);
+    }
+  }
+
+  customElements.define("commands-input", Command);
+}
