@@ -5,3 +5,5 @@ tmp/build-errors.log
 tmp/main
 
 **/*_templ.go 
+
+.DS_Store
