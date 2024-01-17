@@ -2,3 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
+.input-bordered, .select-bordered {
+@apply required:input-secondary !important;
+}

@@ -30,11 +30,11 @@ type Attribute struct {
 	ObjectID   string              `json:"object_id,omitempty" schema:"object_id"`
 	Name       string              `json:"name" schema:"name"`
 	Type       string              `json:"type" schema:"type"`
-	Metadata   map[string]Metadata `json:"metadata,omitempty" schema:"metadata"`
 	Expression string              `json:"expression,omitempty" schema:"expression"`
 	SkipValue  string              `json:"skipValue,omitempty" schema:"skipValue"`
 	EntityName string              `json:"entity_name,omitempty" schema:"entity_name"`
 	EntityType string              `json:"entity_type,omitempty" schema:"entity_type"`
+	Metadata   map[string]Metadata `json:"metadata,omitempty" schema:"metadata"`
 }
 
 type LazyAttribute struct {
@@ -45,10 +45,10 @@ type LazyAttribute struct {
 }
 
 type StaticAttribute struct {
-	ObjectID string              `json:"object_id,omitempty"`
+	ObjectID string              `json:"object_id,omitempty" schema:"object_id"`
 	Name     string              `json:"name" schema:"name"`
 	Type     string              `json:"type" schema:"type"`
-	Metadata map[string]Metadata `json:"metadata,omitempty"`
+	Metadata map[string]Metadata `json:"metadata,omitempty" schema:"metadata"`
 }
 
 type Command struct {
@@ -90,6 +90,9 @@ type ServiceGroup struct {
 	NgsiVersion                  string            `json:"ngsiVersion,omitempty" schema:"ngsiVersion"`
 	DefaultEntityNameConjunction string            `json:"defaultEntityNameConjunction,omitempty" schema:"defaultEntityNameConjunction"`
 	Autoprovision                bool              `json:"autoprovision,omitempty" schema:"autoprovision"`
+	PayloadType                  string            `json:"payloadType,omitempty" schema:"payloadType"`
+	Transport                    string            `json:"transport,omitempty" schema:"transport"`
+	Endpoint                     string            `json:"endpoint,omitempty" schema:"endpoint"`
 }
 
 type DeciveId string
@@ -113,6 +116,7 @@ type Device struct {
 	InternalAttributes []interface{}     `json:"internal_attributes,omitempty" schema:"internal_attributes"`
 	ExplicitAttrs      string            `json:"explicitAttrs,omitempty" schema:"explicitAttrs"`
 	NgsiVersion        string            `json:"ngsiVersion,omitempty" schema:"ngsiVersion"`
+	PayloadType        string            `json:"payloadType,omitempty" schema:"payloadType"`
 }
 
 type MissingFields struct {

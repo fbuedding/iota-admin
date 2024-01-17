@@ -1,6 +1,29 @@
 package template
 
+templ Metdata(kind string) {
+	<metadata-input kind={ kind }></metadata-input>
+}
+
 templ MetadataTemplate() {
+	<template id="metadata-container-template">
+		<div class="pl-5 pt-5">
+			<div>Metadata:</div>
+			<div id="metadata" class="pb-5"></div>
+			<input
+ 				id="add-metadata-btn"
+ 				type="button"
+ 				value="Add"
+ 				class="btn"
+			/>
+			<input
+ 				id="remove-metadata-btn"
+ 				type="button"
+ 				value="Remove"
+ 				class="btn"
+ 				disabled
+			/>
+		</div>
+	</template>
 	<template id="metadata-template">
 		<div class="join pt-5 w-full">
 			<input
@@ -25,7 +48,7 @@ templ MetadataTemplate() {
 			/>
 		</div>
 	</template>
-  @MetadataScript()
+	@MetadataScript()
 }
 
 script MetadataScript() {
@@ -38,24 +61,30 @@ script MetadataScript() {
       // Always call super first in constructor
       super();
       this.internals_ = this.attachInternals();
+      this.state =  {
+        count:0
+      }
     }
 
     connectedCallback() {
-      let template = document.getElementById("metadata-template");
+      let template = document.getElementById("metadata-container-template");
       this.appendChild(template.content.cloneNode(true));
 
-      if(!(this.hasAttribute("kind") && this.hasAttribute("index"))){
-        throw("Missing Attributes")
+      this.metadataTemplate = document.getElementById("metadata-template");
+
+      if(!(this.hasAttribute("kind"))){
+        throw("Missing Attribute 'kind'")
       }
+      this.addMetadataBtn = this.querySelector("#add-metadata-btn");
+      this.addMetadataBtn.onclick = () =>{ this.addMetadata() };
+
+      this.removeMetadataBtn = this.querySelector("#remove-metadata-btn");
+      this.removeMetadataBtn.onclick = () => { this.removeMetdata() };
+
+      this.metadata = this.querySelector("#metadata");
 
       this.kind = this.getAttribute("kind");
-      this.index = this.getAttribute("index");
       
-      this.nameInput = this.querySelector("#name-input");
-      this.nameInput.onchange = (event) => { this.onNameChange(event) };
-
-      this.typeInput = this.querySelector("#type-input");
-      this.valueInput = this.querySelector("#value-input");
     }
 
     disconnectedCallback() {}
@@ -64,11 +93,30 @@ script MetadataScript() {
 
     attributeChangedCallback(name, oldValue, newValue) {}
 
-    onNameChange(event){
+    onNameChange(event, typeInput, valueInput, count){
       const value = event.target.value;
 
-      this.typeInput.name =`${this.kind}[${this.index}].metadata[${value}].type`; 
-      this.valueInput.name =`${this.kind}[${this.index}].metadata[${value}].value`; 
+      typeInput.name =`${this.kind}[${count}].metadata[${value}].type`; 
+      valueInput.name =`${this.kind}[${ count }].metadata[${value}].value`; 
+    }
+
+    addMetadata(){
+      const el = this.metadataTemplate.content.cloneNode(true).firstElementChild;
+      el.innerHTML = el.innerHTML.replaceAll("%index", this.state.count);
+      const nameInput = el.querySelector("#name-input");
+      const count = this.state.count;
+      nameInput.onchange = (event) => { this.onNameChange(event, el.querySelector("#type-input"), el.querySelector("#value-input"), count) };
+
+      this.metadata.appendChild(el);
+      el.scrollIntoView({behavior: "smooth",block:"center"});
+      this.state.count++;
+      this.removeMetadataBtn.disabled = this.state.count < 1;
+    }
+
+    removeMetdata(){
+      this.metadata.removeChild(this.metadata.lastChild);
+      this.state.count--;
+      this.removeMetadataBtn.disabled = this.state.count < 1;
     }
 
   }

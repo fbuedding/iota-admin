@@ -13,6 +13,9 @@ templ Main(content templ.Component) {
 			<script src="/assets/js/htmx.min.js"></script>
 			@AddServiceGroupFormTemplate()
       @AttributeTemplate()
+      @LazyAttributeTemplate()
+      @CommandTemplate()
+      @StaticAttributeTemplate()
       @MetadataTemplate()
 		</head>
 		<body hx-boost="true">

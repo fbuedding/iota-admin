@@ -84,23 +84,75 @@ templ AddServiceGroupFormTemplate() {
 				</div>
 				<input name="cbHost" type="text" placeholder="Type here" class="input input-bordered" autocomplete="off"/>
 			</label>
-			<div class="pl-5 pt-5">
-				<div>Attributes:</div>
-				<div id="attributes" class=""></div>
-				<div class="pt-5">
-					<input id="attributes-add-btn" type="button" value="Add" class="btn" />
-					<input id="attributes-rm-btn" type="button" value="Remove" class="btn" disabled />
+			@Attributes()
+			@LazyAttributes()
+			@Commands()
+			@StaticAttributes()
+			<label class="form-control">
+				<div class="label">
+					<span class="label-text">Explicit Attributes</span>
 				</div>
-			</div>
-      // TODO pack Attributes, Metadata and so on into selfcontained web component
-			<div class="pl-5 pt-5">
-				<div>Lazy Attributes:</div>
-				<div id="lazy-attributes" class=""></div>
-				<div class="pt-5">
-					<input id="attributes-add-btn" type="button" value="Add" class="btn" />
-					<input id="attributes-rm-btn" type="button" value="Remove" class="btn" disabled />
+				<input name="explicitAttrs" type="text" placeholder="Type here" class="input input-bordered" list="explicit-attributes-datalist" autocomplete="off"/>
+				<datalist id="explicit-attributes-datalist">
+					<option>true </option>
+					<option>false </option>
+				</datalist>
+			</label>
+			<label class="form-control">
+				<div class="label">
+					<span class="label-text">Entity Name Expression</span>
 				</div>
+				<input name="entityNameExp" type="text" placeholder="Type here" class="input input-bordered" autocomplete="off"/>
+			</label>
+			<label class="form-control">
+				<div class="label">
+					<span class="label-text">NGSI Version</span>
+				</div>
+				<select
+ 					name="ngsiVersion"
+ 					class="select select-bordered w-full"
+				>
+					<option selected value="v2">NGSI-v2</option>
+					<option value="ld">NGSI-LD</option>
+				</select>
+			</label>
+			<label class="form-control">
+				<div class="label">
+					<span class="label-text">Default Entity Name Conjunction</span>
+				</div>
+				<input name="defaultEntityNameConjunction" type="text" placeholder="Type here" class="input input-bordered" autocomplete="off"/>
+			</label>
+			<div class="form-control pt-5">
+				<label class="label cursor-pointer">
+					<span class="label-text">Autoprovision</span>
+					<input name="autoprovision" type="checkbox" checked="checked" class="checkbox"/>
+				</label>
 			</div>
+			<label class="form-control">
+				<div class="label">
+					<span class="label-text">Payload Type</span>
+				</div>
+				<select
+ 					name="payloadType"
+ 					class="select select-bordered w-full"
+				>
+					<option selected value="iotagent">IoTAgent</option>
+					<option value="ngsiv2">NGSI-v2</option>
+					<option value="ngsild">NGSI-LD</option>
+				</select>
+			</label>
+			<label class="form-control">
+				<div class="label">
+					<span class="label-text">Transport</span>
+				</div>
+				<input name="transport" type="text" placeholder="Type here" class="input input-bordered" autocomplete="off"/>
+			</label>
+			<label class="form-control">
+				<div class="label">
+					<span class="label-text">Endpoint</span>
+				</div>
+				<input name="endpoint" type="text" placeholder="Type here" class="input input-bordered" autocomplete="off"/>
+			</label>
 			<p class="pt-5">
 				<input type="submit" value="Submit" class="btn"/>
 			</p>
@@ -140,11 +192,6 @@ script AddServiceGroupFormScript(templateId string, formId string) {
       this.appendChild(template.content.cloneNode(true));
       this.id = formId;
       this.parseServices();
-
-      this.addBtn = document.getElementById("attributes-add-btn");
-      this.addBtn.onclick = () => { this.addAttribute() };
-      this.removeBtn = document.getElementById("attributes-rm-btn");
-      this.removeBtn.onclick = () => { this.removeGenericAttribute("attributes") };
     }
 
     disconnectedCallback() {
@@ -171,32 +218,6 @@ script AddServiceGroupFormScript(templateId string, formId string) {
         alert("Error parsing Fiware Services")
        }
      }
-    }
-
-
-    addAttribute() {
-      const countAttributes = this.state.attributes.count;
-
-      let container = document.getElementById("attributes");
-      let el = document.createElement('attribute-input');
-      el.setAttribute("index", this.state.attributes.count);
-
-      container.appendChild(el);
-      el.scrollIntoView({behavior: "smooth", block:"center"});
-      
-      document.getElementById("attributes-rm-btn").disabled = false;
-      this.state.attributes.count++;
-
-    }
-
-    removeGenericAttribute(id) {
-
-      let element = document.getElementById(`${id}`);
-      element.removeChild(element.lastChild)
-      this.state[id].count--;
-      if(this.state[id].count <= 0) {
-        document.getElementById(`${id}-rm-btn`).disabled = true;
-      }
     }
 
   }
