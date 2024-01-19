@@ -21,7 +21,7 @@ func (e *MissingFields) Error() string {
 	return fmt.Sprintf("Error %s: %s", e.Message, e.Fields)
 }
 
-func (sg ServiceGroup) Validate() error {
+func (sg ConfigGroup) Validate() error {
 
 	mF := &MissingFields{make(vector.StringVector, 0), "Missing fields"}
 	if sg.Apikey == "" {
@@ -38,16 +38,16 @@ func (sg ServiceGroup) Validate() error {
 	}
 }
 
-type RespReadServiceGroup struct {
-	Count    int            `json:"count"`
-	Services []ServiceGroup `json:"services"`
+type RespReadConfigGroup struct {
+	Count    int           `json:"count"`
+	Services []ConfigGroup `json:"services"`
 }
 
-type ReqCreateServiceGroup struct {
-	Services []ServiceGroup `json:"services"`
+type ReqCreateConfigGroup struct {
+	Services []ConfigGroup `json:"services"`
 }
 
-func (i IoTA) ReadServiceGroup(fs FiwareService, r Resource, a Apikey) (*RespReadServiceGroup, error) {
+func (i IoTA) ReadConfigGroup(fs FiwareService, r Resource, a Apikey) (*RespReadConfigGroup, error) {
 	url := urlService + fmt.Sprintf("?resource=%s&apikey=%s", r, a)
 
 	method := "GET"
@@ -83,12 +83,12 @@ func (i IoTA) ReadServiceGroup(fs FiwareService, r Resource, a Apikey) (*RespRea
 		return nil, fmt.Errorf("Error while getting service: %w", err)
 	}
 
-	var respReadServiceGroup RespReadServiceGroup
-	json.Unmarshal(responseData, &respReadServiceGroup)
-	return &respReadServiceGroup, nil
+	var respReadConfigGroup RespReadConfigGroup
+	json.Unmarshal(responseData, &respReadConfigGroup)
+	return &respReadConfigGroup, nil
 }
 
-func (i IoTA) ListServiceGroups(fs FiwareService) (*RespReadServiceGroup, error) {
+func (i IoTA) ListConfigGroups(fs FiwareService) (*RespReadConfigGroup, error) {
 	url := urlService
 
 	method := "GET"
@@ -124,36 +124,36 @@ func (i IoTA) ListServiceGroups(fs FiwareService) (*RespReadServiceGroup, error)
 		return nil, fmt.Errorf("Error while getting service: %w", err)
 	}
 
-	var respReadServiceGroup RespReadServiceGroup
-	json.Unmarshal(responseData, &respReadServiceGroup)
-	return &respReadServiceGroup, nil
+	var respReadConfigGroup RespReadConfigGroup
+	json.Unmarshal(responseData, &respReadConfigGroup)
+	return &respReadConfigGroup, nil
 }
 
-func (i IoTA) ServiceGroupExists(fs FiwareService, r Resource, a Apikey) bool {
-	tmp, err := i.ReadServiceGroup(fs, r, a)
+func (i IoTA) ConfigGroupExists(fs FiwareService, r Resource, a Apikey) bool {
+	tmp, err := i.ReadConfigGroup(fs, r, a)
 	if err != nil {
 		return false
 	}
 	return tmp.Count > 0
 }
 
-func (i IoTA) CreateServiceGroup(fs FiwareService, sg ServiceGroup) error {
-	sgs := [1]ServiceGroup{sg}
-	return i.CreateServiceGroups(fs, sgs[:])
+func (i IoTA) CreateConfigGroup(fs FiwareService, sg ConfigGroup) error {
+	sgs := [1]ConfigGroup{sg}
+	return i.CreateConfigGroups(fs, sgs[:])
 }
 
-func (i IoTA) CreateServiceGroups(fs FiwareService, sgs []ServiceGroup) error {
+func (i IoTA) CreateConfigGroups(fs FiwareService, sgs []ConfigGroup) error {
 	for _, sg := range sgs {
 		err := sg.Validate()
 		if err != nil {
 			return err
 		}
 	}
-	reqCreateServiceGroup := ReqCreateServiceGroup{}
-	reqCreateServiceGroup.Services = sgs[:]
+	reqCreateConfigGroup := ReqCreateConfigGroup{}
+	reqCreateConfigGroup.Services = sgs[:]
 	method := "POST"
 
-	payload, err := json.Marshal(reqCreateServiceGroup)
+	payload, err := json.Marshal(reqCreateConfigGroup)
 	if err != nil {
 		log.Panic().Err(err).Msg("Could not Marshal struct")
 	}
@@ -186,7 +186,7 @@ func (i IoTA) CreateServiceGroups(fs FiwareService, sgs []ServiceGroup) error {
 	return nil
 }
 
-func (i IoTA) UpdateServiceGroup(fs FiwareService, r Resource, a Apikey, sg ServiceGroup) error {
+func (i IoTA) UpdateConfigGroup(fs FiwareService, r Resource, a Apikey, sg ConfigGroup) error {
 	err := sg.Validate()
 	if err != nil {
 		return err
@@ -229,7 +229,7 @@ func (i IoTA) UpdateServiceGroup(fs FiwareService, r Resource, a Apikey, sg Serv
 
 	return nil
 }
-func (i IoTA) DeleteServiceGroup(fs FiwareService, r Resource, a Apikey) error {
+func (i IoTA) DeleteConfigGroup(fs FiwareService, r Resource, a Apikey) error {
 	url := urlService + fmt.Sprintf("?resource=%s&apikey=%s", r, a)
 
 	method := http.MethodDelete
@@ -263,43 +263,43 @@ func (i IoTA) DeleteServiceGroup(fs FiwareService, r Resource, a Apikey) error {
 	return nil
 }
 
-func (i IoTA) UpsertServiceGroup(fs FiwareService, sg ServiceGroup) error{
-	exists := i.ServiceGroupExists(fs, sg.Resource, sg.Apikey)
+func (i IoTA) UpsertConfigGroup(fs FiwareService, sg ConfigGroup) error {
+	exists := i.ConfigGroupExists(fs, sg.Resource, sg.Apikey)
 	if !exists {
 		log.Debug().Msg("Creating service group...")
-		err := i.CreateServiceGroup(fs, sg)
+		err := i.CreateConfigGroup(fs, sg)
 		if err != nil {
-      return err
+			return err
 		}
 	} else {
 		log.Debug().Msg("Update service group...")
-		err := i.UpdateServiceGroup(fs, sg.Resource, sg.Apikey, sg)
+		err := i.UpdateConfigGroup(fs, sg.Resource, sg.Apikey, sg)
 		if err != nil {
-      return err
+			return err
 		}
 	}
-  return nil
+	return nil
 }
 
-func (i IoTA) CreateServiceGroupWSE(fs FiwareService, sg *ServiceGroup) error {
+func (i IoTA) CreateConfigGroupWSE(fs FiwareService, sg *ConfigGroup) error {
 	if sg == nil {
 		return errors.New("Service group reference cannot be nil")
 	}
 
-	err := i.CreateServiceGroup(fs, *sg)
+	err := i.CreateConfigGroup(fs, *sg)
 	if err != nil {
-    return err
+		return err
 	}
 
-  sgTmp, err := i.ReadServiceGroup(fs, sg.Resource, sg.Apikey)
+	sgTmp, err := i.ReadConfigGroup(fs, sg.Resource, sg.Apikey)
 	if err != nil {
-    return err
+		return err
 	}
 
-  if sgTmp.Count == 0 {
-    return errors.New("No service group created")
-  }
-  *sg = *&sgTmp.Services[0]
+	if sgTmp.Count == 0 {
+		return errors.New("No service group created")
+	}
+	*sg = *&sgTmp.Services[0]
 
 	return nil
 }

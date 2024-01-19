@@ -50,8 +50,8 @@ func New(a auth.Authenticator, st sessionStore.SessionStore, repo fr.FiwareRepo,
 		r.Use(routes.AuthMiddleware(s.SessionStore))
 		r.Mount("/", routes.Index())
 		r.Mount("/fiwareService", routes.FiwareService(repo))
-		r.Mount("/serviceGroups", routes.ServiceGroups(repo))
-		r.Mount("/addServiceGroup", routes.AddServiceGroups(repo))
+		r.Mount("/configGroups", routes.ConfigGroups(repo))
+		r.Mount("/addConfigGroup", routes.AddConfigGroups(repo))
 	})
 
 	s.R = r

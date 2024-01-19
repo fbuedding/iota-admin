@@ -71,7 +71,7 @@ type Apikey string
 type Resource string
 
 // see https://iotagent-node-lib.readthedocs.io/en/latest/api.html#service-group-datamodel
-type ServiceGroup struct {
+type ConfigGroup struct {
 	Service                      string            `json:"service,omitempty" schema:"service"`
 	ServicePath                  string            `json:"subservice,omitempty" schema:"subservice"`
 	Resource                     Resource          `json:"resource" schema:"resource"`

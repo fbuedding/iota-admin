@@ -13,7 +13,7 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-func ServiceGroups(repo fr.FiwareRepo) chi.Router {
+func ConfigGroups(repo fr.FiwareRepo) chi.Router {
 	r := chi.NewRouter()
 	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
 
@@ -35,23 +35,23 @@ func ServiceGroups(repo fr.FiwareRepo) chi.Router {
 		iota := i.IoTA{Host: globals.Conf.IoTAHost, Port: globals.Conf.IoTAPort}
 		fss := services.ToFiwareServices()
 		log.Debug().Int("countServices", len(fss)).Send()
-		serviceToServiceGroups := map[string][]i.ServiceGroup{}
+		serviceToConfigGroups := map[string][]i.ConfigGroup{}
 		for _, v := range fss {
-			sgs, err := iota.ListServiceGroups(*v)
+			sgs, err := iota.ListConfigGroups(*v)
 
 			if err != nil {
 				log.Err(err).Msg("Could not get fiware services")
 				http.Error(w, "Could not get fiware services", http.StatusInternalServerError)
 				return
 			}
-			log.Debug().Int("countServiceGroups", sgs.Count).Send()
+			log.Debug().Int("countConfigGroups", sgs.Count).Send()
 			if sgs.Count != 0 {
-				log.Debug().Any("serviceGroups", sgs.Services).Send()
-				serviceToServiceGroups[v.Service] = sgs.Services
+				log.Debug().Any("configGroups", sgs.Services).Send()
+				serviceToConfigGroups[v.Service] = sgs.Services
 			}
 		}
 
-		template.Prepare(r, template.FiwareServices(serviceToServiceGroups, "")).Render(r.Context(), w)
+		template.Prepare(r, template.FiwareServices(serviceToConfigGroups, "")).Render(r.Context(), w)
 	})
 	r.Post("/", func(w http.ResponseWriter, r *http.Request) {
 		err := r.ParseForm()
@@ -61,7 +61,7 @@ func ServiceGroups(repo fr.FiwareRepo) chi.Router {
 			return
 		}
 
-		var sg i.ServiceGroup
+		var sg i.ConfigGroup
 		var decoder = formam.NewDecoder(&formam.DecoderOptions{TagName: "schema"})
 		err = decoder.Decode(r.PostForm, &sg)
 		if err != nil {
@@ -84,7 +84,7 @@ func ServiceGroups(repo fr.FiwareRepo) chi.Router {
 			ServicePath: "/*",
 		}
 		iota := i.IoTA{Host: globals.Conf.IoTAHost, Port: globals.Conf.IoTAPort}
-		sgs, err := iota.ListServiceGroups(fs)
+		sgs, err := iota.ListConfigGroups(fs)
 
 		if err != nil {
 			log.Err(err).Msg("Could not get fiware services")
@@ -100,7 +100,7 @@ func ServiceGroups(repo fr.FiwareRepo) chi.Router {
 	})
 	return r
 }
-func AddServiceGroups(repo fr.FiwareRepo) chi.Router {
+func AddConfigGroups(repo fr.FiwareRepo) chi.Router {
 	r := chi.NewRouter()
 	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
 
@@ -126,7 +126,7 @@ func AddServiceGroups(repo fr.FiwareRepo) chi.Router {
 			http.Error(w, "Could not stringify fiware services", http.StatusInternalServerError)
 			return
 		}
-		template.Prepare(r, template.AddServiceGroupForm(string(encodedBytes))).Render(r.Context(), w)
+		template.Prepare(r, template.AddConfigGroupForm(string(encodedBytes))).Render(r.Context(), w)
 	})
 	return r
 }

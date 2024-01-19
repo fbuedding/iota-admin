@@ -4,9 +4,9 @@ import (
 	"testing"
 )
 
-func TestReadServiceGroup(t *testing.T) {
-	t.Log("Testing ReadServiceGroup")
-	respD, err := iota.ReadServiceGroup(fs, resource, apiKey)
+func TestReadConfigGroup(t *testing.T) {
+	t.Log("Testing ReadConfigGroup")
+	respD, err := iota.ReadConfigGroup(fs, resource, apiKey)
 	if err != nil {
 		t.Error(err)
 	}
@@ -14,10 +14,10 @@ func TestReadServiceGroup(t *testing.T) {
 		t.Fail()
 	}
 }
-func TestListServiceGroup(t *testing.T) {
-	t.Log("Testing ListServiceGroup")
+func TestListConfigGroup(t *testing.T) {
+	t.Log("Testing ListConfigGroup")
 
-	respD, err := iota.ReadServiceGroup(fs, resource, apiKey)
+	respD, err := iota.ReadConfigGroup(fs, resource, apiKey)
 	if err != nil {
 		t.Error(err)
 	}
@@ -26,45 +26,45 @@ func TestListServiceGroup(t *testing.T) {
 	}
 }
 
-func TestUpdateServiceGroup(t *testing.T) {
-	t.Log("Testing UpdateServiceGroup")
+func TestUpdateConfigGroup(t *testing.T) {
+	t.Log("Testing UpdateConfigGroup")
 	sgtmp := sg
 	sgtmp.Autoprovision = true
-	err := iota.UpdateServiceGroup(fs, resource, apiKey, sgtmp)
+	err := iota.UpdateConfigGroup(fs, resource, apiKey, sgtmp)
 	if err != nil {
 		t.Error(err)
 	}
-	sgUpdated, _ := iota.ReadServiceGroup(fs, resource, apiKey)
+	sgUpdated, _ := iota.ReadConfigGroup(fs, resource, apiKey)
 	if sgUpdated.Services[0].Autoprovision != true {
 		t.Fail()
 	}
 }
 
-func TestDeleteServiceGroup(t *testing.T) {
-	t.Log("Testing deleteServiceGroup")
-	err := iota.DeleteServiceGroup(fs, resource, apiKey)
+func TestDeleteConfigGroup(t *testing.T) {
+	t.Log("Testing deleteConfigGroup")
+	err := iota.DeleteConfigGroup(fs, resource, apiKey)
 	if err != nil {
 		t.Error(err)
 	}
 }
 
-func TestUpsertServiceGroup(t *testing.T) {
-	t.Log("Testing UpsertServiceGroup")
+func TestUpsertConfigGroup(t *testing.T) {
+	t.Log("Testing UpsertConfigGroup")
 
-	err := iota.UpsertServiceGroup(fs, sg)
+	err := iota.UpsertConfigGroup(fs, sg)
 	if err != nil {
 		t.Error(err)
 	}
-	t.Log("Testing UpsertServiceGroup again")
-	err = iota.UpsertServiceGroup(fs, sg)
+	t.Log("Testing UpsertConfigGroup again")
+	err = iota.UpsertConfigGroup(fs, sg)
 	if err != nil {
 		t.Error(err)
 	}
-	iota.DeleteServiceGroup(fs, resource, apiKey)
+	iota.DeleteConfigGroup(fs, resource, apiKey)
 }
-func TestCreatServiceGroupWSE(t *testing.T) {
+func TestCreatConfigGroupWSE(t *testing.T) {
   sgtemp := sg
-  err := iota.CreateServiceGroupWSE(fs, &sgtemp)
+  err := iota.CreateConfigGroupWSE(fs, &sgtemp)
   if err != nil {
     t.Error(err)
   }
