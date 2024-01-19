@@ -2,6 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
-.input-bordered, .select-bordered {
+.input-bordered:invalid{
+@apply required:input-secondary !important;
+}
+.select-bordered:invalid {
+@apply required:input-secondary !important;
+}
+.textarea-bordered:ivalid{
 @apply required:input-secondary !important;
 }

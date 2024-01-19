@@ -1,19 +1,19 @@
 package template;
 
-const TEMPLATE_ID = "add-service-group-form-template"
-const FORM_ID = "add-service-group-form"
+const TEMPLATE_ID = "add-config-group-form-template"
+const FORM_ID = "add-config-group-form"
 
-templ AddServiceGroupForm(services string) {
-	<add-service-group-form
+templ AddConfigGroupForm(services string) {
+	<add-config-group-form
  		if services !="" {
 			services={ services }
 		}
-	></add-service-group-form>
+	></add-config-group-form>
 }
 
-templ AddServiceGroupFormTemplate() {
-	<template id="add-service-group-form-template">
-		<form hx-post="/serviceGroups">
+templ AddConfigGroupFormTemplate() {
+	<template id="add-config-group-form-template">
+		<form hx-post="/configGroups">
 			<label class="form-control">
 				<div class="label">
 					<span class="label-text">Service</span>
@@ -22,7 +22,7 @@ templ AddServiceGroupFormTemplate() {
  					name="service"
  					class="select select-bordered w-full"
  					required
- 					hx-get="serviceGroups/servicePaths"
+ 					hx-get="configGroups/servicePaths"
  					hx-target="#service-paths"
  					hx-swap="innerHTML"
  					id="select-services"
@@ -88,6 +88,7 @@ templ AddServiceGroupFormTemplate() {
 			@LazyAttributes()
 			@Commands()
 			@StaticAttributes()
+      @InternalAttributes()
 			<label class="form-control">
 				<div class="label">
 					<span class="label-text">Explicit Attributes</span>
@@ -158,7 +159,7 @@ templ AddServiceGroupFormTemplate() {
 			</p>
 		</form>
 	</template>
-	@AddServiceGroupFormScript(TEMPLATE_ID, FORM_ID)
+	@AddConfigGroupFormScript(TEMPLATE_ID, FORM_ID)
 }
 
 script uuidv4(id string) {
@@ -172,9 +173,9 @@ script uuidv4(id string) {
   el.value = uuid;
 }
 
-script AddServiceGroupFormScript(templateId string, formId string) {
+script AddConfigGroupFormScript(templateId string, formId string) {
 
-  class AddServiceGroupForm extends HTMLElement {
+  class AddConfigGroupForm extends HTMLElement {
     static formAssociated = true;
     constructor() {
       super();
@@ -221,5 +222,5 @@ script AddServiceGroupFormScript(templateId string, formId string) {
     }
 
   }
-  customElements.define("add-service-group-form", AddServiceGroupForm);
+  customElements.define("add-config-group-form", AddConfigGroupForm);
 }

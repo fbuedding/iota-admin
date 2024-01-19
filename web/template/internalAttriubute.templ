@@ -1,0 +1,87 @@
+
+package template
+
+templ InternalAttributes() {
+	<internal-attributes-input></internal-attributes-input>
+}
+
+templ InternalAttributeTemplate() {
+	<template id="internal-attributes-container-template">
+		<div class="pl-5 pt-5">
+			<div>Internal Attributes:</div>
+			<div id="internal-attributes" class=""></div>
+			<div class="pt-5">
+				<input id="add-btn" type="button" value="Add" class="btn"/>
+				<input id="rm-btn" type="button" value="Remove" class="btn" disabled/>
+			</div>
+		</div>
+	</template>
+	<template id="internal-attribute-template">
+		<div class="collapse collapse-arrow mt-5 border border-neutral-500/40">
+			<input type="checkbox" checked/>
+			<div id="static-attribute-title" class="collapse-title text-xl font-medium">
+				%index
+			</div>
+			<div class="collapse-content">
+				<label class="form-control">
+					<div class="label">
+						<span class="label-text">Free JSON format</span>
+					</div>
+					<textarea name="internal_attributes[%index]" class="textarea textarea-bordered h-24" placeholder="JSON" required></textarea>
+				</label>
+			</div>
+		</div>
+	</template>
+	@InternalAttributesScript()
+}
+
+script InternalAttributesScript() {
+  // Create a class for the element
+  class InternalAttribute extends HTMLElement {
+    static formAssociated = true;
+
+    constructor() {
+      // Always call super first in constructor
+      super();
+      this.internals_ = this.attachInternals();
+      this.state = {
+        count: 0,
+      };
+    }
+
+    connectedCallback() {
+      this.attributeTemplate = document.getElementById("internal-attribute-template");
+      let template = document.getElementById("internal-attributes-container-template");
+      this.appendChild(template.content.cloneNode(true));
+      this.attributesContainer = this.querySelector("#internal-attributes");
+
+      this.addBtn = this.querySelector("#add-btn");
+      this.addBtn.onclick = () => { this.addAttribute() };
+      this.removeBtn = this.querySelector("#rm-btn");
+      this.removeBtn.onclick = () => { this.removeGenericAttribute() };
+    }
+
+    disconnectedCallback() {}
+
+    adoptedCallback() {}
+
+    attributeChangedCallback(name, oldValue, newValue) {}
+    addAttribute() {
+      const el = this.attributeTemplate.content.cloneNode(true).firstElementChild;
+      el.innerHTML = el.innerHTML.replaceAll("%index", this.state.count);
+      this.attributesContainer.appendChild(el);
+      el.scrollIntoView({behavior: "smooth", block:"center"});
+      
+      this.state.count++;
+      this.removeBtn.disabled = (this.state.count < 1);
+    }
+
+    removeGenericAttribute() {
+      this.attributesContainer.removeChild(this.attributesContainer.lastChild)
+      this.state.count--;
+      this.removeBtn.disabled = (this.state.count < 1);
+    }
+  }
+
+  customElements.define("internal-attributes-input", InternalAttribute);
+}

@@ -11,11 +11,12 @@ templ Main(content templ.Component) {
 			<link rel="stylesheet" href="/assets/css/style.css"/>
       <link rel="icon" type="image/x-icon" href="/assets/images/favicon.ico"/>
 			<script src="/assets/js/htmx.min.js"></script>
-			@AddServiceGroupFormTemplate()
+			@AddConfigGroupFormTemplate()
       @AttributeTemplate()
       @LazyAttributeTemplate()
       @CommandTemplate()
       @StaticAttributeTemplate()
+      @InternalAttributeTemplate()
       @MetadataTemplate()
 		</head>
 		<body hx-boost="true">
@@ -24,7 +25,7 @@ templ Main(content templ.Component) {
 					<a href="index" class="text-4xl leaading-normal" hx-target="#views" hx-swap="innerHTML">IoTA-Admin</a>
 				</div>
 				<div class="flex flex-row gap-5">
-					<a href="/serviceGroups" hx-target="#views" hx-swap="innerHTML">Service Groups</a>
+					<a href="/configGroups" hx-target="#views" hx-swap="innerHTML">Config Groups</a>
 					<a>Devices</a>
 				</div>
 				<div class="ml-auto">
