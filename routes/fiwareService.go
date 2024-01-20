@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	fr "github.com/fbuedding/iota-admin/internal/pkg/fiwareRepository"
-	"github.com/fbuedding/iota-admin/web/template"
+	"github.com/fbuedding/iota-admin/web/templates/fiware"
 	"github.com/go-chi/chi/v5"
 	"github.com/gorilla/schema"
 	"github.com/rs/zerolog/log"
@@ -31,7 +31,7 @@ func FiwareService(repo fr.FiwareRepo) chi.Router {
 			http.Error(w, "Could not get fiware services", http.StatusInternalServerError)
 			return
 		}
-		template.Services(services).Render(r.Context(), w)
+		fiware.Services(services).Render(r.Context(), w)
 	})
 
 	r.Post("/", func(w http.ResponseWriter, r *http.Request) {
@@ -70,7 +70,7 @@ func FiwareService(repo fr.FiwareRepo) chi.Router {
 			http.Error(w, "Could get fiware services", http.StatusInternalServerError)
 			return
 		}
-		template.Services(services).Render(r.Context(), w)
+		fiware.Services(services).Render(r.Context(), w)
 	})
 
 	r.Delete("/{id}", func(w http.ResponseWriter, r *http.Request) {

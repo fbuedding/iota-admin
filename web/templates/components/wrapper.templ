@@ -1,0 +1,37 @@
+package components
+type Array[T any] interface {
+	~[]T
+}
+type Map[T any, K comparable] interface {
+	~map[K]T
+}
+
+templ WrapMapIfNotEmpty[T any,E comparable, M Map[T, E]](f func(M) templ.Component, arr M) {
+	if len(arr) == 0 {
+		{ "[ ]" }
+	} else {
+		@CollapseWrapper() {
+			@f(arr)
+		}
+	}
+}
+
+templ WrapArrIfNotEmpty[T any, M Array[T]](f func(M) templ.Component, arr M) {
+	if len(arr) == 0 {
+		{ "[ ]" }
+	} else {
+		@CollapseWrapper() {
+			@f(arr)
+		}
+	}
+}
+
+templ CollapseWrapper() {
+	<div class="collapse collapse-plus">
+		<input type="checkbox"/>
+		<div class="collapse-title !p-0 !m-0"></div>
+		<div class="collapse-content pl-0">
+			{ children... }
+		</div>
+	</div>
+}

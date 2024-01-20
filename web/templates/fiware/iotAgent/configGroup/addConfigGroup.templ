@@ -1,4 +1,6 @@
-package template;
+package configgroup;
+
+import "github.com/fbuedding/iota-admin/web/templates/fiware/iotAgent/attributes"
 
 const TEMPLATE_ID = "add-config-group-form-template"
 const FORM_ID = "add-config-group-form"
@@ -86,11 +88,11 @@ templ AddConfigGroupFormTemplate() {
 				</div>
 				<input name="cbHost" type="text" placeholder="Type here" class="input input-bordered" autocomplete="off"/>
 			</label>
-			@Attributes()
-      @LazyAtrributesInput() 
-			@Commands()
-			@StaticAttributes()
-			@InternalAttributes()
+			@attributes.AttributesInput()
+			@attributes.LazyAtrributesInput()
+			@attributes.Commands()
+			@attributes.StaticAttributes()
+			@attributes.InternalAttributes()
 			<label class="form-control">
 				<div class="label">
 					<span class="label-text">Explicit Attributes</span>

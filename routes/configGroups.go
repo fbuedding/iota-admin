@@ -3,15 +3,25 @@ package routes
 import (
 	"encoding/json"
 	"net/http"
+	"slices"
 
 	"github.com/fbuedding/iota-admin/internal/globals"
 	fr "github.com/fbuedding/iota-admin/internal/pkg/fiwareRepository"
 	i "github.com/fbuedding/iota-admin/pkg/iot-agent-sdk"
-	"github.com/fbuedding/iota-admin/web/template"
+	"github.com/fbuedding/iota-admin/web/templates"
+	"github.com/fbuedding/iota-admin/web/templates/components"
+	configgroup "github.com/fbuedding/iota-admin/web/templates/fiware/iotAgent/configGroup"
 	"github.com/go-chi/chi/v5"
 	"github.com/monoculum/formam/v3"
 	"github.com/rs/zerolog/log"
 )
+
+type CofigGroupDeleteRequest struct {
+	ApiKey      i.Apikey   `formam:"apiKey"`
+	Rescource   i.Resource `formam:"resource"`
+	Service     string     `formam:"service"`
+	ServicePath string     `formam:"servicePath"`
+}
 
 func ConfigGroups(repo fr.FiwareRepo) chi.Router {
 	r := chi.NewRouter()
@@ -51,14 +61,14 @@ func ConfigGroups(repo fr.FiwareRepo) chi.Router {
 			}
 		}
 
-		template.Prepare(r, template.FiwareServices(serviceToConfigGroups, "")).Render(r.Context(), w)
+		templates.Prepare(r, configgroup.FiwareServices(serviceToConfigGroups, "")).Render(r.Context(), w)
 	})
 	r.Post("/", func(w http.ResponseWriter, r *http.Request) {
 		err := r.ParseForm()
 		if err != nil {
 			w.WriteHeader(400)
 			w.Write([]byte("Bad Request"))
-			template.Error(err)
+			components.Error(err).Render(r.Context(), w)
 			return
 		}
 
@@ -68,7 +78,7 @@ func ConfigGroups(repo fr.FiwareRepo) chi.Router {
 		if err != nil {
 			log.Error().Err(err).Send()
 			w.WriteHeader(400)
-			template.Error(err).Render(r.Context(), w)
+			components.Error(err).Render(r.Context(), w)
 			return
 		}
 
@@ -78,12 +88,36 @@ func ConfigGroups(repo fr.FiwareRepo) chi.Router {
 		if err != nil {
 			log.Error().Err(err).Send()
 			w.WriteHeader(500)
-			template.Error(err).Render(r.Context(), w)
+			components.Error(err).Render(r.Context(), w)
 			return
 		}
+		configgroup.ConfigGroup(sg).Render(r.Context(), w)
+		w.WriteHeader(http.StatusOK)
 
-		log.Debug().Any("PostForm", sg).Send()
 	})
+	r.Delete("/", func(w http.ResponseWriter, r *http.Request) {
+		err := r.ParseForm()
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			components.Error(err).Render(r.Context(), w)
+		}
+
+		var req CofigGroupDeleteRequest
+		var decoder = formam.NewDecoder(&formam.DecoderOptions{TagName: "formam"})
+		err = decoder.Decode(r.Form, &req)
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			components.Error(err).Render(r.Context(), w)
+		}
+		iota := i.IoTA{Host: globals.Conf.IoTAHost, Port: globals.Conf.IoTAPort}
+		err = iota.DeleteConfigGroup(i.FiwareService{Service: req.Service, ServicePath: req.ServicePath}, req.Rescource, req.ApiKey)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			components.Error(err).Render(r.Context(), w)
+		}
+		w.WriteHeader(http.StatusOK)
+	})
+
 	r.Get("/servicePaths", func(w http.ResponseWriter, r *http.Request) {
 		service := r.URL.Query().Get("service")
 		if service == "" {
@@ -103,8 +137,12 @@ func ConfigGroups(repo fr.FiwareRepo) chi.Router {
 			return
 		}
 		response := ""
+		var servicePaths []string
 		for _, v := range sgs.Services {
-			response = response + "<option value=\"" + v.ServicePath + "\">"
+			if !slices.Contains(servicePaths, v.ServicePath) {
+				response = response + "<option value=\"" + v.ServicePath + "\">"
+				servicePaths = append(servicePaths, v.ServicePath)
+			}
 		}
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte(response))
@@ -137,7 +175,7 @@ func AddConfigGroups(repo fr.FiwareRepo) chi.Router {
 			http.Error(w, "Could not stringify fiware services", http.StatusInternalServerError)
 			return
 		}
-		template.Prepare(r, template.AddConfigGroupForm(string(encodedBytes))).Render(r.Context(), w)
+		templates.Prepare(r, configgroup.AddConfigGroupForm(string(encodedBytes))).Render(r.Context(), w)
 	})
 	return r
 }
