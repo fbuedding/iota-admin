@@ -7,7 +7,7 @@ import (
 
 templ ConfigGroup(sg i.ConfigGroup) {
 	<div class="container flex-col gap-5">
-		<div class="overflow-x-auto">
+		<div class="overflow-x-auto border rounded border-base-300">
 			<table class="table">
 				<tbody>
 					<tr>
@@ -33,47 +33,82 @@ templ ConfigGroup(sg i.ConfigGroup) {
 						</td>
 					</tr>
 					<tr>
+						<td>Entity Type</td>
+						<td>{ sg.EntityType } </td>
+					</tr>
+					<tr>
+						<td>Trust Token</td>
+						<td>{ sg.Trust } </td>
+					</tr>
+					<tr>
+						<td>Context Broker</td>
+						<td>{ sg.CbHost } </td>
+					</tr>
+					<tr>
 						<td>Attributes</td>
 						<td>
 							<div class="collapse collapse-plus">
 								<input type="checkbox"/>
 								<div class="collapse-title !p-0 !m-0"></div>
 								<div class="collapse-content pl-0">
-                  test
-                </div>
+									test
+								</div>
 							</div>
+						</td>
+					</tr>
+					<tr>
+						<td>Lazy Attributes</td>
+						<td>
+							@WrapIfNotEmpty(LazyAttributes, sg.Lazy)
 						</td>
 					</tr>
 				</tbody>
 			</table>
 		</div>
-		<p>
-			Api-Key: { string(sg.Apikey) }
-		</p>
-		<p>
-			Service Path: { sg.ServicePath }
-		</p>
-		<p>
-			Resource: { string(sg.Resource) }
-		</p>
-		<p>
-			Timestamp: 
-			if sg.Timestamp != nil {
-				{ fmt.Sprintf("%t", *sg.Timestamp) }
-			} else {
-				false  
-			}
-		</p>
 	</div>
 }
 
-templ FiwareServiceServiveGroups(service string, sgs [] i.ConfigGroup, checked bool) {
-	<div class="collapse collapse-arrow border border-neutral-501/40">
+type WrapConstraint[E any] interface {
+	~[]E | ~map[any]E
+}
+
+templ WrapIfNotEmpty [T WrapConstraint[E], E any ]( f func(T) templ.Component, arr T) {
+	if len(arr) == 0 {
+		[ ]	
+	} else {
+		@CollapseWrapper() {
+			@f(arr)
+		}
+	}
+}
+
+templ DisplayGenericAttributes(length int) {
+	if length == 0 {
+		[ ]	
+	} else {
+		@CollapseWrapper() {
+			{ children... }
+		}
+	}
+}
+
+templ CollapseWrapper() {
+	<div class="collapse collapse-plus">
+		<input type="checkbox"/>
+		<div class="collapse-title !p-0 !m-0"></div>
+		<div class="collapse-content pl-0">
+			{ children... }
+		</div>
+	</div>
+}
+
+templ FiwareServiceConfigGroups(service string, sgs [] i.ConfigGroup, checked bool) {
+	<div class="collapse collapse-arrow border border-base-300">
 		<input type="checkbox" checked/>
-		<div id="static-attribute-title" class="collapse-title text-xl font-medium">
+		<div id="static-attribute-title" class="collapse-title text-xl font-medium underline">
 			{ service }
 		</div>
-		<div class="collapse-content">
+		<div class="collapse-content flex flex-col gap-5">
 			for _, v := range sgs {
 				@ConfigGroup(v)
 			}
@@ -88,7 +123,7 @@ templ FiwareServices(fssgs map[string][]i.ConfigGroup, openedService string) {
 	<div>
 		<h3 class="text-xl py-5">Fiware services</h3>
 		for k, v := range fssgs {
-			@FiwareServiceServiveGroups(k,v,k==openedService)
+			@FiwareServiceConfigGroups(k,v,k==openedService)
 		}
 	</div>
 	<div>

@@ -58,6 +58,7 @@ func ConfigGroups(repo fr.FiwareRepo) chi.Router {
 		if err != nil {
 			w.WriteHeader(400)
 			w.Write([]byte("Bad Request"))
+			template.Error(err)
 			return
 		}
 
@@ -67,7 +68,17 @@ func ConfigGroups(repo fr.FiwareRepo) chi.Router {
 		if err != nil {
 			log.Error().Err(err).Send()
 			w.WriteHeader(400)
-			w.Write([]byte(err.Error()))
+			template.Error(err).Render(r.Context(), w)
+			return
+		}
+
+		iota := i.IoTA{Host: globals.Conf.IoTAHost, Port: globals.Conf.IoTAPort}
+
+		err = iota.CreateConfigGroup(i.FiwareService{Service: sg.Service, ServicePath: sg.ServicePath}, sg)
+		if err != nil {
+			log.Error().Err(err).Send()
+			w.WriteHeader(500)
+			template.Error(err).Render(r.Context(), w)
 			return
 		}
 

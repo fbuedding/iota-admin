@@ -69,6 +69,7 @@ func Auth(a auth.Authenticator, st sessionStore.SessionStore) chi.Router {
 	r.Delete("/login", func(w http.ResponseWriter, r *http.Request) {
 
 		sessionToken, err := cookies.ReadSigned(r, "session_token", getCookieSecret())
+		log.Log().Str("Session Token:", sessionToken).AnErr("Error:", err).Msg("delete login")
 		cookies.Delete(w, "session_token")
 		if err != nil {
 			switch {

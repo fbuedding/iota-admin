@@ -13,7 +13,9 @@ templ AddConfigGroupForm(services string) {
 
 templ AddConfigGroupFormTemplate() {
 	<template id="add-config-group-form-template">
-		<form hx-post="/configGroups">
+		<form
+ 			hx-post="/configGroups"
+		>
 			<label class="form-control">
 				<div class="label">
 					<span class="label-text">Service</span>
@@ -85,10 +87,10 @@ templ AddConfigGroupFormTemplate() {
 				<input name="cbHost" type="text" placeholder="Type here" class="input input-bordered" autocomplete="off"/>
 			</label>
 			@Attributes()
-			@LazyAttributes()
+      @LazyAtrributesInput() 
 			@Commands()
 			@StaticAttributes()
-      @InternalAttributes()
+			@InternalAttributes()
 			<label class="form-control">
 				<div class="label">
 					<span class="label-text">Explicit Attributes</span>

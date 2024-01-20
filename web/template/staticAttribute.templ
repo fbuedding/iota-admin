@@ -16,7 +16,7 @@ templ StaticAttributeTemplate() {
 		</div>
 	</template>
 	<template id="static-attribute-template">
-		<div class="collapse collapse-arrow mt-5 border border-neutral-500/40">
+		<div class="collapse collapse-arrow mt-5 border border-base-300">
 			<input type="checkbox" checked/>
 			<div id="static-attribute-title" class="collapse-title text-xl font-medium">
 				%index
@@ -40,7 +40,7 @@ templ StaticAttributeTemplate() {
 					</div>
 					<input name="static_attributes[%index].type" type="text" placeholder="Type here" class="input input-bordered" required/>
 				</label>
-				@Metdata("static_attributes")
+				@MetdataInput("static_attributes")
 			</div>
 		</div>
 	</template>

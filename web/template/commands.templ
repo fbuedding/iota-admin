@@ -17,7 +17,7 @@ templ CommandTemplate() {
 		</div>
 	</template>
 	<template id="command-template">
-		<div class="collapse collapse-arrow mt-5 border border-neutral-500/40">
+		<div class="collapse collapse-arrow mt-5 border border-base-300">
 			<input type="checkbox" checked/>
 			<div id="lazy-attribute-title" class="collapse-title text-xl font-medium">
 				%index
@@ -59,7 +59,7 @@ templ CommandTemplate() {
 					</div>
 					<input name="commands[%index].contentType" type="text" placeholder="Type here" class="input input-bordered"/>
 				</label>
-				@Metdata("commands")
+				@MetdataInput("commands")
 			</div>
 		</div>
 	</template>
