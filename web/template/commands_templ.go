@@ -56,7 +56,7 @@ func CommandTemplate() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div><div id=\"commands\" class=\"\"></div><div class=\"pt-5\"><input id=\"add-btn\" type=\"button\" value=\"Add\" class=\"btn\"> <input id=\"rm-btn\" type=\"button\" value=\"Remove\" class=\"btn\" disabled></div></div></template><template id=\"command-template\"><div class=\"collapse collapse-arrow mt-5 border border-neutral-500/40\"><input type=\"checkbox\" checked><div id=\"lazy-attribute-title\" class=\"collapse-title text-xl font-medium\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div><div id=\"commands\" class=\"\"></div><div class=\"pt-5\"><input id=\"add-btn\" type=\"button\" value=\"Add\" class=\"btn\"> <input id=\"rm-btn\" type=\"button\" value=\"Remove\" class=\"btn\" disabled></div></div></template><template id=\"command-template\"><div class=\"collapse collapse-arrow mt-5 border border-base-300\"><input type=\"checkbox\" checked><div id=\"lazy-attribute-title\" class=\"collapse-title text-xl font-medium\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -123,7 +123,7 @@ func CommandTemplate() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = Metdata("commands").Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = MetdataInput("commands").Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

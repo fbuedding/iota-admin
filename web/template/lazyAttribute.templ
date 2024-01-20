@@ -1,7 +1,48 @@
 
 package template
 
-templ LazyAttributes() {
+import "github.com/fbuedding/iota-admin/pkg/iot-agent-sdk"
+import "fmt"
+
+templ LazyAttributes(cgs []iotagentsdk.LazyAttribute) {
+	for i, la := range(cgs) {
+		<div class="overflow-x-auto">
+			<table class="table">
+				<!-- head -->
+				<thead>
+					<tr>
+						<th>{ fmt.Sprint( i + 1 ) } </th>
+					</tr>
+				</thead>
+				<tbody>
+					<!-- row 1 -->
+					<tr>
+						<td>Name</td>
+						<td>{ la.Name }</td>
+					</tr>
+					<tr>
+						<td>Type</td>
+						<td>{ la.Type }</td>
+					</tr>
+					<tr>
+						<td>Object ID</td>
+						<td>{ la.ObjectID }</td>
+					</tr>
+					<tr>
+						<td>Metadata</td>
+						<td>
+							@DisplayGenericAttributes(len(la.Metadata)) {
+								@Metdata(la.Metadata)
+							}
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	}
+}
+
+templ LazyAtrributesInput() {
 	<lazy-attributes-input></lazy-attributes-input>
 }
 
@@ -17,7 +58,7 @@ templ LazyAttributeTemplate() {
 		</div>
 	</template>
 	<template id="lazy-attribute-template">
-		<div class="collapse collapse-arrow mt-5 border border-neutral-500/40">
+		<div class="collapse collapse-arrow mt-5 border border-base-300">
 			<input type="checkbox" checked/>
 			<div id="lazy-attribute-title" class="collapse-title text-xl font-medium">
 				%index
@@ -41,7 +82,7 @@ templ LazyAttributeTemplate() {
 					</div>
 					<input name="lazy[%index].type" type="text" placeholder="Type here" class="input input-bordered" required/>
 				</label>
-				@Metdata("lazy")
+				@MetdataInput("lazy")
 			</div>
 		</div>
 	</template>

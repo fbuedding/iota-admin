@@ -16,7 +16,7 @@ templ AttributeTemplate() {
 		</div>
 	</template>
 	<template id="attribute-template">
-		<div class="collapse collapse-arrow mt-5 border border-neutral-500/40">
+		<div class="collapse collapse-arrow mt-5 border border-base-300">
 			<input type="checkbox" checked/>
 			<div id="attribute-title" class="collapse-title text-xl font-medium">
 				%index
@@ -64,7 +64,7 @@ templ AttributeTemplate() {
 					</div>
 					<input name="attributes[%index].entity_type" type="text" placeholder="Type here" class="input input-bordered"/>
 				</label>
-        @Metdata("attributes")
+        @MetdataInput("attributes")
 			</div>
 		</div>
 	</template>

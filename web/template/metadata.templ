@@ -1,6 +1,33 @@
 package template
 
-templ Metdata(kind string) {
+import "github.com/fbuedding/iota-admin/pkg/iot-agent-sdk"
+
+templ Metdata(mm map[string]iotagentsdk.Metadata) {
+	<div class="overflow-x-auto">
+		<table class="table">
+			<!-- head -->
+			<thead>
+				<tr>
+					<th>Name </th>
+					<th>Type </th>
+					<th>Value </th>
+				</tr>
+			</thead>
+			for n,m := range(mm) {
+				<tbody>
+					<!-- row 1 -->
+					<tr>
+						<td>{ n }</td>
+						<td>{ m.Type }</td>
+						<td>{ m.Value }</td>
+					</tr>
+				</tbody>
+			}
+		</table>
+	</div>
+}
+
+templ MetdataInput(kind string) {
 	<metadata-input kind={ kind }></metadata-input>
 }
 
