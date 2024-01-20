@@ -4,42 +4,6 @@ import "github.com/fbuedding/iota-admin/pkg/iot-agent-sdk"
 import "fmt"
 import "github.com/fbuedding/iota-admin/web/templates/components"
 
-templ LazyAttributes(cgs []iotagentsdk.LazyAttribute) {
-	for i, la := range(cgs) {
-		<div class="overflow-x-auto">
-			<table class="table">
-				<!-- head -->
-				<thead>
-					<tr>
-						<th>{ fmt.Sprint( i + 1 ) } </th>
-					</tr>
-				</thead>
-				<tbody>
-					<!-- row 1 -->
-					<tr>
-						<td>Name</td>
-						<td>{ la.Name }</td>
-					</tr>
-					<tr>
-						<td>Type</td>
-						<td>{ la.Type }</td>
-					</tr>
-					<tr>
-						<td>Object ID</td>
-						<td>{ la.ObjectID }</td>
-					</tr>
-					<tr>
-						<td>Metadata</td>
-						<td>
-							@components.WrapMapIfNotEmpty(Metdata, la.Metadata)
-						</td>
-					</tr>
-				</tbody>
-			</table>
-		</div>
-	}
-}
-
 templ LazyAtrributesInput() {
 	<lazy-attributes-input></lazy-attributes-input>
 }
@@ -142,4 +106,40 @@ script LazyAttributesScript() {
   }
 
   customElements.define("lazy-attributes-input", LazyAttribute);
+}
+
+templ LazyAttributes(cgs []iotagentsdk.LazyAttribute) {
+	for i, la := range(cgs) {
+		<div class="overflow-x-auto">
+			<table class="table">
+				<!-- head -->
+				<thead>
+					<tr>
+						<th>{ fmt.Sprint( i + 1 ) } </th>
+					</tr>
+				</thead>
+				<tbody>
+					<!-- row 1 -->
+					<tr>
+						<td>Name</td>
+						<td>{ la.Name }</td>
+					</tr>
+					<tr>
+						<td>Type</td>
+						<td>{ la.Type }</td>
+					</tr>
+					<tr>
+						<td>Object ID</td>
+						<td>{ la.ObjectID }</td>
+					</tr>
+					<tr>
+						<td>Metadata</td>
+						<td>
+							@components.WrapMapIfNotEmpty(Metdata, la.Metadata)
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	}
 }

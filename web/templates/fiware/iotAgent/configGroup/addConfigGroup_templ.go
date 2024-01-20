@@ -57,6 +57,78 @@ func AddConfigGroupForm(services string) templ.Component {
 	})
 }
 
+func uuidv4(id string) templ.ComponentScript {
+	return templ.ComponentScript{
+		Name: `__templ_uuidv4_3254`,
+		Function: `function __templ_uuidv4_3254(id){let el = document.getElementById(id);
+  const uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'
+    .replace(/[xy]/g, function (c) {
+      const r = Math.random() * 16 | 0, 
+        v = c == 'x' ? r : (r & 0x3 | 0x8);
+      return v.toString(16);
+    });
+  el.value = uuid;}`,
+		Call:       templ.SafeScript(`__templ_uuidv4_3254`, id),
+		CallInline: templ.SafeScriptInline(`__templ_uuidv4_3254`, id),
+	}
+}
+
+func AddConfigGroupFormScript(templateId string, formId string) templ.ComponentScript {
+	return templ.ComponentScript{
+		Name: `__templ_AddConfigGroupFormScript_4e68`,
+		Function: `function __templ_AddConfigGroupFormScript_4e68(templateId, formId){class AddConfigGroupForm extends HTMLElement {
+    static formAssociated = true;
+    constructor() {
+      super();
+      this.internals_ = this.attachInternals();
+      this.state = {
+        attributes : {
+          count: 0,
+          countMetadata : []
+        }
+      }
+
+    }
+    connectedCallback() {
+      let template = document.getElementById(templateId);
+      this.appendChild(template.content.cloneNode(true));
+      this.id = formId;
+      this.parseServices();
+    }
+
+    disconnectedCallback() {
+    }
+
+    adoptedCallback() {
+    }
+
+    attributeChangedCallback(name, oldValue, newValue) {
+    }
+    
+    parseServices() {
+     if(this.hasAttribute("services")){
+       try {
+        const services = JSON.parse(this.getAttribute("services"));
+        const select = document.getElementById("select-services");
+        for (const service of services) {
+          const option = document.createElement("option");
+          option.value = service.Service;
+          option.innerHTML = service.Service;
+          select.appendChild(option);
+        }
+       } catch(e){
+        alert("Error parsing Fiware Services")
+       }
+     }
+    }
+
+  }
+  customElements.define("add-config-group-form", AddConfigGroupForm);}`,
+		Call:       templ.SafeScript(`__templ_AddConfigGroupFormScript_4e68`, templateId, formId),
+		CallInline: templ.SafeScriptInline(`__templ_AddConfigGroupFormScript_4e68`, templateId, formId),
+	}
+}
+
 func AddConfigGroupFormTemplate() templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
@@ -189,15 +261,15 @@ func AddConfigGroupFormTemplate() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = attributes.Commands().Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = attributes.CommandsInput().Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = attributes.StaticAttributes().Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = attributes.StaticAttributesInput().Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = attributes.InternalAttributes().Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = attributes.InternalAttributesInput().Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -349,76 +421,4 @@ func AddConfigGroupFormTemplate() templ.Component {
 		}
 		return templ_7745c5c3_Err
 	})
-}
-
-func uuidv4(id string) templ.ComponentScript {
-	return templ.ComponentScript{
-		Name: `__templ_uuidv4_3254`,
-		Function: `function __templ_uuidv4_3254(id){let el = document.getElementById(id);
-  const uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'
-    .replace(/[xy]/g, function (c) {
-      const r = Math.random() * 16 | 0, 
-        v = c == 'x' ? r : (r & 0x3 | 0x8);
-      return v.toString(16);
-    });
-  el.value = uuid;}`,
-		Call:       templ.SafeScript(`__templ_uuidv4_3254`, id),
-		CallInline: templ.SafeScriptInline(`__templ_uuidv4_3254`, id),
-	}
-}
-
-func AddConfigGroupFormScript(templateId string, formId string) templ.ComponentScript {
-	return templ.ComponentScript{
-		Name: `__templ_AddConfigGroupFormScript_4e68`,
-		Function: `function __templ_AddConfigGroupFormScript_4e68(templateId, formId){class AddConfigGroupForm extends HTMLElement {
-    static formAssociated = true;
-    constructor() {
-      super();
-      this.internals_ = this.attachInternals();
-      this.state = {
-        attributes : {
-          count: 0,
-          countMetadata : []
-        }
-      }
-
-    }
-    connectedCallback() {
-      let template = document.getElementById(templateId);
-      this.appendChild(template.content.cloneNode(true));
-      this.id = formId;
-      this.parseServices();
-    }
-
-    disconnectedCallback() {
-    }
-
-    adoptedCallback() {
-    }
-
-    attributeChangedCallback(name, oldValue, newValue) {
-    }
-    
-    parseServices() {
-     if(this.hasAttribute("services")){
-       try {
-        const services = JSON.parse(this.getAttribute("services"));
-        const select = document.getElementById("select-services");
-        for (const service of services) {
-          const option = document.createElement("option");
-          option.value = service.Service;
-          option.innerHTML = service.Service;
-          select.appendChild(option);
-        }
-       } catch(e){
-        alert("Error parsing Fiware Services")
-       }
-     }
-    }
-
-  }
-  customElements.define("add-config-group-form", AddConfigGroupForm);}`,
-		Call:       templ.SafeScript(`__templ_AddConfigGroupFormScript_4e68`, templateId, formId),
-		CallInline: templ.SafeScriptInline(`__templ_AddConfigGroupFormScript_4e68`, templateId, formId),
-	}
 }
