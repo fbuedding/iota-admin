@@ -1,9 +1,10 @@
-package template
+package templates
 
 import (
 	"net/http"
 
 	"github.com/a-h/templ"
+	"github.com/fbuedding/iota-admin/web/templates/layouts"
 	"github.com/rs/zerolog/log"
 )
 
@@ -13,5 +14,5 @@ func Prepare(r *http.Request, component templ.Component) templ.Component {
 		log.Debug().Msg("HTMX Request")
 		return component
 	}
-	return Main(component)
+	return layouts.Main(component)
 }

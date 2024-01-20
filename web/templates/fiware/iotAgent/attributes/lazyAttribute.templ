@@ -1,8 +1,8 @@
-
-package template
+package attributes
 
 import "github.com/fbuedding/iota-admin/pkg/iot-agent-sdk"
 import "fmt"
+import "github.com/fbuedding/iota-admin/web/templates/components"
 
 templ LazyAttributes(cgs []iotagentsdk.LazyAttribute) {
 	for i, la := range(cgs) {
@@ -31,9 +31,7 @@ templ LazyAttributes(cgs []iotagentsdk.LazyAttribute) {
 					<tr>
 						<td>Metadata</td>
 						<td>
-							@DisplayGenericAttributes(len(la.Metadata)) {
-								@Metdata(la.Metadata)
-							}
+							@components.WrapMapIfNotEmpty(Metdata, la.Metadata)
 						</td>
 					</tr>
 				</tbody>

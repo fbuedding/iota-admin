@@ -1,4 +1,8 @@
-package template
+package layouts
+
+import "github.com/fbuedding/iota-admin/web/templates/fiware/iotAgent/attributes"
+import "github.com/fbuedding/iota-admin/web/templates/fiware/iotAgent/configGroup"
+import "github.com/fbuedding/iota-admin/web/templates/components"
 
 templ Main(content templ.Component) {
 	<!DOCTYPE html>
@@ -12,13 +16,13 @@ templ Main(content templ.Component) {
 			<link rel="icon" type="image/x-icon" href="/assets/images/favicon.ico"/>
 			<script src="/assets/js/htmx.min.js"></script>
 			<script src="/assets/js/htmx.response-target.js"></script>
-			@AddConfigGroupFormTemplate()
-			@AttributeTemplate()
-			@LazyAttributeTemplate()
-			@CommandTemplate()
-			@StaticAttributeTemplate()
-			@InternalAttributeTemplate()
-			@MetadataTemplate()
+      @configgroup.AddConfigGroupFormTemplate()
+			@attributes.AttributeTemplate()
+			@attributes.LazyAttributeTemplate()
+			@attributes.CommandTemplate()
+			@attributes.StaticAttributeTemplate()
+			@attributes.InternalAttributeTemplate()
+			@attributes.MetadataTemplate()
 		</head>
 		<body
  			hx-boost="true"
@@ -43,7 +47,7 @@ templ Main(content templ.Component) {
 				// Content
 				@content
 			</div>
-			@Alerts() {
+			@components.Alerts() {
 			}
 		</body>
 	</html>

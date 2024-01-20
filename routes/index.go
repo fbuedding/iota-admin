@@ -5,7 +5,8 @@ import (
 
 	"github.com/fbuedding/iota-admin/internal/globals"
 	iotagentsdk "github.com/fbuedding/iota-admin/pkg/iot-agent-sdk"
-	"github.com/fbuedding/iota-admin/web/template"
+	"github.com/fbuedding/iota-admin/web/templates"
+	"github.com/fbuedding/iota-admin/web/templates/pages"
 	"github.com/go-chi/chi/v5"
 )
 
@@ -16,7 +17,7 @@ func Index() chi.Router {
 	})
 
 	router.Get("/index", func(w http.ResponseWriter, r *http.Request) {
-		template.Prepare(r, template.Index([]iotagentsdk.IoTA{{Host: globals.Conf.IoTAHost, Port: globals.Conf.IoTAPort}})).Render(r.Context(), w)
+		templates.Prepare(r, pages.Index([]iotagentsdk.IoTA{{Host: globals.Conf.IoTAHost, Port: globals.Conf.IoTAPort}})).Render(r.Context(), w)
 		// TODO add multiple IoT-Agent support
 	})
 
