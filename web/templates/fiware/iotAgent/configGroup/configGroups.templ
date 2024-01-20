@@ -59,6 +59,56 @@ templ ConfigGroup(sg i.ConfigGroup) {
 						</td>
 					</tr>
 					<tr>
+						<td>Commands</td>
+						<td>
+							@components.WrapArrIfNotEmpty(attributes.Commands, sg.Commands)
+						</td>
+					</tr>
+					<tr>
+						<td>Static Attributes</td>
+						<td>
+							@components.WrapArrIfNotEmpty(attributes.StaticAttributes, sg.StaticAttributes)
+						</td>
+					</tr>
+					<tr>
+						<td>Internal Attributes</td>
+						<td>
+							@components.WrapArrIfNotEmpty(attributes.InternalAttributes, sg.InternalAttributes)
+						</td>
+					</tr>
+					<tr>
+						<td>Explicit Attributes</td>
+						<td>{ sg.ExplicitAttrs } </td>
+					</tr>
+					<tr>
+						<td>Entitiy Name Expression</td>
+						<td>{ sg.EntityNameExp } </td>
+					</tr>
+					<tr>
+						<td>NGSI Version</td>
+						<td>{ sg.NgsiVersion } </td>
+					</tr>
+					<tr>
+						<td>Default entity name conjunction</td>
+						<td>{ sg.DefaultEntityNameConjunction } </td>
+					</tr>
+					<tr>
+						<td>Autoprovision</td>
+						<td>{ fmt.Sprint(sg.Autoprovision) } </td>
+					</tr>
+					<tr>
+						<td>Payload type</td>
+						<td>{ sg.PayloadType } </td>
+					</tr>
+					<tr>
+						<td>Transport</td>
+						<td>{ sg.Transport } </td>
+					</tr>
+					<tr>
+						<td>Endpoint</td>
+						<td>{ sg.Endpoint } </td>
+					</tr>
+					<tr>
 						<td>
 							<button
  								type="button"
@@ -66,7 +116,7 @@ templ ConfigGroup(sg i.ConfigGroup) {
  								hx-target="closest .container"
  								hx-swap="outerHTML"
  								hx-delete={ fmt.Sprintf("/configGroups?apiKey=%v&resource=%v&service=%v&servicePath=%v", sg.Apikey, sg.Resource, sg.Service, sg.ServicePath) }
- 								hx-confirm="Do you want to delete this Config Group?"
+ 								hx-confirm={ fmt.Sprintf("Do you want to delete the Config Group: \nApi Key: %v \nResource: %v\n In service: \nService: %v\nservicePath: %v", sg.Apikey, sg.Resource, sg.Service, sg.ServicePath) }
 							>Delete</button>
 						</td>
 						<td></td>
@@ -76,7 +126,6 @@ templ ConfigGroup(sg i.ConfigGroup) {
 		</div>
 	</div>
 }
-
 
 templ FiwareServiceConfigGroups(service string, sgs [] i.ConfigGroup, checked bool) {
 	<div class="collapse collapse-arrow border border-base-300">

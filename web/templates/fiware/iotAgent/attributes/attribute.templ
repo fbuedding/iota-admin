@@ -1,60 +1,10 @@
 package attributes
 
-import "github.com/fbuedding/iota-admin/pkg/iot-agent-sdk"
-import "fmt"
-import "github.com/fbuedding/iota-admin/web/templates/components"
-
-templ Attributes(as []iotagentsdk.Attribute) {
-	for i, a := range(as) {
-		<div class="overflow-x-auto">
-			<table class="table">
-				<!-- head -->
-				<thead>
-					<tr>
-						<th>{ fmt.Sprint( i + 1 ) } </th>
-					</tr>
-				</thead>
-				<tbody>
-					<!-- rows -->
-					<tr>
-						<td>Name</td>
-						<td>{ a.Name }</td>
-					</tr>
-					<tr>
-						<td>Type</td>
-						<td>{ a.Type }</td>
-					</tr>
-					<tr>
-						<td>Object ID</td>
-						<td>{ a.ObjectID }</td>
-					</tr>
-					<tr>
-						<td>Entity Name</td>
-						<td>{ a.EntityName }</td>
-					</tr>
-					<tr>
-						<td>Entity Type</td>
-						<td>{ a.EntityType }</td>
-					</tr>
-					<tr>
-						<td>Skip Value</td>
-						<td>{ a.SkipValue }</td>
-					</tr>
-					<tr>
-						<td>Expression</td>
-						<td>{ a.Expression }</td>
-					</tr>
-					<tr>
-						<td>Metadata</td>
-						<td>
-							@components.WrapMapIfNotEmpty(Metdata, a.Metadata)
-						</td>
-					</tr>
-				</tbody>
-			</table>
-		</div>
-	}
-}
+import (
+	"github.com/fbuedding/iota-admin/pkg/iot-agent-sdk"
+	"fmt"
+	"github.com/fbuedding/iota-admin/web/templates/components"
+)
 
 templ AttributesInput() {
 	<attributes-input></attributes-input>
@@ -180,4 +130,56 @@ script AttributesScript() {
   }
 
   customElements.define("attributes-input", Attribute);
+}
+
+templ Attributes(as []iotagentsdk.Attribute) {
+	for i, a := range(as) {
+		<div class="overflow-x-auto">
+			<table class="table">
+				<!-- head -->
+				<thead>
+					<tr>
+						<th>{ fmt.Sprint( i + 1 ) } </th>
+					</tr>
+				</thead>
+				<tbody>
+					<!-- rows -->
+					<tr>
+						<td>Name</td>
+						<td>{ a.Name }</td>
+					</tr>
+					<tr>
+						<td>Type</td>
+						<td>{ a.Type }</td>
+					</tr>
+					<tr>
+						<td>Object ID</td>
+						<td>{ a.ObjectID }</td>
+					</tr>
+					<tr>
+						<td>Entity Name</td>
+						<td>{ a.EntityName }</td>
+					</tr>
+					<tr>
+						<td>Entity Type</td>
+						<td>{ a.EntityType }</td>
+					</tr>
+					<tr>
+						<td>Skip Value</td>
+						<td>{ a.SkipValue }</td>
+					</tr>
+					<tr>
+						<td>Expression</td>
+						<td>{ a.Expression }</td>
+					</tr>
+					<tr>
+						<td>Metadata</td>
+						<td>
+							@components.WrapMapIfNotEmpty(Metdata, a.Metadata)
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	}
 }

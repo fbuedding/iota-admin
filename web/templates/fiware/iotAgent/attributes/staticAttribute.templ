@@ -1,6 +1,46 @@
 package attributes
 
-templ StaticAttributes() {
+import "github.com/fbuedding/iota-admin/pkg/iot-agent-sdk"
+import "fmt"
+import "github.com/fbuedding/iota-admin/web/templates/components"
+
+templ StaticAttributes(sas []iotagentsdk.StaticAttribute){
+	for i, sa := range(sas) {
+		<div class="overflow-x-auto">
+			<table class="table">
+				<!-- head -->
+				<thead>
+					<tr>
+						<th>{ fmt.Sprint( i + 1 ) } </th>
+					</tr>
+				</thead>
+				<tbody>
+					<!-- row 1 -->
+					<tr>
+						<td>Name</td>
+						<td>{ sa.Name }</td>
+					</tr>
+					<tr>
+						<td>Type</td>
+						<td>{ sa.Type }</td>
+					</tr>
+					<tr>
+						<td>Object ID</td>
+						<td>{ sa.ObjectID }</td>
+					</tr>
+					<tr>
+						<td>Metadata</td>
+						<td>
+							@components.WrapMapIfNotEmpty(Metdata, sa.Metadata)
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	}
+}
+
+templ StaticAttributesInput() {
 	<static-attributes-input></static-attributes-input>
 }
 

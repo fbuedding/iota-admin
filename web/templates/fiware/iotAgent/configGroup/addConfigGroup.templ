@@ -13,6 +13,69 @@ templ AddConfigGroupForm(services string) {
 	></add-config-group-form>
 }
 
+script uuidv4(id string) {
+  let el = document.getElementById(id);
+  const uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'
+    .replace(/[xy]/g, function (c) {
+      const r = Math.random() * 16 | 0, 
+        v = c == 'x' ? r : (r & 0x3 | 0x8);
+      return v.toString(16);
+    });
+  el.value = uuid;
+}
+
+script AddConfigGroupFormScript(templateId string, formId string) {
+
+  class AddConfigGroupForm extends HTMLElement {
+    static formAssociated = true;
+    constructor() {
+      super();
+      this.internals_ = this.attachInternals();
+      this.state = {
+        attributes : {
+          count: 0,
+          countMetadata : []
+        }
+      }
+
+    }
+    connectedCallback() {
+      let template = document.getElementById(templateId);
+      this.appendChild(template.content.cloneNode(true));
+      this.id = formId;
+      this.parseServices();
+    }
+
+    disconnectedCallback() {
+    }
+
+    adoptedCallback() {
+    }
+
+    attributeChangedCallback(name, oldValue, newValue) {
+    }
+    
+    parseServices() {
+     if(this.hasAttribute("services")){
+       try {
+        const services = JSON.parse(this.getAttribute("services"));
+        const select = document.getElementById("select-services");
+        for (const service of services) {
+          const option = document.createElement("option");
+          option.value = service.Service;
+          option.innerHTML = service.Service;
+          select.appendChild(option);
+        }
+       } catch(e){
+        alert("Error parsing Fiware Services")
+       }
+     }
+    }
+
+  }
+  customElements.define("add-config-group-form", AddConfigGroupForm);
+}
+
 templ AddConfigGroupFormTemplate() {
 	<template id="add-config-group-form-template">
 		<form
@@ -90,9 +153,9 @@ templ AddConfigGroupFormTemplate() {
 			</label>
 			@attributes.AttributesInput()
 			@attributes.LazyAtrributesInput()
-			@attributes.Commands()
-			@attributes.StaticAttributes()
-			@attributes.InternalAttributes()
+			@attributes.CommandsInput()
+			@attributes.StaticAttributesInput()
+			@attributes.InternalAttributesInput()
 			<label class="form-control">
 				<div class="label">
 					<span class="label-text">Explicit Attributes</span>
@@ -164,67 +227,4 @@ templ AddConfigGroupFormTemplate() {
 		</form>
 	</template>
 	@AddConfigGroupFormScript(TEMPLATE_ID, FORM_ID)
-}
-
-script uuidv4(id string) {
-  let el = document.getElementById(id);
-  const uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'
-    .replace(/[xy]/g, function (c) {
-      const r = Math.random() * 16 | 0, 
-        v = c == 'x' ? r : (r & 0x3 | 0x8);
-      return v.toString(16);
-    });
-  el.value = uuid;
-}
-
-script AddConfigGroupFormScript(templateId string, formId string) {
-
-  class AddConfigGroupForm extends HTMLElement {
-    static formAssociated = true;
-    constructor() {
-      super();
-      this.internals_ = this.attachInternals();
-      this.state = {
-        attributes : {
-          count: 0,
-          countMetadata : []
-        }
-      }
-
-    }
-    connectedCallback() {
-      let template = document.getElementById(templateId);
-      this.appendChild(template.content.cloneNode(true));
-      this.id = formId;
-      this.parseServices();
-    }
-
-    disconnectedCallback() {
-    }
-
-    adoptedCallback() {
-    }
-
-    attributeChangedCallback(name, oldValue, newValue) {
-    }
-    
-    parseServices() {
-     if(this.hasAttribute("services")){
-       try {
-        const services = JSON.parse(this.getAttribute("services"));
-        const select = document.getElementById("select-services");
-        for (const service of services) {
-          const option = document.createElement("option");
-          option.value = service.Service;
-          option.innerHTML = service.Service;
-          select.appendChild(option);
-        }
-       } catch(e){
-        alert("Error parsing Fiware Services")
-       }
-     }
-    }
-
-  }
-  customElements.define("add-config-group-form", AddConfigGroupForm);
 }

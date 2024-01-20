@@ -1,6 +1,30 @@
 package attributes
 
-templ InternalAttributes() {
+import "fmt"
+
+templ InternalAttributes(ias []interface{}) {
+	for i, ia := range(ias) {
+		<div class="overflow-x-auto">
+			<table class="table">
+				<!-- head -->
+				<thead>
+					<tr>
+						<th>{ fmt.Sprint( i + 1 ) } </th>
+					</tr>
+				</thead>
+				<tbody>
+					<!-- row 1 -->
+					<tr>
+						<td>Value</td>
+						<td>{ fmt.Sprintf("%+v", ia) }</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	}
+}
+
+templ InternalAttributesInput() {
 	<internal-attributes-input></internal-attributes-input>
 }
 
