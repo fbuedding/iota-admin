@@ -27,6 +27,7 @@ type ApiError struct {
 
 // these are nearly the same, but for typesafety differnt structs
 type Attribute struct {
+
 	ObjectID   string              `json:"object_id,omitempty" formam:"object_id"`
 	Name       string              `json:"name" formam:"name"`
 	Type       string              `json:"type" formam:"type"`
