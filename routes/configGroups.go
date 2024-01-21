@@ -70,7 +70,7 @@ func ConfigGroups(repo fr.FiwareRepo) chi.Router {
 		}
 
 		var sg i.ConfigGroup
-		var decoder = formam.NewDecoder(&formam.DecoderOptions{TagName: "schema"})
+		var decoder = formam.NewDecoder(&formam.DecoderOptions{TagName: "formam"})
 		err = decoder.Decode(r.PostForm, &sg)
 		if err != nil {
 			log.Error().Err(err).Send()
