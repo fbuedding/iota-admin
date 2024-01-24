@@ -1,0 +1,150 @@
+
+package devices
+
+import (
+	i "github.com/fbuedding/iota-admin/pkg/iot-agent-sdk"
+	"fmt"
+	"github.com/fbuedding/iota-admin/web/templates/fiware/iotAgent/attributes"
+	"github.com/fbuedding/iota-admin/web/templates/components"
+)
+
+templ Device(d i.Device) {
+	<div class="container flex-col gap-5">
+		<div class="overflow-x-auto border rounded border-base-300">
+			<table class="table">
+				<tbody>
+					<tr>
+						<td>Device ID</td>
+						<td>{ string(d.Id) }</td>
+					</tr>
+					<tr>
+						<td>Service Path</td>
+						<td>{ d.ServicePath }</td>
+					</tr>
+					<tr>
+						<td>Entity Name</td>
+						<td>{ string(d.EntityName) } </td>
+					</tr>
+					<tr>
+						<td>Entity Type</td>
+						<td>{ d.EntityType } </td>
+					</tr>
+					<tr>
+						<td>Timezone</td>
+						<td>{ d.Timezone } </td>
+					</tr>
+					<tr>
+						<td>Timestamp</td>
+						<td>
+							if d.Timestamp != nil {
+								{ fmt.Sprintf("%t", *d.Timestamp) }
+							} else {
+								false  
+							}
+						</td>
+					</tr>
+					<tr>
+						<td>Api-Key</td>
+						<td>{ string(d.Apikey) }</td>
+					</tr>
+					<tr>
+						<td>Endpoint</td>
+						<td>{ d.Endpoint } </td>
+					</tr>
+					<tr>
+						<td>Protocol </td>
+						<td>{ d.Protocol } </td>
+					</tr>
+					<tr>
+						<td>Transport</td>
+						<td>{ d.Transport } </td>
+					</tr>
+					<tr>
+						<td>Attributes</td>
+						<td>
+							@components.WrapArrIfNotEmpty(attributes.Attributes, d.Attributes)
+						</td>
+					</tr>
+					<tr>
+						<td>Lazy Attributes</td>
+						<td>
+							@components.WrapArrIfNotEmpty(attributes.LazyAttributes, d.Lazy)
+						</td>
+					</tr>
+					<tr>
+						<td>Commands</td>
+						<td>
+							@components.WrapArrIfNotEmpty(attributes.Commands, d.Commands)
+						</td>
+					</tr>
+					<tr>
+						<td>Static Attributes</td>
+						<td>
+							@components.WrapArrIfNotEmpty(attributes.StaticAttributes, d.StaticAttributes)
+						</td>
+					</tr>
+					<tr>
+						<td>Internal Attributes</td>
+						<td>
+							@components.WrapArrIfNotEmpty(attributes.InternalAttributes, d.InternalAttributes)
+						</td>
+					</tr>
+					<tr>
+						<td>Explicit Attributes</td>
+						<td>{ d.ExplicitAttrs } </td>
+					</tr>
+					<tr>
+						<td>NGSI Version</td>
+						<td>{ d.NgsiVersion } </td>
+					</tr>
+					<tr>
+						<td>Payload type</td>
+						<td>{ d.PayloadType } </td>
+					</tr>
+					<tr>
+						<td>
+							<button
+ 								type="button"
+ 								class="btn"
+ 								hx-target="closest .container"
+ 								hx-swap="outerHTML"
+ 								hx-delete={ fmt.Sprintf("/devices?deviceId=%v&service=%v&servicePath=%v", d.Id, d.Service, d.ServicePath) }
+ 								hx-confirm={ fmt.Sprintf("Do you want to delete the Config Group: \nDevice ID: %v \n In service: \nService: %v\nservicePath: %v", d.Id, d.Service, d.ServicePath) }
+							>Delete</button>
+						</td>
+						<td></td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+}
+
+templ FiwareServiceDevices(service string, ds [] i.Device, checked bool) {
+	<div class="collapse collapse-arrow border border-base-300">
+		<input type="checkbox"/>
+		<div id="static-attribute-title" class="collapse-title text-xl font-medium underline">
+			{ service }
+		</div>
+		<div class="collapse-content flex flex-col gap-5">
+			for _, v := range ds {
+				@Device(v)
+			}
+		</div>
+	</div>
+}
+
+templ FiwareServices(fsds map[string][]i.Device, openedService string) {
+	<div>
+		<a href="/addDeviceForm" hx-target="#views" hx-swap="innerHTML" class="btn">Add a device</a>
+	</div>
+	<div class="flex flex-col gap-5">
+		<h3 class="text-xl py-5">Fiware services</h3>
+		for k, v := range fsds {
+			@FiwareServiceDevices(k,v,k==openedService)
+		}
+	</div>
+	<div>
+		<a href="/addDeviceForm" hx-target="#views" hx-swap="innerHTML" class="btn">Add a device</a>
+	</div>
+}

@@ -27,7 +27,6 @@ type ApiError struct {
 
 // these are nearly the same, but for typesafety differnt structs
 type Attribute struct {
-
 	ObjectID   string              `json:"object_id,omitempty" formam:"object_id"`
 	Name       string              `json:"name" formam:"name"`
 	Type       string              `json:"type" formam:"type"`
@@ -104,7 +103,7 @@ type Device struct {
 	ServicePath        string            `json:"service_path,omitempty" formam:"service_path"`
 	EntityName         string            `json:"entity_name,omitempty" formam:"entity_name"`
 	EntityType         string            `json:"entity_type,omitempty" formam:"entity_type"`
-	Timezone           string            `json:"timezon,omitempty" formam:"timezon"`
+	Timezone           string            `json:"timezon,omitempty" formam:"timezone"`
 	Timestamp          *bool             `json:"timestamp,omitempty" formam:"timestamp"`
 	Apikey             Apikey            `json:"apikey,omitempty" formam:"apikey"`
 	Endpoint           string            `json:"endpoint,omitempty" formam:"endpoint"`

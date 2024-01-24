@@ -11,19 +11,19 @@ import (
 	i "github.com/fbuedding/iota-admin/pkg/iot-agent-sdk"
 	"github.com/fbuedding/iota-admin/web/templates"
 	"github.com/fbuedding/iota-admin/web/templates/components"
-	configgroup "github.com/fbuedding/iota-admin/web/templates/fiware/iotAgent/configGroup"
+	"github.com/fbuedding/iota-admin/web/templates/fiware/iotAgent/devices"
 	"github.com/go-chi/chi/v5"
 	"github.com/rs/zerolog/log"
 )
 
-type CofigGroupDeleteRequest struct {
+type DevicDeleteRequest struct {
 	ApiKey      i.Apikey   `formam:"apiKey"`
 	Rescource   i.Resource `formam:"resource"`
 	Service     string     `formam:"service"`
 	ServicePath string     `formam:"servicePath"`
 }
 
-func ConfigGroups(repo fr.FiwareRepo) chi.Router {
+func Devices(repo fr.FiwareRepo) chi.Router {
 	r := chi.NewRouter()
 	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
 
@@ -44,21 +44,24 @@ func ConfigGroups(repo fr.FiwareRepo) chi.Router {
 		}
 		iota := i.IoTA{Host: globals.Conf.IoTAHost, Port: globals.Conf.IoTAPort}
 		fss := services.ToFiwareServices()
-		serviceToConfigGroups := map[string][]i.ConfigGroup{}
+		log.Debug().Any("Fiware services", fss).Send()
+		serviceToDevices := map[string][]i.Device{}
 		for _, v := range fss {
-			sgs, err := iota.ListConfigGroups(*v)
+			ds, err := iota.ListDevices(*v)
 
 			if err != nil {
 				log.Err(err).Msg("Could not get fiware services")
 				http.Error(w, "Could not get fiware services", http.StatusInternalServerError)
 				return
 			}
-			if sgs.Count != 0 {
-				serviceToConfigGroups[v.Service] = sgs.Services
+			if ds.Count != 0 {
+				serviceToDevices[v.Service] = ds.Devices
 			}
 		}
 
-		templates.Prepare(r, configgroup.FiwareServices(serviceToConfigGroups, "")).Render(r.Context(), w)
+		log.Debug().Any("Devices", serviceToDevices).Send()
+
+		templates.Prepare(r, devices.FiwareServices(serviceToDevices, "")).Render(r.Context(), w)
 	})
 	r.Post("/", func(w http.ResponseWriter, r *http.Request) {
 		err := r.ParseForm()
@@ -69,8 +72,8 @@ func ConfigGroups(repo fr.FiwareRepo) chi.Router {
 			return
 		}
 
-		var sg i.ConfigGroup
-		err = helpers.Decode(r.PostForm, &sg)
+		var d i.Device
+		err = helpers.Decode(r.PostForm, &d)
 		if err != nil {
 			log.Error().Err(err).Send()
 			w.WriteHeader(400)
@@ -80,14 +83,14 @@ func ConfigGroups(repo fr.FiwareRepo) chi.Router {
 
 		iota := i.IoTA{Host: globals.Conf.IoTAHost, Port: globals.Conf.IoTAPort}
 
-		err = iota.CreateConfigGroup(i.FiwareService{Service: sg.Service, ServicePath: sg.ServicePath}, sg)
+		err = iota.CreateDevice(i.FiwareService{Service: d.Service, ServicePath: d.ServicePath}, d)
 		if err != nil {
 			log.Error().Err(err).Send()
 			w.WriteHeader(500)
 			components.Error(err).Render(r.Context(), w)
 			return
 		}
-		configgroup.ConfigGroup(sg).Render(r.Context(), w)
+		devices.Device(d).Render(r.Context(), w)
 		w.WriteHeader(http.StatusOK)
 
 	})
@@ -144,7 +147,7 @@ func ConfigGroups(repo fr.FiwareRepo) chi.Router {
 	})
 	return r
 }
-func AddConfigGroupForm(repo fr.FiwareRepo) chi.Router {
+func AddDeviceForm(repo fr.FiwareRepo) chi.Router {
 	r := chi.NewRouter()
 	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
 
@@ -170,7 +173,7 @@ func AddConfigGroupForm(repo fr.FiwareRepo) chi.Router {
 			http.Error(w, "Could not stringify fiware services", http.StatusInternalServerError)
 			return
 		}
-		templates.Prepare(r, configgroup.AddConfigGroupForm(string(encodedBytes))).Render(r.Context(), w)
+		templates.Prepare(r, devices.AddDeviceForm(string(encodedBytes))).Render(r.Context(), w)
 	})
 	return r
 }

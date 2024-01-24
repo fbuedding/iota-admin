@@ -3,6 +3,7 @@ package layouts
 import "github.com/fbuedding/iota-admin/web/templates/fiware/iotAgent/attributes"
 import "github.com/fbuedding/iota-admin/web/templates/fiware/iotAgent/configGroup"
 import "github.com/fbuedding/iota-admin/web/templates/components"
+import "github.com/fbuedding/iota-admin/web/templates/fiware/iotAgent/devices"
 
 templ Main(content templ.Component) {
 	<!DOCTYPE html>
@@ -16,7 +17,8 @@ templ Main(content templ.Component) {
 			<link rel="icon" type="image/x-icon" href="/assets/images/favicon.ico"/>
 			<script src="/assets/js/htmx.min.js"></script>
 			<script src="/assets/js/htmx.response-target.js"></script>
-      @configgroup.AddConfigGroupFormTemplate()
+			@configgroup.AddConfigGroupFormTemplate()
+			@devices.AddDeviceFormTemplate()
 			@attributes.AttributeTemplate()
 			@attributes.LazyAttributeTemplate()
 			@attributes.CommandTemplate()
@@ -25,9 +27,10 @@ templ Main(content templ.Component) {
 			@attributes.MetadataTemplate()
 		</head>
 		<body
- 			hx-boost="true"
- 			hx-ext="response-targets"
- 			hx-target-error="#alerts"
+			hx-boost="true"
+			hx-ext="response-targets"
+			hx-target-error="#alerts"
+			hx-error-swap="afterbegin"
 		>
 			<header class="p-5 w-full flex flex-row gap-5 items-end bg-primary text-primary-content">
 				<div class="w-fit" hx-boost="true">
@@ -35,7 +38,7 @@ templ Main(content templ.Component) {
 				</div>
 				<div class="flex flex-row gap-5">
 					<a href="/configGroups" hx-target="#views" hx-swap="innerHTML">Config Groups</a>
-					<a>Devices</a>
+					<a href="/devices" hx-target="#views" hx-swap="innerHTML">Devices</a>
 				</div>
 				<div class="ml-auto">
 					<button hx-delete="/auth/login" hx-target="body" hx-target-error="#alerts">

@@ -1,16 +1,14 @@
-package configgroup;
+package devices;
 
 import "github.com/fbuedding/iota-admin/web/templates/fiware/iotAgent/attributes"
+import "github.com/fbuedding/iota-admin/web/templates/components"
 
-const TEMPLATE_ID = "add-config-group-form-template"
-const FORM_ID = "add-config-group-form"
-
-templ AddConfigGroupForm(services string) {
-	<add-config-group-form
- 		if services !="" {
+templ AddDeviceForm(services string) {
+	<add-device-form
+		if services !="" {
 			services={ services }
 		}
-	></add-config-group-form>
+	></add-device-form>
 }
 
 script uuidv4(id string) {
@@ -24,9 +22,8 @@ script uuidv4(id string) {
   el.value = uuid;
 }
 
-script AddConfigGroupFormScript(templateId string, formId string) {
-
-  class AddConfigGroupForm extends HTMLElement {
+script AddDeviceFormScript() {
+  class AddDeviceForm extends HTMLElement {
     static formAssociated = true;
     constructor() {
       super();
@@ -40,9 +37,8 @@ script AddConfigGroupFormScript(templateId string, formId string) {
 
     }
     connectedCallback() {
-      let template = document.getElementById(templateId);
+      let template = document.getElementById("add-device-form-template");
       this.appendChild(template.content.cloneNode(true));
-      this.id = formId;
       this.parseServices();
     }
 
@@ -73,26 +69,26 @@ script AddConfigGroupFormScript(templateId string, formId string) {
     }
 
   }
-  customElements.define("add-config-group-form", AddConfigGroupForm);
+  customElements.define("add-device-form", AddDeviceForm);
 }
 
-templ AddConfigGroupFormTemplate() {
-	<template id="add-config-group-form-template">
+templ AddDeviceFormTemplate() {
+	<template id="add-device-form-template">
 		<form
- 			hx-post="/configGroups"
+			hx-post="/devices"
 		>
 			<label class="form-control">
 				<div class="label">
 					<span class="label-text">Service</span>
 				</div>
 				<select
- 					name="service"
- 					class="select select-bordered w-full"
- 					required
- 					hx-get="/servicePaths"
- 					hx-target="#service-paths"
- 					hx-swap="innerHTML"
- 					id="select-services"
+					name="service"
+					class="select select-bordered w-full"
+					required
+					hx-get="/servicePaths"
+					hx-target="#service-paths"
+					hx-swap="innerHTML"
+					id="select-services"
 				>
 					<option disabled selected value="">Select service</option>
 				</select>
@@ -101,31 +97,35 @@ templ AddConfigGroupFormTemplate() {
 				<div class="label">
 					<span class="label-text">Service-Path</span>
 				</div>
-				<input name="subservice" type="text" placeholder="Type here" class="input input-bordered" list="service-paths" autocomplete="off" required/>
+				<input name="service_path" type="text" placeholder="Type here" class="input input-bordered" list="service-paths" autocomplete="off" required/>
 				<datalist id="service-paths"></datalist>
 			</label>
 			<label class="form-control">
 				<div class="label">
-					<span class="label-text">Resource</span>
+					<span class="label-text">Device Id</span>
 				</div>
-				<input name="resource" type="text" placeholder="Type here" class="input input-bordered" list="resources" autocomplete="off" required/>
-				<datalist id="resources">
-					<option>{ "/iot/d" } </option>
-				</datalist>
+				<input name="device_id" type="text" placeholder="Type here" class="input input-bordered" autocomplete="off" required/>
 			</label>
 			<label class="form-control">
 				<div class="label">
-					<span class="label-text">API Key</span>
+					<span class="label-text">Entity Name</span>
 				</div>
-				<div class="join">
-					<input id="apikey-input" name="apikey" type="text" placeholder="Type here" class="input input-bordered join-item w-full" autocomplete="off" required/>
-					<input
- 						type="button"
- 						class="btn join-item"
- 						value="Generate"
- 						onclick={ uuidv4("apikey-input") }
-					/>
+				<input name="entity_name" type="text" placeholder="Type here" class="input input-bordered" autocomplete="off"/>
+			</label>
+			<label class="form-control">
+				<div class="label">
+					<span class="label-text">Entity type</span>
 				</div>
+				<input name="entity_type" type="text" placeholder="Type here" class="input input-bordered" autocomplete="off" />
+			</label>
+			<label class="form-control">
+				<div class="label">
+					<span class="label-text">Timezone</span>
+				</div>
+				<input name="timezone" type="text" placeholder="Type here" class="input input-bordered" list="timezones-datalist" autocomplete="off" />
+				<datalist id="timezones-datalist">
+					@components.TimezoneOptions()
+				</datalist>
 			</label>
 			<div class="form-control pt-5">
 				<label class="label cursor-pointer">
@@ -135,21 +135,35 @@ templ AddConfigGroupFormTemplate() {
 			</div>
 			<label class="form-control">
 				<div class="label">
-					<span class="label-text">Entity type</span>
+					<span class="label-text">API Key</span>
 				</div>
-				<input name="entity_type" type="text" placeholder="Type here" class="input input-bordered" autocomplete="off" required/>
+				<div class="join">
+					<input id="apikey-input" name="apikey" type="text" placeholder="Type here" class="input input-bordered join-item w-full" autocomplete="off"/>
+					<input
+						type="button"
+						class="btn join-item"
+						value="Generate"
+						onclick={ uuidv4("apikey-input") }
+					/>
+				</div>
 			</label>
 			<label class="form-control">
 				<div class="label">
-					<span class="label-text">Trust token</span>
+					<span class="label-text">Endpoint</span>
 				</div>
-				<input name="trust" type="text" placeholder="Type here" class="input input-bordered" autocomplete="off"/>
+				<input name="endpoint" type="text" placeholder="Type here" class="input input-bordered" autocomplete="off"/>
 			</label>
 			<label class="form-control">
 				<div class="label">
-					<span class="label-text">Context Broker host</span>
+					<span class="label-text">Protocol</span>
 				</div>
-				<input name="cbHost" type="text" placeholder="Type here" class="input input-bordered" autocomplete="off"/>
+				<input name="protocol" type="text" placeholder="Type here" class="input input-bordered" autocomplete="off"/>
+			</label>
+			<label class="form-control">
+				<div class="label">
+					<span class="label-text">Transport</span>
+				</div>
+				<input name="transport" type="text" placeholder="Type here" class="input input-bordered" autocomplete="off"/>
 			</label>
 			@attributes.AttributesInput()
 			@attributes.LazyAtrributesInput()
@@ -168,17 +182,11 @@ templ AddConfigGroupFormTemplate() {
 			</label>
 			<label class="form-control">
 				<div class="label">
-					<span class="label-text">Entity Name Expression</span>
-				</div>
-				<input name="entityNameExp" type="text" placeholder="Type here" class="input input-bordered" autocomplete="off"/>
-			</label>
-			<label class="form-control">
-				<div class="label">
 					<span class="label-text">NGSI Version</span>
 				</div>
 				<select
- 					name="ngsiVersion"
- 					class="select select-bordered w-full"
+					name="ngsiVersion"
+					class="select select-bordered w-full"
 				>
 					<option selected value="v2">NGSI-v2</option>
 					<option value="ld">NGSI-LD</option>
@@ -186,45 +194,21 @@ templ AddConfigGroupFormTemplate() {
 			</label>
 			<label class="form-control">
 				<div class="label">
-					<span class="label-text">Default Entity Name Conjunction</span>
-				</div>
-				<input name="defaultEntityNameConjunction" type="text" placeholder="Type here" class="input input-bordered" autocomplete="off"/>
-			</label>
-			<div class="form-control pt-5">
-				<label class="label cursor-pointer">
-					<span class="label-text">Autoprovision</span>
-					<input name="autoprovision" type="checkbox" checked="checked" class="checkbox"/>
-				</label>
-			</div>
-			<label class="form-control">
-				<div class="label">
 					<span class="label-text">Payload Type</span>
 				</div>
 				<select
- 					name="payloadType"
- 					class="select select-bordered w-full"
+					name="payloadType"
+					class="select select-bordered w-full"
 				>
 					<option selected value="iotagent">IoTAgent</option>
 					<option value="ngsiv2">NGSI-v2</option>
 					<option value="ngsild">NGSI-LD</option>
 				</select>
 			</label>
-			<label class="form-control">
-				<div class="label">
-					<span class="label-text">Transport</span>
-				</div>
-				<input name="transport" type="text" placeholder="Type here" class="input input-bordered" autocomplete="off"/>
-			</label>
-			<label class="form-control">
-				<div class="label">
-					<span class="label-text">Endpoint</span>
-				</div>
-				<input name="endpoint" type="text" placeholder="Type here" class="input input-bordered" autocomplete="off"/>
-			</label>
 			<p class="pt-5">
 				<input type="submit" value="Submit" class="btn"/>
 			</p>
 		</form>
 	</template>
-	@AddConfigGroupFormScript(TEMPLATE_ID, FORM_ID)
+	@AddDeviceFormScript()
 }

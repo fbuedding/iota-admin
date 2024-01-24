@@ -51,7 +51,10 @@ func New(a auth.Authenticator, st sessionStore.SessionStore, repo fr.FiwareRepo,
 		r.Mount("/", routes.Index())
 		r.Mount("/fiwareService", routes.FiwareService(repo))
 		r.Mount("/configGroups", routes.ConfigGroups(repo))
-		r.Mount("/addConfigGroup", routes.AddConfigGroups(repo))
+		r.Mount("/addConfigGroupForm", routes.AddConfigGroupForm(repo))
+		r.Mount("/servicePaths", routes.ServicePaths())
+		r.Mount("/devices", routes.Devices(repo))
+		r.Mount("/addDeviceForm", routes.AddDeviceForm(repo))
 	})
 
 	s.R = r
@@ -63,13 +66,17 @@ func (s Server) Start() error {
 	log.Info().Int("Port", s.Port).Msg("Server starting")
 	return http.ListenAndServe(fmt.Sprintf(":%d", s.Port), s.R)
 }
+
+/*
+* See https://github.com/ironstar-io/chizerolog/blob/master/main.go
+ */
 func LoggerMiddleware(logger *zerolog.Logger) func(next http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		fn := func(w http.ResponseWriter, r *http.Request) {
 			log := logger.With().Logger()
 
 			ww := middleware.NewWrapResponseWriter(w, r.ProtoMajor)
-
+			// For timing the request
 			t1 := time.Now()
 			defer func() {
 				t2 := time.Now()
@@ -86,7 +93,7 @@ func LoggerMiddleware(logger *zerolog.Logger) func(next http.Handler) http.Handl
 				}
 
 				// log end request
-				log.Debug().
+				log.Info().
 					Str("type", "access").
 					Timestamp().
 					Fields(map[string]interface{}{
