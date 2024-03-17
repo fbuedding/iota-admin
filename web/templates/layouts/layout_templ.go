@@ -91,7 +91,7 @@ func Main(content templ.Component) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</head><body hx-boost=\"true\" hx-ext=\"response-targets\" hx-target-error=\"#alerts\" hx-error-swap=\"afterbegin\"><header class=\"p-5 w-full flex flex-row gap-5 items-end bg-primary text-primary-content\"><div class=\"w-fit\" hx-boost=\"true\"><a href=\"index\" class=\"text-4xl leaading-normal\" hx-target=\"#views\" hx-swap=\"innerHTML\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</head><body hx-boost=\"true\" hx-ext=\"response-targets\" hx-target-error=\"#alerts\"><header class=\"p-5 w-full flex flex-row gap-5 items-end bg-primary text-primary-content\"><div class=\"w-fit\" hx-boost=\"true\"><a href=\"index\" class=\"text-4xl leaading-normal\" hx-target=\"#views\" hx-swap=\"innerHTML\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

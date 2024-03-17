@@ -35,7 +35,7 @@ func FiwareService(repo fr.FiwareRepo) chi.Router {
 	})
 
 	r.Post("/", func(w http.ResponseWriter, r *http.Request) {
-		var decoder = schema.NewDecoder()
+		decoder := schema.NewDecoder()
 		err := r.ParseForm()
 		if err != nil {
 			w.WriteHeader(400)
@@ -64,7 +64,6 @@ func FiwareService(repo fr.FiwareRepo) chi.Router {
 			return
 		}
 		services, err := repo.ListFiwareServices()
-
 		if err != nil {
 			log.Error().Err(err).Msg("Could get fiware services")
 			http.Error(w, "Could get fiware services", http.StatusInternalServerError)

@@ -1,0 +1,9 @@
+CREATE TABLE IF NOT EXISTS "iotas" (
+	"id"	TEXT NOT NULL UNIQUE,
+	"created_at"	DATETIME NOT NULL,
+	"updated_at"	DATETIME NOT NULL,
+	"port"	INTEGER NOT NULL,
+	"host"	TEXT NOT NULL,
+  "alias"	TEXT NOT NULL,
+	PRIMARY KEY("id")
+);

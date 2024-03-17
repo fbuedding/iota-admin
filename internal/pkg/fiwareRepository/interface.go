@@ -24,6 +24,17 @@ type FiwareServiceRow struct {
 	UpdatedAt time.Time
 }
 
+type IotaRows []IotaRow
+
+type IotaRow struct {
+	Id        string
+	Alias     string
+	Host      string
+	Port      int
+	CreatedAt time.Time
+	UpdatedAt time.Time
+}
+
 func (rs FiwareServiceRows) ToFiwareServices() []*i.FiwareService {
 	fss := make([]*i.FiwareService, len(rs))
 	for i, v := range rs {
@@ -39,6 +50,21 @@ func (r FiwareServiceRow) ToFiwareService() *i.FiwareService {
 	}
 }
 
+func (rs IotaRows) ToIoTAs() []*i.IoTA {
+	fss := make([]*i.IoTA, len(rs))
+	for i, v := range rs {
+		fss[i] = v.ToIoTA()
+	}
+	return fss
+}
+
+func (r IotaRow) ToIoTA() *i.IoTA {
+	return &i.IoTA{
+		Host: r.Host,
+		Port: r.Port,
+	}
+}
+
 type FiwareRepo interface {
 	AddFiwareService(string) error
 	GetFiwareService(string) (*FiwareServiceRow, error)
@@ -47,6 +73,10 @@ type FiwareRepo interface {
 	DeleteFiwareService(string) error
 	SetIdGen(func() string)
 	FindFiwareServiceByName(string) (FiwareServiceRows, error)
+	AddIota(string, int, string) error
+	GetIota(string) (*i.IoTA, error)
+	ListIotas() (IotaRows, error)
+	DeleteIota(string) error
 }
 
 const (

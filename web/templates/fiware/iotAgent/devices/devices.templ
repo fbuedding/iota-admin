@@ -8,7 +8,15 @@ import (
 	"github.com/fbuedding/iota-admin/web/templates/components"
 )
 
-templ Device(d i.Device) {
+type DevicesWithIoTAId struct {
+	IoTAId  string
+	Devices []i.Device
+}
+
+type FiwareServiceToDevicesWithIoTAId map[string]DevicesWithIoTAId
+type IoTAToFiwareServiceToDevicesWithIoTAId map[string]FiwareServiceToDevicesWithIoTAId
+
+templ Device(d i.Device, iotAgentId string) {
 	<div class="container flex-col gap-5">
 		<div class="overflow-x-auto border rounded border-base-300">
 			<table class="table">
@@ -104,12 +112,12 @@ templ Device(d i.Device) {
 					<tr>
 						<td>
 							<button
- 								type="button"
- 								class="btn"
- 								hx-target="closest .container"
- 								hx-swap="outerHTML"
- 								hx-delete={ fmt.Sprintf("/devices?deviceId=%v&service=%v&servicePath=%v", d.Id, d.Service, d.ServicePath) }
- 								hx-confirm={ fmt.Sprintf("Do you want to delete the Config Group: \nDevice ID: %v \n In service: \nService: %v\nservicePath: %v", d.Id, d.Service, d.ServicePath) }
+								type="button"
+								class="btn btn-xs btn-error"
+								hx-target="closest .container"
+								hx-swap="outerHTML"
+								hx-delete={ fmt.Sprintf("/devices?deviceId=%v&service=%v&servicePath=%v&iotAgentId=%s", d.Id, d.Service, d.ServicePath, iotAgentId) }
+								hx-confirm={ fmt.Sprintf("Do you want to delete the Config Group: \nDevice ID: %v \n In service: \nService: %v\nservicePath: %v", d.Id, d.Service, d.ServicePath) }
 							>Delete</button>
 						</td>
 						<td></td>
@@ -120,28 +128,37 @@ templ Device(d i.Device) {
 	</div>
 }
 
-templ FiwareServiceDevices(service string, ds [] i.Device, checked bool) {
+templ FiwareServiceDevices(service string, ds DevicesWithIoTAId) {
 	<div class="collapse collapse-arrow border border-base-300">
 		<input type="checkbox"/>
 		<div id="static-attribute-title" class="collapse-title text-xl font-medium underline">
 			{ service }
 		</div>
 		<div class="collapse-content flex flex-col gap-5">
-			for _, v := range ds {
-				@Device(v)
+			for _, v := range ds.Devices {
+				@Device(v, ds.IoTAId)
 			}
 		</div>
 	</div>
 }
 
-templ FiwareServices(fsds map[string][]i.Device, openedService string) {
+templ FiwareServices(fsds FiwareServiceToDevicesWithIoTAId) {
+	<div class="flex flex-col gap-5">
+		<h3 class="text-sm">Fiware services</h3>
+		for k, v := range fsds {
+			@FiwareServiceDevices(k,v)
+		}
+	</div>
+}
+
+templ IoTAgents(ifsds IoTAToFiwareServiceToDevicesWithIoTAId) {
 	<div>
 		<a href="/addDeviceForm" hx-target="#views" hx-swap="innerHTML" class="btn">Add a device</a>
 	</div>
-	<div class="flex flex-col gap-5">
-		<h3 class="text-xl py-5">Fiware services</h3>
-		for k, v := range fsds {
-			@FiwareServiceDevices(k,v,k==openedService)
+	<div>
+		for alias, fsds := range ifsds {
+			<div class="underline text-xl">{ alias }</div>
+			@FiwareServices(fsds)
 		}
 	</div>
 	<div>

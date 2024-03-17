@@ -1,69 +1,54 @@
 package pages
 
-import "github.com/fbuedding/iota-admin/pkg/iot-agent-sdk"
-import "fmt"
+import (
+	a "github.com/fbuedding/iota-admin/web/templates/fiware/iotAgent/agent"
+	fr "github.com/fbuedding/iota-admin/internal/pkg/fiwareRepository"
+)
 
-templ Index(agents []iotagentsdk.IoTA) {
-	<div class="p-5 flex flex-row gap-5">
-		if len(agents) > 0 {
-			for _, agent := range agents {
-				@IoTA(agent)
-			}
-		} else {
-			<div>No IoT-Agnets!</div>
-		}
-	</div>
+templ Index(agents fr.IotaRows) {
+	@a.IoTAs(agents)
+	<form
+		hx-post="/iotAgents"
+		hx-target="#iot-agents"
+		hx-swap="outerHTML"
+		hx-on::after-request=" if(event.detail.successful) this.reset()"
+		class="join"
+	>
+		<input name="host" type="text" required placeholder="Host" class="input input-bordered join-item"/>
+		<input name="port" type="number" required placeholder="Port" class="input input-bordered join-item"/>
+		<input name="alias" type="text" placeholder="Alias" class="input input-bordered join-item"/>
+		<input type="submit" class="btn btn-outline join-item"/>
+	</form>
 	<div class="divider"></div>
 	<div>
 		<input
- 			class="input input-bordered join-item"
- 			type="search"
- 			name="name"
- 			placeholder="Search Fiware Services..."
- 			hx-get="/fiwareService"
- 			hx-trigger="input changed delay:250ms, name"
- 			hx-target="#fiware-services"
+			class="input input-bordered join-item"
+			type="search"
+			name="name"
+			placeholder="Search Fiware Services..."
+			hx-get="/fiwareService"
+			hx-trigger="input changed delay:250ms, name"
+			hx-target="#fiware-services"
 		/>
 	</div>
 	<div
- 		id="fiware-services"
- 		class="grid grid-cols-3 gap-4"
- 		hx-trigger="load"
- 		hx-get="/fiwareService"
- 		hx-target-error="#alerts"
+		id="fiware-services"
+		class="grid grid-cols-3 gap-4"
+		hx-trigger="load"
+		hx-get="/fiwareService"
+		hx-target-error="#alerts"
 	></div>
 	<div class="flex flex-row gap-5">
-		<form hx-post="/fiwareService" hx-target="#fiware-services" hx-swap="innerHTML" hx-on::after-request=" if(event.detail.successful) this.reset()" class="join">
+		<form
+			hx-post="/fiwareService"
+			hx-target="#fiware-services"
+			hx-swap="innerHTML"
+			hx-on::after-request=" if(event.detail.successful) this.reset()"
+			class="join"
+		>
 			<input type="text" name="name" placeholder="Fiware Service" required class="input input-bordered join-item"/>
 			<button type="submit" class="btn btn-outline join-item">Add</button>
 		</form>
-	</div>
-}
-
-templ IoTA(agent iotagentsdk.IoTA) {
-	<div class="w-fit">
-		{ agent.Host }:{ fmt.Sprintf("%d",agent.Port) }
-		if htc, err := agent.Healthcheck(); err == nil {
-			<table class="table table-xs">
-				<tr>
-					<th>Lib-Version</th>
-					<td>{ htc.LibVersion }</td>
-				</tr>
-				<tr>
-					<th>Base root</th>
-					<td>{ htc.BaseRoot }</td>
-				</tr>
-				<tr>
-					<th>Version</th>
-					<td>{ htc.Version }</td>
-				</tr>
-			</table>
-		} else {
-			<div class="alert alert-error">
-				<svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-				<span>IoT Agent is not reachable!</span>
-			</div>
-		}
 	</div>
 }
 

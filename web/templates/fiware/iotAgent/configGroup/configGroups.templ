@@ -7,7 +7,15 @@ import (
 	"github.com/fbuedding/iota-admin/web/templates/components"
 )
 
-templ ConfigGroup(sg i.ConfigGroup) {
+type ConfigGroupsWithIoTAId struct {
+	IoTAId       string
+	ConfigGroups []i.ConfigGroup
+}
+
+type FiwareServiceToConfigGroupsWithIoTAId map[string]ConfigGroupsWithIoTAId
+type IoTAToFiwareServiceToConfigGroupsWithIoTAId map[string]FiwareServiceToConfigGroupsWithIoTAId
+
+templ ConfigGroup(sg i.ConfigGroup, iotAgentId string) {
 	<div class="container flex-col gap-5">
 		<div class="overflow-x-auto border rounded border-base-300">
 			<table class="table">
@@ -111,12 +119,12 @@ templ ConfigGroup(sg i.ConfigGroup) {
 					<tr>
 						<td>
 							<button
- 								type="button"
- 								class="btn"
- 								hx-target="closest .container"
- 								hx-swap="outerHTML"
- 								hx-delete={ fmt.Sprintf("/configGroups?apiKey=%v&resource=%v&service=%v&servicePath=%v", sg.Apikey, sg.Resource, sg.Service, sg.ServicePath) }
- 								hx-confirm={ fmt.Sprintf("Do you want to delete the Config Group: \nApi Key: %v \nResource: %v\n In service: \nService: %v\nservicePath: %v", sg.Apikey, sg.Resource, sg.Service, sg.ServicePath) }
+								type="button"
+								class="btn btn-xs btn-error"
+								hx-target="closest .container"
+								hx-swap="outerHTML"
+								hx-delete={ fmt.Sprintf("/configGroups?apiKey=%v&resource=%v&service=%v&servicePath=%v&iotAgentId=%s", sg.Apikey, sg.Resource, sg.Service, sg.ServicePath, iotAgentId) }
+								hx-confirm={ fmt.Sprintf("Do you want to delete the Config Group: \nApi Key: %v \nResource: %v\n In service: \nService: %v\nservicePath: %v", sg.Apikey, sg.Resource, sg.Service, sg.ServicePath) }
 							>Delete</button>
 						</td>
 						<td></td>
@@ -127,7 +135,7 @@ templ ConfigGroup(sg i.ConfigGroup) {
 	</div>
 }
 
-templ FiwareServiceConfigGroups(service string, sgs [] i.ConfigGroup, checked bool) {
+templ FiwareServiceConfigGroups(service string, sgs [] i.ConfigGroup, iotAgentId string) {
 	<div class="collapse collapse-arrow border border-base-300">
 		<input type="checkbox"/>
 		<div id="static-attribute-title" class="collapse-title text-xl font-medium underline">
@@ -135,20 +143,29 @@ templ FiwareServiceConfigGroups(service string, sgs [] i.ConfigGroup, checked bo
 		</div>
 		<div class="collapse-content flex flex-col gap-5">
 			for _, v := range sgs {
-				@ConfigGroup(v)
+				@ConfigGroup(v, iotAgentId)
 			}
 		</div>
 	</div>
 }
 
-templ FiwareServices(fssgs map[string][]i.ConfigGroup, openedService string) {
+templ FiwareServices(fssgs FiwareServiceToConfigGroupsWithIoTAId, iotAgent string) {
+	<div class="flex flex-col gap-5">
+		<h3 class="text-sm">Fiware services</h3>
+		for k, v := range fssgs {
+			@FiwareServiceConfigGroups(k,v.ConfigGroups, v.IoTAId)
+		}
+	</div>
+}
+
+templ IoTAgents(ifscgs IoTAToFiwareServiceToConfigGroupsWithIoTAId) {
 	<div>
 		<a href="/addConfigGroupForm" hx-target="#views" hx-swap="innerHTML" class="btn">Add a Config Group</a>
 	</div>
-	<div class="flex flex-col gap-5">
-		<h3 class="text-xl py-5">Fiware services</h3>
-		for k, v := range fssgs {
-			@FiwareServiceConfigGroups(k,v,k==openedService)
+	<div>
+		for alias, fscgs := range ifscgs {
+			<div class="underline text-xl">{ alias }</div>
+			@FiwareServices(fscgs, "")
 		}
 	</div>
 	<div>

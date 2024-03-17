@@ -1,12 +1,15 @@
 package iotagentsdk
 
 import (
+	"net/http"
+
 	"github.com/niemeyer/golang/src/pkg/container/vector"
 )
 
 type IoTA struct {
-	Host string
-	Port int
+	Host   string
+	Port   int
+	client *http.Client
 }
 
 type FiwareService struct {
@@ -67,8 +70,10 @@ type Metadata struct {
 	Value string `json:"value" formam:"value"`
 }
 
-type Apikey string
-type Resource string
+type (
+	Apikey   string
+	Resource string
+)
 
 // see https://iotagent-node-lib.readthedocs.io/en/latest/api.html#service-group-datamodel
 type ConfigGroup struct {

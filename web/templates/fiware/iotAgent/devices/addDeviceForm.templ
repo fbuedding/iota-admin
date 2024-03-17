@@ -3,80 +3,102 @@ package devices;
 import "github.com/fbuedding/iota-admin/web/templates/fiware/iotAgent/attributes"
 import "github.com/fbuedding/iota-admin/web/templates/components"
 
-templ AddDeviceForm(services string) {
-	<add-device-form
-		if services !="" {
-			services={ services }
-		}
-	></add-device-form>
-}
-
 script uuidv4(id string) {
-  let el = document.getElementById(id);
-  const uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'
-    .replace(/[xy]/g, function (c) {
-      const r = Math.random() * 16 | 0, 
-        v = c == 'x' ? r : (r & 0x3 | 0x8);
-      return v.toString(16);
-    });
+let el = document.getElementById(id);
+const uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+  const r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+  return v.toString(16);
+  });
   el.value = uuid;
 }
 
 script AddDeviceFormScript() {
-  class AddDeviceForm extends HTMLElement {
-    static formAssociated = true;
-    constructor() {
-      super();
-      this.internals_ = this.attachInternals();
-      this.state = {
-        attributes : {
-          count: 0,
-          countMetadata : []
+class AddDeviceForm extends HTMLElement {
+static formAssociated = true;
+constructor() {
+super();
+this.internals_ = this.attachInternals();
+this.state = {
+attributes : {
+count: 0,
+countMetadata : []
+}
+}
+
+}
+connectedCallback() {
+let template = document.getElementById("add-device-form-template");
+this.appendChild(template.content.cloneNode(true));
+this.parseIoTAgents();
+this.parseServices();
+}
+
+disconnectedCallback() {
+}
+
+adoptedCallback() {
+}
+
+attributeChangedCallback(name, oldValue, newValue) {
+}
+
+    parseIoTAgents() {
+      if(this.hasAttribute("iot-agents")){
+        try  {
+          const iotAgents = JSON.parse(this.getAttribute("iot-agents"))
+          const select = document.getElementById("select-iot-agents");
+          for (const iotAgent of iotAgents) {
+            const option = document.createElement("option");
+            option.value = iotAgent.Id;
+            option.innerHTML = iotAgent.Alias;
+            select.appendChild(option);
+          }
+        } catch(e) {
+          alert("Error parsing Fiware Services")
         }
       }
+    }
+parseServices() {
+if(this.hasAttribute("services")){
+try {
+const services = JSON.parse(this.getAttribute("services"));
+const select = document.getElementById("select-services");
+for (const service of services) {
+const option = document.createElement("option");
+option.value = service.Service;
+option.innerHTML = service.Service;
+select.appendChild(option);
+}
+} catch(e){
+alert("Error parsing Fiware Services")
+}
+}
+}
 
-    }
-    connectedCallback() {
-      let template = document.getElementById("add-device-form-template");
-      this.appendChild(template.content.cloneNode(true));
-      this.parseServices();
-    }
-
-    disconnectedCallback() {
-    }
-
-    adoptedCallback() {
-    }
-
-    attributeChangedCallback(name, oldValue, newValue) {
-    }
-    
-    parseServices() {
-     if(this.hasAttribute("services")){
-       try {
-        const services = JSON.parse(this.getAttribute("services"));
-        const select = document.getElementById("select-services");
-        for (const service of services) {
-          const option = document.createElement("option");
-          option.value = service.Service;
-          option.innerHTML = service.Service;
-          select.appendChild(option);
-        }
-       } catch(e){
-        alert("Error parsing Fiware Services")
-       }
-     }
-    }
-
-  }
-  customElements.define("add-device-form", AddDeviceForm);
+}
+customElements.define("add-device-form", AddDeviceForm);
 }
 
 templ AddDeviceFormTemplate() {
 	<template id="add-device-form-template">
-		<form
-			hx-post="/devices"
-		>
+		<form hx-post="/devices">
+			<label class="form-control">
+				<div class="label">
+					<span class="label-text">IoT-Agent</span>
+				</div>
+				<select
+					name="iotAgent"
+					class="select select-bordered w-full"
+					required
+					hx-get="/servicePaths"
+					hx-target="#service-paths"
+					hx-swap="innerHTML"
+					hx-include="#select-services"
+					id="select-iot-agents"
+				>
+					<option disabled selected value="">Select IoT-Agent</option>
+				</select>
+			</label>
 			<label class="form-control">
 				<div class="label">
 					<span class="label-text">Service</span>
@@ -88,6 +110,7 @@ templ AddDeviceFormTemplate() {
 					hx-get="/servicePaths"
 					hx-target="#service-paths"
 					hx-swap="innerHTML"
+					hx-include="#select-iot-agents"
 					id="select-services"
 				>
 					<option disabled selected value="">Select service</option>
@@ -97,14 +120,29 @@ templ AddDeviceFormTemplate() {
 				<div class="label">
 					<span class="label-text">Service-Path</span>
 				</div>
-				<input name="service_path" type="text" placeholder="Type here" class="input input-bordered" list="service-paths" autocomplete="off" required/>
-				<datalist id="service-paths"></datalist>
+				<select
+					name="service_path"
+					type="text"
+					placeholder="Type here"
+					class="select select-bordered w-full"
+					id="service-paths"
+					required
+				>
+					<option disabled selected value="">Select service path</option>
+				</select>
 			</label>
 			<label class="form-control">
 				<div class="label">
 					<span class="label-text">Device Id</span>
 				</div>
-				<input name="device_id" type="text" placeholder="Type here" class="input input-bordered" autocomplete="off" required/>
+				<input
+					name="device_id"
+					type="text"
+					placeholder="Type here"
+					class="input input-bordered"
+					autocomplete="off"
+					required
+				/>
 			</label>
 			<label class="form-control">
 				<div class="label">
@@ -116,13 +154,20 @@ templ AddDeviceFormTemplate() {
 				<div class="label">
 					<span class="label-text">Entity type</span>
 				</div>
-				<input name="entity_type" type="text" placeholder="Type here" class="input input-bordered" autocomplete="off" />
+				<input name="entity_type" type="text" placeholder="Type here" class="input input-bordered" autocomplete="off"/>
 			</label>
 			<label class="form-control">
 				<div class="label">
 					<span class="label-text">Timezone</span>
 				</div>
-				<input name="timezone" type="text" placeholder="Type here" class="input input-bordered" list="timezones-datalist" autocomplete="off" />
+				<input
+					name="timezone"
+					type="text"
+					placeholder="Type here"
+					class="input input-bordered"
+					list="timezones-datalist"
+					autocomplete="off"
+				/>
 				<datalist id="timezones-datalist">
 					@components.TimezoneOptions()
 				</datalist>
@@ -138,13 +183,15 @@ templ AddDeviceFormTemplate() {
 					<span class="label-text">API Key</span>
 				</div>
 				<div class="join">
-					<input id="apikey-input" name="apikey" type="text" placeholder="Type here" class="input input-bordered join-item w-full" autocomplete="off"/>
 					<input
-						type="button"
-						class="btn join-item"
-						value="Generate"
-						onclick={ uuidv4("apikey-input") }
+						id="apikey-input"
+						name="apikey"
+						type="text"
+						placeholder="Type here"
+						class="input input-bordered join-item w-full"
+						autocomplete="off"
 					/>
+					<input type="button" class="btn join-item" value="Generate" onclick={ uuidv4("apikey-input") }/>
 				</div>
 			</label>
 			<label class="form-control">
@@ -174,7 +221,14 @@ templ AddDeviceFormTemplate() {
 				<div class="label">
 					<span class="label-text">Explicit Attributes</span>
 				</div>
-				<input name="explicitAttrs" type="text" placeholder="Type here" class="input input-bordered" list="explicit-attributes-datalist" autocomplete="off"/>
+				<input
+					name="explicitAttrs"
+					type="text"
+					placeholder="Type here"
+					class="input input-bordered"
+					list="explicit-attributes-datalist"
+					autocomplete="off"
+				/>
 				<datalist id="explicit-attributes-datalist">
 					<option>true </option>
 					<option>false </option>
@@ -184,10 +238,7 @@ templ AddDeviceFormTemplate() {
 				<div class="label">
 					<span class="label-text">NGSI Version</span>
 				</div>
-				<select
-					name="ngsiVersion"
-					class="select select-bordered w-full"
-				>
+				<select name="ngsiVersion" class="select select-bordered w-full">
 					<option selected value="v2">NGSI-v2</option>
 					<option value="ld">NGSI-LD</option>
 				</select>
@@ -196,10 +247,7 @@ templ AddDeviceFormTemplate() {
 				<div class="label">
 					<span class="label-text">Payload Type</span>
 				</div>
-				<select
-					name="payloadType"
-					class="select select-bordered w-full"
-				>
+				<select name="payloadType" class="select select-bordered w-full">
 					<option selected value="iotagent">IoTAgent</option>
 					<option value="ngsiv2">NGSI-v2</option>
 					<option value="ngsild">NGSI-LD</option>
@@ -211,4 +259,15 @@ templ AddDeviceFormTemplate() {
 		</form>
 	</template>
 	@AddDeviceFormScript()
+}
+
+templ AddDeviceForm(services string, iotAgents string) {
+	<add-device-form
+		if services !="" {
+			services={ services }
+		}
+		if iotAgents !="" {
+			iot-agents={ iotAgents }
+		}
+	></add-device-form>
 }

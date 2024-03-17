@@ -17,7 +17,15 @@ import (
 	"github.com/fbuedding/iota-admin/web/templates/fiware/iotAgent/attributes"
 )
 
-func ConfigGroup(sg i.ConfigGroup) templ.Component {
+type ConfigGroupsWithIoTAId struct {
+	IoTAId       string
+	ConfigGroups []i.ConfigGroup
+}
+
+type FiwareServiceToConfigGroupsWithIoTAId map[string]ConfigGroupsWithIoTAId
+type IoTAToFiwareServiceToConfigGroupsWithIoTAId map[string]FiwareServiceToConfigGroupsWithIoTAId
+
+func ConfigGroup(sg i.ConfigGroup, iotAgentId string) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
 		if !templ_7745c5c3_IsBuffer {
@@ -393,11 +401,11 @@ func ConfigGroup(sg i.ConfigGroup) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</td></tr><tr><td><button type=\"button\" class=\"btn\" hx-target=\"closest .container\" hx-swap=\"outerHTML\" hx-delete=\"")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</td></tr><tr><td><button type=\"button\" class=\"btn btn-xs btn-error\" hx-target=\"closest .container\" hx-swap=\"outerHTML\" hx-delete=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(fmt.Sprintf("/configGroups?apiKey=%v&resource=%v&service=%v&servicePath=%v", sg.Apikey, sg.Resource, sg.Service, sg.ServicePath)))
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(fmt.Sprintf("/configGroups?apiKey=%v&resource=%v&service=%v&servicePath=%v&iotAgentId=%s", sg.Apikey, sg.Resource, sg.Service, sg.ServicePath, iotAgentId)))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -429,7 +437,7 @@ func ConfigGroup(sg i.ConfigGroup) templ.Component {
 	})
 }
 
-func FiwareServiceConfigGroups(service string, sgs []i.ConfigGroup, checked bool) templ.Component {
+func FiwareServiceConfigGroups(service string, sgs []i.ConfigGroup, iotAgentId string) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
 		if !templ_7745c5c3_IsBuffer {
@@ -456,7 +464,7 @@ func FiwareServiceConfigGroups(service string, sgs []i.ConfigGroup, checked bool
 			return templ_7745c5c3_Err
 		}
 		for _, v := range sgs {
-			templ_7745c5c3_Err = ConfigGroup(v).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = ConfigGroup(v, iotAgentId).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -472,7 +480,7 @@ func FiwareServiceConfigGroups(service string, sgs []i.ConfigGroup, checked bool
 	})
 }
 
-func FiwareServices(fssgs map[string][]i.ConfigGroup, openedService string) templ.Component {
+func FiwareServices(fssgs FiwareServiceToConfigGroupsWithIoTAId, iotAgent string) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
 		if !templ_7745c5c3_IsBuffer {
@@ -485,21 +493,12 @@ func FiwareServices(fssgs map[string][]i.ConfigGroup, openedService string) temp
 			templ_7745c5c3_Var41 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div><a href=\"/addConfigGroupForm\" hx-target=\"#views\" hx-swap=\"innerHTML\" class=\"btn\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"flex flex-col gap-5\"><h3 class=\"text-sm\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Var42 := `Add a Config Group`
+		templ_7745c5c3_Var42 := `Fiware services`
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var42)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</a></div><div class=\"flex flex-col gap-5\"><h3 class=\"text-xl py-5\">")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Var43 := `Fiware services`
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var43)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -508,7 +507,63 @@ func FiwareServices(fssgs map[string][]i.ConfigGroup, openedService string) temp
 			return templ_7745c5c3_Err
 		}
 		for k, v := range fssgs {
-			templ_7745c5c3_Err = FiwareServiceConfigGroups(k, v, k == openedService).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = FiwareServiceConfigGroups(k, v.ConfigGroups, v.IoTAId).Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		if !templ_7745c5c3_IsBuffer {
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteTo(templ_7745c5c3_W)
+		}
+		return templ_7745c5c3_Err
+	})
+}
+
+func IoTAgents(ifscgs IoTAToFiwareServiceToConfigGroupsWithIoTAId) templ.Component {
+	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
+		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
+		if !templ_7745c5c3_IsBuffer {
+			templ_7745c5c3_Buffer = templ.GetBuffer()
+			defer templ.ReleaseBuffer(templ_7745c5c3_Buffer)
+		}
+		ctx = templ.InitializeContext(ctx)
+		templ_7745c5c3_Var43 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var43 == nil {
+			templ_7745c5c3_Var43 = templ.NopComponent
+		}
+		ctx = templ.ClearChildren(ctx)
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div><a href=\"/addConfigGroupForm\" hx-target=\"#views\" hx-swap=\"innerHTML\" class=\"btn\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Var44 := `Add a Config Group`
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var44)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</a></div><div>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		for alias, fscgs := range ifscgs {
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"underline text-xl\">")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var45 string = alias
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var45))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = FiwareServices(fscgs, "").Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -517,8 +572,8 @@ func FiwareServices(fssgs map[string][]i.ConfigGroup, openedService string) temp
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Var44 := `Add a Config Group`
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var44)
+		templ_7745c5c3_Var46 := `Add a Config Group`
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var46)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

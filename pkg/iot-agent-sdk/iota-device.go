@@ -27,7 +27,6 @@ type respListDevices struct {
 }
 
 func (d Device) Validate() error {
-
 	mF := &MissingFields{make(vector.StringVector, 0), "Missing fields"}
 	if d.Id == "" {
 		mF.Fields.Push("Id")
@@ -42,15 +41,13 @@ func (d Device) Validate() error {
 
 func (i IoTA) ReadDevice(fs FiwareService, id DeciveId) (*Device, error) {
 	url, err := u.JoinPath(fmt.Sprintf(urlDevice, i.Host, i.Port), u.PathEscape(string(id)))
-
 	if err != nil {
 		return nil, err
 	}
 	method := "GET"
 
-	client := &http.Client{}
+	client := i.Client()
 	req, err := http.NewRequest(method, url, nil)
-
 	if err != nil {
 		return nil, fmt.Errorf("Error while getting service: %w", err)
 	}
@@ -96,14 +93,14 @@ func (i IoTA) DeviceExists(fs FiwareService, id DeciveId) bool {
 	}
 	return true
 }
+
 func (i IoTA) ListDevices(fs FiwareService) (*respListDevices, error) {
 	url := fmt.Sprintf(urlDevice, i.Host, i.Port)
 
 	method := "GET"
 
-	client := &http.Client{}
+	client := i.Client()
 	req, err := http.NewRequest(method, url, nil)
-
 	if err != nil {
 		return nil, fmt.Errorf("Error while getting service: %w", err)
 	}
@@ -140,7 +137,6 @@ func (i IoTA) ListDevices(fs FiwareService) (*respListDevices, error) {
 }
 
 func (i IoTA) CreateDevices(fs FiwareService, ds []Device) error {
-
 	for _, sg := range ds {
 		err := sg.Validate()
 		if err != nil {
@@ -155,9 +151,8 @@ func (i IoTA) CreateDevices(fs FiwareService, ds []Device) error {
 	if err != nil {
 		log.Panic().Err(err).Msg("Could not Marshal struct")
 	}
-	client := &http.Client{}
+	client := i.Client()
 	req, err := http.NewRequest(method, fmt.Sprintf(urlDevice, i.Host, i.Port), bytes.NewBuffer(payload))
-
 	if err != nil {
 		return fmt.Errorf("Error while creating Request %w", err)
 	}
@@ -183,6 +178,7 @@ func (i IoTA) CreateDevices(fs FiwareService, ds []Device) error {
 
 	return nil
 }
+
 func (i IoTA) CreateDevice(fs FiwareService, d Device) error {
 	ds := [1]Device{d}
 	return i.CreateDevices(fs, ds[:])
@@ -196,7 +192,7 @@ func (i IoTA) UpdateDevice(fs FiwareService, d Device) error {
 
 	url, err := u.JoinPath(fmt.Sprintf(urlDevice, i.Host, i.Port), u.PathEscape(string(d.Id)))
 
-	//Ensure these fields are not set
+	// Ensure these fields are not set
 	d.Id = ""
 	d.Transport = ""
 
@@ -209,9 +205,8 @@ func (i IoTA) UpdateDevice(fs FiwareService, d Device) error {
 	if string(payload) == "{}" {
 		return nil
 	}
-	client := &http.Client{}
+	client := i.Client()
 	req, err := http.NewRequest(method, url, bytes.NewBuffer(payload))
-
 	if err != nil {
 		return fmt.Errorf("Error while creating Request %w", err)
 	}
@@ -236,17 +231,16 @@ func (i IoTA) UpdateDevice(fs FiwareService, d Device) error {
 	}
 	return nil
 }
+
 func (i IoTA) DeleteDevice(fs FiwareService, id DeciveId) error {
 	url, err := u.JoinPath(fmt.Sprintf(urlDevice, i.Host, i.Port), u.PathEscape(string(id)))
-
 	if err != nil {
 		return err
 	}
 	method := "DELETE"
 
-	client := &http.Client{}
+	client := i.Client()
 	req, err := http.NewRequest(method, url, nil)
-
 	if err != nil {
 		return fmt.Errorf("Error while getting service: %w", err)
 	}

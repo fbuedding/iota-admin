@@ -25,7 +25,7 @@ templ Service(s fr.FiwareServiceRow) {
 			<h2 class="card-title">{ s.Name }</h2>
 			<p>Service was created on {s.CreatedAt.Format("02.01.2006")}</p>
 			<div class="card-actions justify-end">
-				<button class="btn btn-outline btn-sm" hx-delete={ "/fiwareService/" + s.Id } hx-target={"#i"+ s.Id} hx-swap="outerHTML">delete</button>
+				<button class="btn btn-xs btn-error" hx-delete={ "/fiwareService/" + s.Id } hx-target={"#i"+ s.Id} hx-swap="outerHTML">delete</button>
 			</div>
 		</div>
 	</div>

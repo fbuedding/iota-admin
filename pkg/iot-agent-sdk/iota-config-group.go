@@ -22,7 +22,6 @@ func (e *MissingFields) Error() string {
 }
 
 func (sg ConfigGroup) Validate() error {
-
 	mF := &MissingFields{make(vector.StringVector, 0), "Missing fields"}
 	if sg.Apikey == "" {
 		mF.Fields.Push("Apikey")
@@ -52,9 +51,8 @@ func (i IoTA) ReadConfigGroup(fs FiwareService, r Resource, a Apikey) (*RespRead
 
 	method := "GET"
 
-	client := &http.Client{}
+	client := i.Client()
 	req, err := http.NewRequest(method, fmt.Sprintf(url, i.Host, i.Port), nil)
-
 	if err != nil {
 		return nil, fmt.Errorf("Error while getting service: %w", err)
 	}
@@ -93,9 +91,8 @@ func (i IoTA) ListConfigGroups(fs FiwareService) (*RespReadConfigGroup, error) {
 
 	method := "GET"
 
-	client := &http.Client{}
+	client := i.Client()
 	req, err := http.NewRequest(method, fmt.Sprintf(url, i.Host, i.Port), nil)
-
 	if err != nil {
 		return nil, fmt.Errorf("Error while getting service: %w", err)
 	}
@@ -157,9 +154,8 @@ func (i IoTA) CreateConfigGroups(fs FiwareService, sgs []ConfigGroup) error {
 	if err != nil {
 		log.Panic().Err(err).Msg("Could not Marshal struct")
 	}
-	client := &http.Client{}
+	client := i.Client()
 	req, err := http.NewRequest(method, fmt.Sprintf(urlService, i.Host, i.Port), bytes.NewBuffer(payload))
-
 	if err != nil {
 		return fmt.Errorf("Error while creating Request %w", err)
 	}
@@ -201,9 +197,8 @@ func (i IoTA) UpdateConfigGroup(fs FiwareService, r Resource, a Apikey, sg Confi
 	if string(payload) == "{}" {
 		return nil
 	}
-	client := &http.Client{}
+	client := i.Client()
 	req, err := http.NewRequest(method, fmt.Sprintf(url, i.Host, i.Port), bytes.NewBuffer(payload))
-
 	if err != nil {
 		return fmt.Errorf("Error while creating Request %w", err)
 	}
@@ -229,6 +224,7 @@ func (i IoTA) UpdateConfigGroup(fs FiwareService, r Resource, a Apikey, sg Confi
 
 	return nil
 }
+
 func (i IoTA) DeleteConfigGroup(fs FiwareService, r Resource, a Apikey) error {
 	url := urlService + fmt.Sprintf("?resource=%s&apikey=%s", r, a)
 
@@ -236,7 +232,6 @@ func (i IoTA) DeleteConfigGroup(fs FiwareService, r Resource, a Apikey) error {
 
 	client := http.Client{}
 	req, err := http.NewRequest(method, fmt.Sprintf(url, i.Host, i.Port), strings.NewReader(""))
-
 	if err != nil {
 		return fmt.Errorf("Error while creating Request %w", err)
 	}

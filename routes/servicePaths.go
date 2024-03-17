@@ -2,42 +2,49 @@ package routes
 
 import (
 	"net/http"
-	"slices"
 
-	"github.com/fbuedding/iota-admin/internal/globals"
-	i "github.com/fbuedding/iota-admin/pkg/iot-agent-sdk"
+	"github.com/fbuedding/iota-admin/internal/helpers"
+	fr "github.com/fbuedding/iota-admin/internal/pkg/fiwareRepository"
+	"github.com/fbuedding/iota-admin/web/templates"
 	"github.com/go-chi/chi/v5"
 	"github.com/rs/zerolog/log"
 )
 
-func ServicePaths() chi.Router {
+type servicePathsGetQueryParams struct {
+	Service  string `formam:"service"`
+	IotAgent string `formam:"iotAgent"`
+}
+
+func ServicePaths(repo fr.FiwareRepo) chi.Router {
 	r := chi.NewRouter()
 
 	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
-		service := r.URL.Query().Get("service")
-		if service == "" {
-			http.Error(w, "no service provided", http.StatusUnprocessableEntity)
+		var params servicePathsGetQueryParams
+		err := helpers.Decode(r.URL.Query(), &params)
+		if params.Service == "" {
+			w.WriteHeader(http.StatusUnprocessableEntity)
 			return
 		}
-		fs := i.FiwareService{
-			Service:     service,
-			ServicePath: "/*",
+		if params.IotAgent == "" {
+			w.WriteHeader(http.StatusUnprocessableEntity)
+			return
 		}
-		iota := i.IoTA{Host: globals.Conf.IoTAHost, Port: globals.Conf.IoTAPort}
-		sgs, err := iota.ListConfigGroups(fs)
 
+		iota, err := repo.GetIota(params.IotAgent)
 		if err != nil {
-			log.Err(err).Msg("Could not get fiware services")
-			http.Error(w, "Could not get fiware services", http.StatusInternalServerError)
+			templates.HandleError(r.Context(), w, err, http.StatusInternalServerError)
+			log.Error().Err(err).Msgf("Could not get IoT-Agent for id: %s", params.IotAgent)
 			return
 		}
-		response := ""
-		var servicePaths []string
-		for _, v := range sgs.Services {
-			if !slices.Contains(servicePaths, v.ServicePath) {
-				response = response + "<option value=\"" + v.ServicePath + "\">"
-				servicePaths = append(servicePaths, v.ServicePath)
-			}
+		servicePaths, err := iota.GetAllServicePathsForService(params.Service)
+		if err != nil {
+			templates.HandleError(r.Context(), w, err, http.StatusInternalServerError)
+			log.Err(err).Msg("Could not get fiware services")
+			return
+		}
+		response := "<option disabled selected value=\"\">Select service path</option>"
+		for _, v := range servicePaths {
+			response = response + "<option value=\"" + v + "\">" + v + "</option>"
 		}
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte(response))

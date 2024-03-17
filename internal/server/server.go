@@ -16,8 +16,6 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-var ()
-
 type Server struct {
 	Authenticator auth.Authenticator
 	SessionStore  sessionStore.SessionStore
@@ -26,7 +24,6 @@ type Server struct {
 }
 
 func New(a auth.Authenticator, st sessionStore.SessionStore, repo fr.FiwareRepo, port int) *Server {
-
 	var s Server
 
 	s.Authenticator = a
@@ -34,25 +31,26 @@ func New(a auth.Authenticator, st sessionStore.SessionStore, repo fr.FiwareRepo,
 	s.Port = port
 	r := chi.NewRouter()
 	r.Use(middleware.RequestID)
-	//r.Use(middleware.Logger)
+	// r.Use(middleware.Logger)
 	r.Use(LoggerMiddleware(&log.Logger))
 	r.Use(middleware.Recoverer)
 
-	//Public Routes
+	// Public Routes
 	r.Group(func(r chi.Router) {
 		r.Mount("/login", routes.Login())
 		r.Mount("/auth", routes.Auth(s.Authenticator, s.SessionStore))
 		r.Mount("/assets", routes.StaticAssets())
 	})
 
-	//Private Routes, require authentication
+	// Private Routes, require authentication
 	r.Group(func(r chi.Router) {
 		r.Use(routes.AuthMiddleware(s.SessionStore))
-		r.Mount("/", routes.Index())
+		r.Mount("/", routes.Index(repo))
 		r.Mount("/fiwareService", routes.FiwareService(repo))
+		r.Mount("/iotAgents", routes.IoTAgents(repo))
 		r.Mount("/configGroups", routes.ConfigGroups(repo))
 		r.Mount("/addConfigGroupForm", routes.AddConfigGroupForm(repo))
-		r.Mount("/servicePaths", routes.ServicePaths())
+		r.Mount("/servicePaths", routes.ServicePaths(repo))
 		r.Mount("/devices", routes.Devices(repo))
 		r.Mount("/addDeviceForm", routes.AddDeviceForm(repo))
 	})

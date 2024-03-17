@@ -1,0 +1,52 @@
+package agent
+
+import (
+	fr "github.com/fbuedding/iota-admin/internal/pkg/fiwareRepository"
+	"fmt"
+)
+
+templ IoTAs(agents fr.IotaRows) {
+	<div class="flex flex-row gap-5" id="iot-agents">
+		for _,agent := range agents {
+			@IoTA(agent)
+		}
+	</div>
+}
+
+templ IoTA(agent fr.IotaRow ) {
+	<div class="w-fit flex flex-col">
+		<h2 class="underline">{ agent.Alias }</h2>
+		<div>
+			{ agent.Host }:{ fmt.Sprintf("%d",agent.Port) }
+		</div>
+		// TODO This should probably change
+		if htc, err := agent.ToIoTA().Healthcheck(); err == nil {
+			<table class="table table-xs">
+				<tr>
+					<th>Lib-Version</th>
+					<td>{ htc.LibVersion }</td>
+				</tr>
+				<tr>
+					<th>Base root</th>
+					<td>{ htc.BaseRoot }</td>
+				</tr>
+				<tr>
+					<th>Version</th>
+					<td>{ htc.Version }</td>
+				</tr>
+			</table>
+		} else {
+			<div class="text-error flex-grow">
+				Not reachable
+			</div>
+		}
+		<button
+			type="button"
+			class="btn btn-xs btn-error"
+			hx-target="closest div"
+			hx-swap="outerHTML"
+			hx-delete={ fmt.Sprintf("/iotAgents/" + agent.Id) }
+			hx-confirm={ fmt.Sprintf("Do you want to delete the IoT-Agent: %s", agent.Alias) }
+		>Delete</button>
+	</div>
+}

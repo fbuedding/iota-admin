@@ -15,7 +15,7 @@ services:
     ports:
     - 8080:8080  
   iot-agent:
-    image: fiware/iotagent-ul
+    image: fiware/iotagent-ul:latest
     hostname: iot-agent
     depends_on:
         - mongodb
@@ -35,7 +35,8 @@ services:
         - "IOTA_MONGO_DB=iotagent-ul"
         - "IOTA_HTTP_PORT=7896"
         - "IOTA_PROVIDER_URL=http://iot-agent:4061"
-
+        - "IOTA_MQTT_HOST=mosquitto"
+        - "IOTA_MQTT_PORT=1883"
   mongodb:
     image: mongo:4.2
     hostname: mongodb
@@ -55,3 +56,18 @@ services:
     ports:
         - "1026:1026"
     command: -dbhost mongodb
+  mosquitto:
+    image: eclipse-mosquitto
+    hostname: mosquitto
+    networks:
+        - default
+    expose:
+        - '1883'
+        - '9001'
+    ports:
+        - '1883:1883'
+        - '9001:9001'
+    volumes:
+        - ./mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf
+
+
