@@ -10,7 +10,7 @@ require (
 	github.com/gorilla/schema v1.2.1
 	github.com/mattn/go-sqlite3 v1.14.18
 	github.com/niemeyer/golang v0.0.0-20110826170342-f8c0f811cb19
-	github.com/rs/zerolog v1.31.0
+	github.com/rs/zerolog v1.32.0
 )
 
 require (
@@ -20,6 +20,7 @@ require (
 	github.com/cenkalti/backoff/v4 v4.2.1 // indirect
 	github.com/cli/browser v1.3.0 // indirect
 	github.com/fatih/color v1.16.0 // indirect
+	github.com/fbuedding/fiware-iot-agent-sdk v1.1.2 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/monoculum/formam/v3 v3.6.0 // indirect
