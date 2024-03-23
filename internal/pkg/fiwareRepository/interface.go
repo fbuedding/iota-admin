@@ -8,7 +8,7 @@ import (
 	"fmt"
 	"time"
 
-	i "github.com/fbuedding/iota-admin/pkg/iot-agent-sdk"
+	i "github.com/fbuedding/fiware-iot-agent-sdk"
 	"github.com/google/uuid"
 
 	_ "github.com/mattn/go-sqlite3"

@@ -6,7 +6,7 @@ import (
 	"sync"
 	"time"
 
-	i "github.com/fbuedding/iota-admin/pkg/iot-agent-sdk"
+	i "github.com/fbuedding/fiware-iot-agent-sdk"
 	"github.com/rs/zerolog/log"
 )
 

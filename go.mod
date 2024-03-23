@@ -4,7 +4,7 @@ go 1.21.1
 
 require (
 	github.com/Netflix/go-env v0.0.0-20220526054621-78278af1949d
-	github.com/a-h/templ v0.2.513
+	github.com/a-h/templ v0.2.639
 	github.com/go-chi/chi/v5 v5.0.10
 	github.com/google/uuid v1.4.0
 	github.com/gorilla/schema v1.2.1
@@ -15,7 +15,7 @@ require (
 
 require (
 	github.com/a-h/lexical v0.0.53 // indirect
-	github.com/a-h/parse v0.0.0-20230731060248-8319ff0754b6 // indirect
+	github.com/a-h/parse v0.0.0-20240121214402-3caf7543159a // indirect
 	github.com/a-h/protocol v0.0.0-20230224160810-b4eec67c1c22 // indirect
 	github.com/cenkalti/backoff/v4 v4.2.1 // indirect
 	github.com/cli/browser v1.3.0 // indirect
