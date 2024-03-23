@@ -112,7 +112,10 @@ func (i IoTA) ListConfigGroups(fs FiwareService) (*RespReadConfigGroup, error) {
 			return nil, fmt.Errorf("Error while eding response body %w", err)
 		}
 		var apiError ApiError
-		json.Unmarshal(resData, &apiError)
+		err = json.Unmarshal(resData, &apiError)
+		if err != nil {
+			return nil, fmt.Errorf("Unexpected Response, is host %s a IoT-Agent?", i.Host)
+		}
 		return nil, apiError
 	}
 
