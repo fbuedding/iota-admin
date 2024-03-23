@@ -6,10 +6,10 @@ import (
 	"net/http"
 	"slices"
 
+	i "github.com/fbuedding/fiware-iot-agent-sdk"
 	"github.com/fbuedding/iota-admin/internal/globals"
 	"github.com/fbuedding/iota-admin/internal/helpers"
 	fr "github.com/fbuedding/iota-admin/internal/pkg/fiwareRepository"
-	i "github.com/fbuedding/iota-admin/pkg/iot-agent-sdk"
 	"github.com/fbuedding/iota-admin/web/templates"
 	configgroup "github.com/fbuedding/iota-admin/web/templates/fiware/iotAgent/configGroup"
 	"github.com/go-chi/chi/v5"
