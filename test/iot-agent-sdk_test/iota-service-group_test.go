@@ -14,6 +14,7 @@ func TestReadConfigGroup(t *testing.T) {
 		t.Fail()
 	}
 }
+
 func TestListConfigGroup(t *testing.T) {
 	t.Log("Testing ListConfigGroup")
 
@@ -60,13 +61,14 @@ func TestUpsertConfigGroup(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	iota.DeleteConfigGroup(fs, resource, apiKey)
+	_ = iota.DeleteConfigGroup(fs, resource, apiKey)
 }
+
 func TestCreatConfigGroupWSE(t *testing.T) {
-  sgtemp := sg
-  err := iota.CreateConfigGroupWSE(fs, &sgtemp)
-  if err != nil {
-    t.Error(err)
-  }
-  t.Log(sgtemp)
+	sgtemp := sg
+	err := iota.CreateConfigGroupWSE(fs, &sgtemp)
+	if err != nil {
+		t.Error(err)
+	}
+	t.Log(sgtemp)
 }

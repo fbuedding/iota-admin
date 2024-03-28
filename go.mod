@@ -13,6 +13,8 @@ require (
 	github.com/rs/zerolog v1.32.0
 )
 
+require github.com/cespare/xxhash/v2 v2.1.2 // indirect
+
 require (
 	github.com/a-h/lexical v0.0.53 // indirect
 	github.com/a-h/parse v0.0.0-20240121214402-3caf7543159a // indirect
@@ -20,7 +22,8 @@ require (
 	github.com/cenkalti/backoff/v4 v4.2.1 // indirect
 	github.com/cli/browser v1.3.0 // indirect
 	github.com/fatih/color v1.16.0 // indirect
-	github.com/fbuedding/fiware-iot-agent-sdk v1.1.2 // indirect
+	github.com/fbuedding/fiware-iot-agent-sdk v1.1.3 // indirect
+	github.com/go-chi/httprate v0.9.0
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/monoculum/formam/v3 v3.6.0 // indirect

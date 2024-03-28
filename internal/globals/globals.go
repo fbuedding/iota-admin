@@ -8,17 +8,18 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-var (
-	Conf Config
-)
+var Conf Config
 
 type Config struct {
-	LogLevel     string `env:"LOG_LEVEL,required=true"`
-	CookieSecret string `env:"COOKIE_SECRET,required=true"`
-	AppEnv       string `env:"APP_ENV,default=development"`
-	BypassAuth   bool   `env:"BYPASS_AUTH"`
-	IoTAHost     string `env:"IOTA_HOST,default=iot-agent"`
-	IoTAPort     int    `env:"IOTA_PORT,default=4061"`
+	LogLevel      string `env:"LOG_LEVEL,required=true"`
+	CookieSecret  string `env:"COOKIE_SECRET,required=true"`
+	AppEnv        string `env:"APP_ENV,default=development"`
+	BypassAuth    bool   `env:"BYPASS_AUTH"`
+	IoTAHost      string `env:"IOTA_HOST,default=iot-agent"`
+	IoTAPort      int    `env:"IOTA_PORT,default=4061"`
+	Username      string `env:"USERNAME"`
+	Password      string `env:"PASSWORD"`
+	LoginAttempts int    `env:"LOGIN_ATTEMPTS,default=3"`
 }
 
 func init() {
@@ -28,8 +29,8 @@ func init() {
 	}
 
 	setLogLevel(Conf.LogLevel)
-
 }
+
 func setLogLevel(ll string) {
 	ll = strings.ToLower(ll)
 	switch ll {

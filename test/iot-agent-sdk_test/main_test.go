@@ -3,7 +3,7 @@ package iotagentsdktest_test
 import (
 	"testing"
 
-	i "github.com/fbuedding/iota-admin/pkg/iot-agent-sdk"
+	i "github.com/fbuedding/fiware-iot-agent-sdk"
 	"github.com/rs/zerolog/log"
 )
 
@@ -35,12 +35,12 @@ func TestMain(m *testing.M) {
 		Apikey:        apiKey,
 		Autoprovision: false,
 	}
-	iota.DeleteDevice(fs, d.Id)
+	_ = iota.DeleteDevice(fs, d.Id)
 	err := iota.CreateDevice(fs, d)
 	if err != nil {
 		log.Fatal().Err(err).Msg("Could not create device for tests")
 	}
-	iota.DeleteConfigGroup(fs, resource, apiKey)
+	_ = iota.DeleteConfigGroup(fs, resource, apiKey)
 	err = iota.CreateConfigGroup(fs, sg)
 	if err != nil {
 		log.Fatal().Err(err).Msg("Could not create service group for tests")

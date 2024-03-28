@@ -7,6 +7,8 @@ import (
 	"errors"
 	"net/http"
 	"time"
+
+	"github.com/rs/zerolog/log"
 )
 
 var (
@@ -14,7 +16,7 @@ var (
 	ErrInvalidValue = errors.New("invalid cookie value")
 )
 
-func New(name string, value string,expires time.Time) *http.Cookie {
+func New(name string, value string, expires time.Time) *http.Cookie {
 	return &http.Cookie{
 		Name:     name,
 		Expires:  expires,
@@ -22,7 +24,7 @@ func New(name string, value string,expires time.Time) *http.Cookie {
 		SameSite: http.SameSiteStrictMode,
 		Secure:   true,
 		Path:     "/",
-    Value: value,
+		Value:    value,
 	}
 }
 
@@ -52,21 +54,27 @@ func Read(r *http.Request, name string) (string, error) {
 	return string(value), nil
 }
 
-func Delete(w http.ResponseWriter, name string) error {
+func Delete(w http.ResponseWriter, name string) {
 	http.SetCookie(w, &http.Cookie{
 		Name:   name,
 		MaxAge: -1,
 	})
-	return nil
 }
 
 func WriteSigned(w http.ResponseWriter, cookie *http.Cookie, secretKey []byte) error {
-
 	mac := hmac.New(sha256.New, secretKey)
-	mac.Write([]byte(cookie.Name))
-	mac.Write([]byte(cookie.Value))
+	_, err := mac.Write([]byte(cookie.Name))
+	if err != nil {
+		return err
+	}
+
+	_, err = mac.Write([]byte(cookie.Value))
+	if err != nil {
+		return err
+	}
+
 	signature := mac.Sum(nil)
-	cookie.Value = string(signature) +  cookie.Value
+	cookie.Value = string(signature) + cookie.Value
 
 	return Write(w, cookie)
 }
@@ -78,6 +86,7 @@ func ReadSigned(r *http.Request, name string, secretKey []byte) (string, error) 
 	}
 
 	if len(signedValue) < sha256.Size {
+		log.Debug().Str("signed cookie value", signedValue).Int("Length", len(signedValue)).Send()
 		return "", ErrInvalidValue
 	}
 
@@ -90,6 +99,7 @@ func ReadSigned(r *http.Request, name string, secretKey []byte) (string, error) 
 	expectedSignature := mac.Sum(nil)
 
 	if !hmac.Equal([]byte(signature), expectedSignature) {
+		log.Debug().Bytes("singnature", []byte(signature)).Bytes("expected signature", expectedSignature).Msg("Cookie has wrong signature")
 		return "", ErrInvalidValue
 	}
 	return value, nil

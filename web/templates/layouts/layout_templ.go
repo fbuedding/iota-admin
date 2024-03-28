@@ -28,7 +28,7 @@ func Main(content templ.Component) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<!doctype html><html lang=\"en\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><meta http-equiv=\"X-UA-Compatible\" content=\"ie=edge\"><title>IoTA-Admin</title><link rel=\"stylesheet\" href=\"/assets/css/style.css\"><link rel=\"icon\" type=\"image/x-icon\" href=\"/assets/images/favicon.ico\"><script src=\"/assets/js/htmx.min.js\"></script><script src=\"/assets/js/htmx.response-target.js\"></script>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<!doctype html><html lang=\"en\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><meta http-equiv=\"X-UA-Compatible\" content=\"ie=edge\"><title>IoTA-Admin</title><link rel=\"stylesheet\" href=\"/assets/css/style.css\"><link rel=\"icon\" type=\"image/x-icon\" href=\"/assets/images/favicon.ico\"><script src=\"/assets/js/htmx.min.js\"></script><script src=\"/assets/js/htmx.response-target.js\"></script><script src=\"https://unpkg.com/htmx.org@1.9.11/dist/ext/remove-me.js\"></script>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -64,14 +64,14 @@ func Main(content templ.Component) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</head><body hx-boost=\"true\" hx-ext=\"response-targets\" hx-target-error=\"#alerts\"><header class=\"p-5 w-full flex flex-row gap-5 items-end bg-primary text-primary-content\"><div class=\"w-fit\" hx-boost=\"true\"><a href=\"index\" class=\"text-4xl leaading-normal\" hx-target=\"#views\" hx-swap=\"innerHTML\">IoTA-Admin</a></div><div class=\"flex flex-row gap-5\"><a href=\"/configGroups\" hx-target=\"#views\" hx-swap=\"innerHTML\">Config Groups</a> <a href=\"/devices\" hx-target=\"#views\" hx-swap=\"innerHTML\">Devices</a></div><div class=\"ml-auto\"><button hx-delete=\"/auth/login\" hx-target=\"body\" hx-target-error=\"#alerts\">Logout (")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</head><body hx-boost=\"true\" hx-ext=\"response-targets\" hx-target-error=\"#alerts\"><header class=\"p-5 w-full flex flex-row gap-5 items-end bg-primary text-primary-content\"><div class=\"w-fit\" hx-boost=\"true\"><a href=\"index\" class=\"text-4xl leaading-normal\" hx-target=\"#views\" hx-swap=\"innerHTML\">IoTA-Admin</a></div><div class=\"flex flex-row gap-5\"><a href=\"/configGroups\" hx-target=\"#views\" hx-swap=\"innerHTML\">Config Groups</a> <a href=\"/devices\" hx-target=\"#views\" hx-swap=\"innerHTML\">Devices</a></div><div class=\"ml-auto\"><button hx-delete=\"/auth/login\" hx-target-error=\"#alerts\">Logout (")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var2 string
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(ctx.Value("user").(string))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/templates/layouts/layout.templ`, Line: 44, Col: 42}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/templates/layouts/layout.templ`, Line: 45, Col: 42}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {
@@ -108,6 +108,77 @@ func Main(content templ.Component) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
+		if !templ_7745c5c3_IsBuffer {
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteTo(templ_7745c5c3_W)
+		}
+		return templ_7745c5c3_Err
+	})
+}
+
+func Login(content templ.Component) templ.Component {
+	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
+		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
+		if !templ_7745c5c3_IsBuffer {
+			templ_7745c5c3_Buffer = templ.GetBuffer()
+			defer templ.ReleaseBuffer(templ_7745c5c3_Buffer)
+		}
+		ctx = templ.InitializeContext(ctx)
+		templ_7745c5c3_Var4 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var4 == nil {
+			templ_7745c5c3_Var4 = templ.NopComponent
+		}
+		ctx = templ.ClearChildren(ctx)
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<!doctype html><html lang=\"en\" class=\"h-full\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><meta http-equiv=\"X-UA-Compatible\" content=\"ie=edge\"><title>IoTA-Admin</title><link rel=\"stylesheet\" href=\"/assets/css/style.css\"><link rel=\"icon\" type=\"image/x-icon\" href=\"/assets/images/favicon.ico\"><script src=\"/assets/js/htmx.min.js\"></script><script src=\"/assets/js/htmx.response-target.js\"></script><script src=\"https://unpkg.com/htmx.org@1.9.11/dist/ext/remove-me.js\"></script></head><body hx-boost=\"true\" hx-ext=\"response-targets\" hx-target-error=\"#alerts\" class=\"h-screen flex flex-row\"><div id=\"views\" class=\"p-5 flex flex-col gap-5 max-w-6xl m-auto\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = content.Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Var5 := templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
+			templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
+			if !templ_7745c5c3_IsBuffer {
+				templ_7745c5c3_Buffer = templ.GetBuffer()
+				defer templ.ReleaseBuffer(templ_7745c5c3_Buffer)
+			}
+			if !templ_7745c5c3_IsBuffer {
+				_, templ_7745c5c3_Err = io.Copy(templ_7745c5c3_W, templ_7745c5c3_Buffer)
+			}
+			return templ_7745c5c3_Err
+		})
+		templ_7745c5c3_Err = components.Alerts().Render(templ.WithChildren(ctx, templ_7745c5c3_Var5), templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</body></html>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		if !templ_7745c5c3_IsBuffer {
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteTo(templ_7745c5c3_W)
+		}
+		return templ_7745c5c3_Err
+	})
+}
+
+func html() templ.Component {
+	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
+		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
+		if !templ_7745c5c3_IsBuffer {
+			templ_7745c5c3_Buffer = templ.GetBuffer()
+			defer templ.ReleaseBuffer(templ_7745c5c3_Buffer)
+		}
+		ctx = templ.InitializeContext(ctx)
+		templ_7745c5c3_Var6 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var6 == nil {
+			templ_7745c5c3_Var6 = templ.NopComponent
+		}
+		ctx = templ.ClearChildren(ctx)
 		if !templ_7745c5c3_IsBuffer {
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteTo(templ_7745c5c3_W)
 		}

@@ -17,6 +17,7 @@ templ Main(content templ.Component) {
 			<link rel="icon" type="image/x-icon" href="/assets/images/favicon.ico"/>
 			<script src="/assets/js/htmx.min.js"></script>
 			<script src="/assets/js/htmx.response-target.js"></script>
+      <script src="https://unpkg.com/htmx.org@1.9.11/dist/ext/remove-me.js"></script>
 			@configgroup.AddConfigGroupFormTemplate()
 			@devices.AddDeviceFormTemplate()
 			@attributes.AttributeTemplate()
@@ -40,7 +41,7 @@ templ Main(content templ.Component) {
 					<a href="/devices" hx-target="#views" hx-swap="innerHTML">Devices</a>
 				</div>
 				<div class="ml-auto">
-					<button hx-delete="/auth/login" hx-target="body" hx-target-error="#alerts">
+					<button hx-delete="/auth/login" hx-target-error="#alerts">
 						Logout ({ ctx.Value("user").(string) })
 					</button>
 				</div>
@@ -53,4 +54,40 @@ templ Main(content templ.Component) {
 			}
 		</body>
 	</html>
+}
+
+templ Login(content templ.Component) {
+	<!DOCTYPE html>
+	<html lang="en" class="h-full">
+		<head>
+			<meta charset="UTF-8"/>
+			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+			<meta http-equiv="X-UA-Compatible" content="ie=edge"/>
+			<title>IoTA-Admin</title>
+			<link rel="stylesheet" href="/assets/css/style.css"/>
+			<link rel="icon" type="image/x-icon" href="/assets/images/favicon.ico"/>
+			<script src="/assets/js/htmx.min.js"></script>
+			<script src="/assets/js/htmx.response-target.js"></script>
+      <script src="https://unpkg.com/htmx.org@1.9.11/dist/ext/remove-me.js"></script>
+		</head>
+		<body
+			hx-boost="true"
+			hx-ext="response-targets"
+			hx-target-error="#alerts"
+      class="h-screen flex flex-row"
+		>
+			<div id="views" class="p-5 flex flex-col gap-5 max-w-6xl m-auto">
+				// Content
+				@content
+			</div>
+			@components.Alerts() {
+			}
+		</body>
+	</html>
+}
+
+templ html(){
+
+
+
 }

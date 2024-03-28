@@ -6,9 +6,7 @@ import (
 	"github.com/google/uuid"
 )
 
-var (
-	Sessions = map[SessionToken]*Session{}
-)
+var Sessions = map[SessionToken]*Session{}
 
 type InMemory struct{}
 
@@ -32,9 +30,8 @@ func (im InMemory) Exists(st SessionToken) bool {
 	return exists
 }
 
-func (im InMemory) Remove(st SessionToken) error {
+func (im InMemory) Remove(st SessionToken) {
 	delete(Sessions, st)
-	return nil
 }
 
 func NewInMemory() *InMemory {
