@@ -3,6 +3,8 @@ FROM --platform=linux/amd64 node AS build-css-stage
 
 WORKDIR /app
 COPY . .
+
+RUN npm install
 RUN npx tailwindcss -i ./input.css -o ./assets/css/style.css --minify
 
 # Build the application from source
