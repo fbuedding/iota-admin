@@ -38,14 +38,11 @@ services:
         - "IOTA_MQTT_HOST=mosquitto"
         - "IOTA_MQTT_PORT=1883"
   mongodb:
-    image: mongo:4.2
+    image: mongo
     hostname: mongodb
     ports:
         - "27017:27017"
     command: --bind_ip_all 
-    volumes:
-        - ./data:/data
-
   orion:
     image: fiware/orion
     hostname: orion
