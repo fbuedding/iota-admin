@@ -3,7 +3,7 @@ package iotagentsdktest_test
 import (
 	"testing"
 
-	i "github.com/fbuedding/iota-admin/pkg/iot-agent-sdk"
+	i "github.com/fbuedding/fiware-iot-agent-sdk"
 )
 
 func TestReadDevice(t *testing.T) {
@@ -15,6 +15,7 @@ func TestReadDevice(t *testing.T) {
 		t.Fail()
 	}
 }
+
 func TestListDevice(t *testing.T) {
 	respD, err := iota.ListDevices(fs)
 	if err != nil {
@@ -45,7 +46,6 @@ func TestUpdateDevice(t *testing.T) {
 	dtmp1 := i.Device{Id: deviceId}
 
 	err = iota.UpdateDevice(fs, dtmp1)
-
 	if err != nil {
 		t.Log("Device shouldn't updatet empty body")
 		t.Error(err)
@@ -68,14 +68,14 @@ func TestUpsertDevice(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	iota.DeleteDevice(fs, d.Id)
+	_ = iota.DeleteDevice(fs, d.Id)
 }
 
 func TestCreateDeviceWSE(t *testing.T) {
-  dtemp := d
+	dtemp := d
 	err := iota.CreateDeviceWSE(fs, &dtemp)
 	if err != nil {
-    t.Error(err)
+		t.Error(err)
 	}
-  t.Log(dtemp)
+	t.Log(dtemp)
 }

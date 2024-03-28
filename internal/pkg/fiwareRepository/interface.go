@@ -2,7 +2,6 @@ package fiwareRepository
 
 import (
 	"database/sql"
-	"embed"
 	_ "embed"
 	"errors"
 	"fmt"
@@ -90,37 +89,12 @@ func (r RepoType) String() string {
 }
 
 var (
-	//go:embed migrations/*.sql
-	migrations_files embed.FS
-	migrations       []string
-)
-
-var (
 	ErrNotFound      = errors.New("not found")
 	ErrCouldNotQuery = errors.New("couldn't query")
 	ErrCouldNotExec  = errors.New("couldn't Exec")
 )
 
 func init() {
-	migrations = make([]string, 0)
-	files, err := migrations_files.ReadDir("migrations")
-	if err != nil {
-		log.Fatal().Err(err).Msg("Could not read files")
-	}
-	for _, f := range files {
-		log.Debug().Msg(f.Name())
-
-		data, err := migrations_files.ReadFile("migrations/" + f.Name())
-		if err != nil {
-			fmt.Println(err)
-			log.Fatal().Str("file", f.Name()).Msg("Could not open file")
-		}
-		migrations = append(migrations, string(data))
-	}
-}
-
-func GetMigrations() []string {
-	return migrations
 }
 
 func NewFiwareRepo(i RepoType) (FiwareRepo, error) {
@@ -142,11 +116,13 @@ func newSqliteRepo() (*SqliteRepo, error) {
 	if err != nil {
 		return nil, fmt.Errorf("Could not open Sqlite db: %w", err)
 	}
-	for _, v := range migrations {
-		_, err := db.Exec(v)
-		if err != nil {
-			return nil, err
-		}
+
+	repo := &SqliteRepo{db: db, genId: uuid.NewString}
+	err = repo.initRepo()
+	if err != nil {
+		return nil, err
 	}
-	return &SqliteRepo{db: db, genId: uuid.NewString}, nil
+
+	return repo, nil
+
 }

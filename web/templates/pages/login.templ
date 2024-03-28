@@ -1,0 +1,35 @@
+package pages
+
+templ LoginForm() {
+	<label class="form-control">
+		<div class="label">
+			<span class="label-text font-bold">Login:</span>
+		</div>
+		<div class="flex flex-row justify-center">
+			<form hx-post="auth/login" hx-target="closest label" hx-indicator="#loading" class="join">
+				<input
+					type="text"
+					name="username"
+					placeholder="username"
+					autocomplete="username"
+          id="username"
+					required
+					class="input input-bordered w-full max-w-xs join-item"
+				/>
+				<input
+					type="password"
+					name="password"
+					placeholder="password"
+					autocomplete="current-password"
+          id="current-password"
+					required
+					class="input input-bordered w-full max-w-xs join-item"
+				/>
+				<button type="submit" class="btn btn-primary join-item">
+					Login
+					<span class="loading loading-spinner loading-lg htmx-indicator" id="loading"></span>
+				</button>
+			</form>
+		</div>
+	</label>
+}

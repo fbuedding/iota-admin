@@ -17,15 +17,6 @@ func TestMain(m *testing.M) {
 	os.Exit(code)
 }
 
-func TestInitIntegrations(t *testing.T) {
-	t.Log("TestMigrations")
-	is := r.GetMigrations()
-	if len(is) == 0 {
-		t.Log("No migrations found")
-		t.Fail()
-	}
-}
-
 func TestCreateSqlite(t *testing.T) {
 	_, err := r.NewFiwareRepo(r.Sqlite)
 	if err != nil {

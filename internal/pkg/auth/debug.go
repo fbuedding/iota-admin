@@ -2,20 +2,23 @@ package auth
 
 import "github.com/rs/zerolog/log"
 
-type DebugAuth struct {
-}
+type DebugAuth struct{}
 
 func NewDebugAuth() *DebugAuth {
 	return &DebugAuth{}
 }
 
-func (d DebugAuth) Login(u Username, p Password) (*User, error) {
+func (d DebugAuth) Authenticate(u Username, p Password) (*User, error) {
 	if u == "" {
 		log.Debug().Msg("Username not set")
 	}
 	if p == "" {
 		log.Debug().Msg("Password not set")
 	}
-	user := &User{u, UserId("uuid:1234")}
+	user := &User{
+		Username: u,
+		ID:       "debug",
+		Role:     "Admin",
+	}
 	return user, nil
 }

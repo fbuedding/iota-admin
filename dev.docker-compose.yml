@@ -2,14 +2,16 @@ version: "3"
 services:
   iota-admin:
     environment:
-      - APP_ENV=staging
+      - APP_ENV=development
       - COOKIE_SECRET=d60285f2976fa1f7e5fb654ea4c774d6fbb7482f2fe116bf38c53307e6587e51
       - LOG_LEVEL=DEBUG
       - BYPASS_AUTH=false
       - TZ:"Europe/Berlin"
       - USERNAME=fbuedding
       - PASSWORD=test
-    image: fbuedding/iota-admin
+    build:
+      dockerfile: dev.Dockerfile
+      context: ./
     volumes:
       - ./:/app
     ports:
@@ -37,6 +39,22 @@ services:
         - "IOTA_PROVIDER_URL=http://iot-agent:4061"
         - "IOTA_MQTT_HOST=mosquitto"
         - "IOTA_MQTT_PORT=1883"
+  iota-weatherstations:
+    image: scilabsbo/iotagent-http-query:latest
+    depends_on:
+      - mongodb
+    environment:
+      - TZ=Europe/Berlin
+      - HTTP_SOUTH_HOST=0.0.0.0
+      - IOTA_CB_HOST=orion
+      - IOTA_CB_PORT=1026
+      - IOTA_NORTH_PORT=4041
+      - IOTA_REGISTRY_TYPE=mongodb
+      - IOTA_MONGO_HOST=mongodb
+      - IOTA_MONGO_PORT=27017
+      - IOTA_MONGO_DB=iotagent-wunderground
+      - IOTA_PROVIDER_URL=http://iota-weatherstations:4041
+      - IOTA_LOG_LEVEL=DEBUG
   mongodb:
     image: mongo:4.2
     hostname: mongodb

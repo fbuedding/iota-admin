@@ -2,6 +2,7 @@ package fiwareRepository
 
 import (
 	"database/sql"
+	"embed"
 	"fmt"
 	"sync"
 	"time"
@@ -12,10 +13,44 @@ import (
 
 const file string = "db/sqlite/fiware.db"
 
+var (
+	//go:embed migrations/*.sql
+	migrations_files embed.FS
+)
+
 type SqliteRepo struct {
-	mu    sync.Mutex
-	db    *sql.DB
-	genId func() string
+	mu         sync.Mutex
+	db         *sql.DB
+	genId      func() string
+	migrations []string
+}
+
+func (sr *SqliteRepo) initRepo() error {
+	log.Debug().Msg("Starting sqlite migrations")
+	sr.migrations = make([]string, 0)
+	files, err := migrations_files.ReadDir("migrations")
+	if err != nil {
+		log.Fatal().Err(err).Msg("Could not read files")
+	}
+	for _, f := range files {
+		log.Debug().Str("name", f.Name()).Msg("Loading migrations")
+
+		data, err := migrations_files.ReadFile("migrations/" + f.Name())
+		if err != nil {
+			fmt.Println(err)
+			log.Fatal().Str("file", f.Name()).Msg("Could not open file")
+		}
+		sr.migrations = append(sr.migrations, string(data))
+	}
+	log.Debug().Msg("Running migrations")
+	for _, v := range sr.migrations {
+		_, err := sr.db.Exec(v)
+		if err != nil {
+			return err
+		}
+	}
+	log.Debug().Msg("Finished sqlite migrations")
+	return nil
 }
 
 func (sr *SqliteRepo) SetIdGen(f func() string) {
@@ -69,7 +104,13 @@ func (sr *SqliteRepo) ListFiwareServices() (FiwareServiceRows, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
+	defer func() {
+		err := rows.Close()
+		if err != nil {
+			log.Err(err).Msg("SQLite rows could not be closed")
+			return
+		}
+	}()
 	services := FiwareServiceRows{}
 	for rows.Next() {
 		row := FiwareServiceRow{}
@@ -138,7 +179,13 @@ func (sr *SqliteRepo) FindFiwareServiceByName(name string) (FiwareServiceRows, e
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
+	defer func() {
+		err := rows.Close()
+		if err != nil {
+			log.Err(err).Msg("SQLite rows could not be closed")
+			return
+		}
+	}()
 	services := FiwareServiceRows{}
 	for rows.Next() {
 		row := FiwareServiceRow{}
@@ -205,7 +252,13 @@ func (sr *SqliteRepo) ListIotas() (IotaRows, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
+	defer func() {
+		err := rows.Close()
+		if err != nil {
+			log.Err(err).Msg("SQLite rows could not be closed")
+			return
+		}
+	}()
 	iotas := IotaRows{}
 	for rows.Next() {
 		row := IotaRow{}

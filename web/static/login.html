@@ -16,11 +16,9 @@
       <a href="index" class="text-4xl leaading-normal">IoTA-Admin</a>
     </div>
     <div class="flex flex-row gap-5">
-      <a>Service Groups</a>
-      <a>Devices</a>
     </div>
   </header>
-  <div class="p-5">
+  <div class="p-5 flex flex-row justify-center">
     <form hx-post="auth/login" hx-target="#response" class="join">
       <input type="text" name="username" placeholder="username" required class="input input-bordered w-full max-w-xs join-item"/>
       <input type="password" name="password" placeholder="password" required class="input input-bordered w-full max-w-xs join-item"/>

@@ -7,11 +7,15 @@ import (
 	"time"
 
 	"github.com/fbuedding/iota-admin/internal/pkg/auth"
+	bruteforceprotection "github.com/fbuedding/iota-admin/internal/pkg/bruteForceProtection"
 	fr "github.com/fbuedding/iota-admin/internal/pkg/fiwareRepository"
 	"github.com/fbuedding/iota-admin/internal/pkg/sessionStore"
 	"github.com/fbuedding/iota-admin/routes"
+	"github.com/fbuedding/iota-admin/web/templates"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/go-chi/httprate"
+
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 )
@@ -23,7 +27,7 @@ type Server struct {
 	R             chi.Router
 }
 
-func New(a auth.Authenticator, st sessionStore.SessionStore, repo fr.FiwareRepo, port int) *Server {
+func New(a auth.Authenticator, st sessionStore.SessionStore, bfp bruteforceprotection.BrutForceProtection, repo fr.FiwareRepo, port int) *Server {
 	var s Server
 
 	s.Authenticator = a
@@ -31,14 +35,28 @@ func New(a auth.Authenticator, st sessionStore.SessionStore, repo fr.FiwareRepo,
 	s.Port = port
 	r := chi.NewRouter()
 	r.Use(middleware.RequestID)
-	// r.Use(middleware.Logger)
-	r.Use(LoggerMiddleware(&log.Logger))
 	r.Use(middleware.Recoverer)
+	r.Use(LoggerMiddleware(&log.Logger))
 
 	// Public Routes
 	r.Group(func(r chi.Router) {
+		r.Use(httprate.Limit(
+			10,             // requests
+			10*time.Second, // per duration
+			httprate.WithKeyFuncs(httprate.KeyByIP, httprate.KeyByEndpoint),
+			httprate.WithLimitHandler(
+				func(w http.ResponseWriter, r *http.Request) {
+					if r.Header.Get("HX-Request") == "true" {
+						templates.HandleError(r.Context(), w, fmt.Errorf("To many requests!"), http.StatusTooManyRequests)
+						return
+					}
+					http.Error(w, "To many requests!", http.StatusTooManyRequests)
+				},
+			),
+		),
+		)
 		r.Mount("/login", routes.Login())
-		r.Mount("/auth", routes.Auth(s.Authenticator, s.SessionStore))
+		r.Mount("/auth", routes.Auth(s.Authenticator, s.SessionStore, bfp))
 		r.Mount("/assets", routes.StaticAssets())
 	})
 
@@ -86,6 +104,7 @@ func LoggerMiddleware(logger *zerolog.Logger) func(next http.Handler) http.Handl
 						Timestamp().
 						Interface("recover_info", rec).
 						Bytes("debug_stack", debug.Stack()).
+						Ctx(r.Context()).
 						Msg("log system error")
 					http.Error(ww, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 				}
@@ -94,6 +113,7 @@ func LoggerMiddleware(logger *zerolog.Logger) func(next http.Handler) http.Handl
 				log.Info().
 					Str("type", "access").
 					Timestamp().
+					Str("request_id", middleware.GetReqID(r.Context())).
 					Fields(map[string]interface{}{
 						"remote_ip":  r.RemoteAddr,
 						"url":        r.URL.Path,

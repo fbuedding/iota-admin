@@ -4,7 +4,7 @@ import "github.com/fbuedding/fiware-iot-agent-sdk"
 import "fmt"
 import "github.com/fbuedding/iota-admin/web/templates/components"
 
-templ StaticAttributes(sas []iotagentsdk.StaticAttribute){
+templ StaticAttributes(sas []iotagentsdk.StaticAttribute) {
 	for i, sa := range(sas) {
 		<div class="overflow-x-auto">
 			<table class="table">

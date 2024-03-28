@@ -21,5 +21,9 @@ func Prepare(r *http.Request, component templ.Component) templ.Component {
 func HandleError(ctx context.Context, w http.ResponseWriter, err error, status int) {
 	w.Header().Set("hx-Reswap", "beforeend")
 	w.WriteHeader(status)
-	components.Error(err).Render(ctx, w)
+	err1 := components.Error(err).Render(ctx, w)
+	if err1 != nil {
+		log.Err(err).Msg("Could not redner error alert")
+		return
+	}
 }
