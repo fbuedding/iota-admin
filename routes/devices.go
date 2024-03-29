@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"slices"
+	"sync"
 
 	i "github.com/fbuedding/fiware-iot-agent-sdk"
 	"github.com/fbuedding/iota-admin/internal/globals"
@@ -48,31 +49,17 @@ func Devices(repo fr.FiwareRepo) chi.Router {
 		fss := services.ToFiwareServices()
 		log.Debug().Any("Fiware services", fss).Send()
 		iotAgentToServiceToDevices := devices.IoTAToFiwareServiceToDevicesWithIoTAId{}
+		mux := &sync.RWMutex{}
+		wg := sync.WaitGroup{}
+		// For every IoT-Agent
 		for _, iotaRow := range iotas {
-			iota := iotaRow.ToIoTA()
-			if _, err := iota.Healthcheck(); err != nil {
-				continue
-			}
-			iotAgentToServiceToDevices[iotaRow.Alias] = devices.FiwareServiceToDevicesWithIoTAId{}
-			for _, fiwareService := range fss {
-				servicePaths, err := iota.GetAllServicePathsForService(fiwareService.Service)
-				if err != nil {
-					log.Err(err).Msg("Could not get Service-Paths for service")
-				}
-				for _, servicePath := range servicePaths {
-					fiwareService.ServicePath = servicePath
-					ds, err := iota.ListDevices(*fiwareService)
-					if err != nil {
-						log.Err(err).Msg("Could not get fiware services")
-						http.Error(w, "Could not get fiware services", http.StatusInternalServerError)
-						return
-					}
-					if ds.Count != 0 {
-						iotAgentToServiceToDevices[iotaRow.Alias][fiwareService.Service] = devices.DevicesWithIoTAId{IoTAId: iotaRow.Id, Devices: ds.Devices}
-					}
-				}
-			}
+			wg.Add(1)
+			go func(iotaRow fr.IotaRow) {
+				defer wg.Done()
+				listDevicesWorker(iotaRow, iotAgentToServiceToDevices, fss, mux)
+			}(iotaRow)
 		}
+		wg.Wait()
 
 		log.Debug().Any("Devices", iotAgentToServiceToDevices).Send()
 
@@ -217,4 +204,32 @@ func AddDeviceForm(repo fr.FiwareRepo) chi.Router {
 		templates.Prepare(r, devices.AddDeviceForm(string(encodedBytes), string(encodedIotAgents))).Render(r.Context(), w)
 	})
 	return r
+}
+
+func listDevicesWorker(iotaRow fr.IotaRow, iotAgentToServiceToDevices devices.IoTAToFiwareServiceToDevicesWithIoTAId, fss []*i.FiwareService, mux *sync.RWMutex) {
+	iota := iotaRow.ToIoTA()
+	if _, err := iota.Healthcheck(); err != nil {
+		return
+	}
+	for _, fiwareService := range fss {
+		servicePaths, err := iota.GetAllServicePathsForService(fiwareService.Service)
+		if err != nil {
+			log.Err(err).Msg("Could not get Service-Paths for service")
+			return
+		}
+		for _, servicePath := range servicePaths {
+			fiwareService.ServicePath = servicePath
+			ds, err := iota.ListDevices(*fiwareService)
+			if err != nil {
+				log.Err(err).Msg("Could not get fiware services")
+				return
+			}
+			if ds.Count != 0 {
+				mux.Lock()
+				iotAgentToServiceToDevices[iotaRow.Alias] = devices.FiwareServiceToDevicesWithIoTAId{}
+				iotAgentToServiceToDevices[iotaRow.Alias][fiwareService.Service] = devices.DevicesWithIoTAId{IoTAId: iotaRow.Id, Devices: ds.Devices}
+				mux.Unlock()
+			}
+		}
+	}
 }

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"slices"
+	"sync"
 
 	i "github.com/fbuedding/fiware-iot-agent-sdk"
 	"github.com/fbuedding/iota-admin/internal/globals"
@@ -47,25 +48,21 @@ func ConfigGroups(repo fr.FiwareRepo) chi.Router {
 			templates.HandleError(r.Context(), w, err, http.StatusInternalServerError)
 		}
 		fss := services.ToFiwareServices()
+
 		iotAgentToServiceToConfigGroups := configgroup.IoTAToFiwareServiceToConfigGroupsWithIoTAId{}
-		for _, iota := range iotas {
-			if _, err := iota.ToIoTA().Healthcheck(); err != nil {
-				continue
-			}
-			iotAgentToServiceToConfigGroups[iota.Alias] = configgroup.FiwareServiceToConfigGroupsWithIoTAId{}
-			for _, v := range fss {
-				sgs, err := iota.ToIoTA().ListConfigGroups(*v)
-				if err != nil {
-					log.Err(err).Msg("Could not get fiware services")
-				}
-				if sgs.Count != 0 {
-					iotAgentToServiceToConfigGroups[iota.Alias][v.Service] = configgroup.ConfigGroupsWithIoTAId{
-						IoTAId:       iota.Id,
-						ConfigGroups: sgs.Services,
-					}
-				}
-			}
+
+		mux := &sync.RWMutex{}
+		wg := sync.WaitGroup{}
+		// For every IoT-Agent
+		for i, iota := range iotas {
+			log.Trace().Int("Index", i).Any("IoTA", iota).Msg("Iteration")
+			wg.Add(1)
+			go func(iota fr.IotaRow) {
+				defer wg.Done()
+				loadConfigGroupsWorker(iota, fss, iotAgentToServiceToConfigGroups, mux)
+			}(iota)
 		}
+		wg.Wait()
 
 		templates.Prepare(r, configgroup.IoTAgents(iotAgentToServiceToConfigGroups)).Render(r.Context(), w)
 	})
@@ -198,4 +195,30 @@ func AddConfigGroupForm(repo fr.FiwareRepo) chi.Router {
 		templates.Prepare(r, configgroup.AddConfigGroupForm(string(encodedBytes), string(encodedIotAgents))).Render(r.Context(), w)
 	})
 	return r
+}
+func loadConfigGroupsWorker(iota fr.IotaRow, fss []*i.FiwareService, iotAgentToServiceToConfigGroups configgroup.IoTAToFiwareServiceToConfigGroupsWithIoTAId, mux *sync.RWMutex) {
+	log.Trace().Any("IoTA", iota).Msg("Starting request to iota")
+	if _, err := iota.ToIoTA().Healthcheck(); err != nil {
+		log.Trace().Msg("Return since healthcheck has error")
+		return
+	}
+	for _, v := range fss {
+		cgs, err := iota.ToIoTA().ListConfigGroups(*v)
+		if err != nil {
+			log.Err(err).Msg("Could not get config groups")
+			return
+		}
+		if cgs.Count != 0 {
+			log.Trace().Msg("Locking mutex")
+			mux.Lock()
+			iotAgentToServiceToConfigGroups[iota.Alias] = configgroup.FiwareServiceToConfigGroupsWithIoTAId{}
+			iotAgentToServiceToConfigGroups[iota.Alias][v.Service] = configgroup.ConfigGroupsWithIoTAId{
+				IoTAId:       iota.Id,
+				ConfigGroups: cgs.Services,
+			}
+			mux.Unlock()
+			log.Trace().Msg("Mutex unlocked")
+		}
+	}
+	log.Trace().Msg("Finished")
 }

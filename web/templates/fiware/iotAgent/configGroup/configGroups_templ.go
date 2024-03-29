@@ -437,6 +437,10 @@ func IoTAgents(ifscgs IoTAToFiwareServiceToConfigGroupsWithIoTAId) templ.Compone
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" <div class=\"divider last-of-type:hidden\"></div>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div><div><a href=\"/addConfigGroupForm\" hx-target=\"#views\" hx-swap=\"innerHTML\" class=\"btn\">Add a Config Group</a></div>")
 		if templ_7745c5c3_Err != nil {
