@@ -202,7 +202,8 @@ func loadConfigGroupsWorker(iota fr.IotaRow, fss []*i.FiwareService, iotAgentToS
 		log.Trace().Msg("Return since healthcheck has error")
 		return
 	}
-	for _, v := range fss {
+	for i, v := range fss {
+		log.Trace().Any("Fiware Service", v).Int("Iteration", i).Msg("Requesting for service")
 		cgs, err := iota.ToIoTA().ListConfigGroups(*v)
 		if err != nil {
 			log.Err(err).Msg("Could not get config groups")
@@ -211,7 +212,9 @@ func loadConfigGroupsWorker(iota fr.IotaRow, fss []*i.FiwareService, iotAgentToS
 		if cgs.Count != 0 {
 			log.Trace().Msg("Locking mutex")
 			mux.Lock()
-			iotAgentToServiceToConfigGroups[iota.Alias] = configgroup.FiwareServiceToConfigGroupsWithIoTAId{}
+			if iotAgentToServiceToConfigGroups[iota.Alias] == nil {
+				iotAgentToServiceToConfigGroups[iota.Alias] = configgroup.FiwareServiceToConfigGroupsWithIoTAId{}
+			}
 			iotAgentToServiceToConfigGroups[iota.Alias][v.Service] = configgroup.ConfigGroupsWithIoTAId{
 				IoTAId:       iota.Id,
 				ConfigGroups: cgs.Services,

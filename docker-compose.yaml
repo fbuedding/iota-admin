@@ -9,7 +9,7 @@ services:
       - TZ:"Europe/Berlin"
       - USERNAME=fbuedding
       - PASSWORD=test
-    image: fbuedding/iota-admin
+    image: fbuedding/iota-admin:staging
     volumes:
       - ./:/app
     ports:

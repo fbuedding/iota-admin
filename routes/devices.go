@@ -226,7 +226,9 @@ func listDevicesWorker(iotaRow fr.IotaRow, iotAgentToServiceToDevices devices.Io
 			}
 			if ds.Count != 0 {
 				mux.Lock()
-				iotAgentToServiceToDevices[iotaRow.Alias] = devices.FiwareServiceToDevicesWithIoTAId{}
+				if iotAgentToServiceToDevices[iotaRow.Alias] == nil {
+					iotAgentToServiceToDevices[iotaRow.Alias] = devices.FiwareServiceToDevicesWithIoTAId{}
+				}
 				iotAgentToServiceToDevices[iotaRow.Alias][fiwareService.Service] = devices.DevicesWithIoTAId{IoTAId: iotaRow.Id, Devices: ds.Devices}
 				mux.Unlock()
 			}
