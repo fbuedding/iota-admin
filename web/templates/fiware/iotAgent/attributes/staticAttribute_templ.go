@@ -67,16 +67,29 @@ func StaticAttributes(sas []iotagentsdk.StaticAttribute) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</td></tr><tr><td>Object ID</td><td>")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</td></tr><tr><td>Value</td><td>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var5 string
-			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(sa.ObjectID)
+			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%v", sa.Value))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/templates/fiware/iotAgent/attributes/staticAttribute.templ`, Line: 29, Col: 23}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/templates/fiware/iotAgent/attributes/staticAttribute.templ`, Line: 29, Col: 39}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</td></tr><tr><td>Object ID</td><td>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var6 string
+			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(sa.ObjectID)
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/templates/fiware/iotAgent/attributes/staticAttribute.templ`, Line: 33, Col: 23}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -108,9 +121,9 @@ func StaticAttributesInput() templ.Component {
 			defer templ.ReleaseBuffer(templ_7745c5c3_Buffer)
 		}
 		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var6 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var6 == nil {
-			templ_7745c5c3_Var6 = templ.NopComponent
+		templ_7745c5c3_Var7 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var7 == nil {
+			templ_7745c5c3_Var7 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<static-attributes-input></static-attributes-input>")
@@ -132,12 +145,12 @@ func StaticAttributeTemplate() templ.Component {
 			defer templ.ReleaseBuffer(templ_7745c5c3_Buffer)
 		}
 		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var7 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var7 == nil {
-			templ_7745c5c3_Var7 = templ.NopComponent
+		templ_7745c5c3_Var8 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var8 == nil {
+			templ_7745c5c3_Var8 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<template id=\"static-attributes-container-template\"><div class=\"pl-5 pt-5\"><div>Static Attributes:</div><div id=\"static-attributes\" class=\"\"></div><div class=\"pt-5\"><input id=\"add-btn\" type=\"button\" value=\"Add\" class=\"btn\"> <input id=\"rm-btn\" type=\"button\" value=\"Remove\" class=\"btn\" disabled></div></div></template><template id=\"static-attribute-template\"><div class=\"collapse collapse-arrow mt-5 border border-base-300\"><input type=\"checkbox\" checked><div id=\"static-attribute-title\" class=\"collapse-title text-xl font-medium\">%index</div><div class=\"collapse-content\"><label class=\"form-control\"><div class=\"label\"><span class=\"label-text\">Object ID</span></div><input name=\"static_attributes[%index].object_id\" type=\"text\" placeholder=\"Type here\" class=\"input input-bordered\"></label> <label class=\"form-control\"><div class=\"label\"><span class=\"label-text\">Name</span></div><input name=\"static_attributes[%index].name\" type=\"text\" placeholder=\"Type here\" class=\"input input-bordered\" required></label> <label class=\"form-control\"><div class=\"label\"><span class=\"label-text\">Type</span></div><input name=\"static_attributes[%index].type\" type=\"text\" placeholder=\"Type here\" class=\"input input-bordered\" required></label>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<template id=\"static-attributes-container-template\"><div class=\"pl-5 pt-5\"><div>Static Attributes:</div><div id=\"static-attributes\" class=\"\"></div><div class=\"pt-5\"><input id=\"add-btn\" type=\"button\" value=\"Add\" class=\"btn\"> <input id=\"rm-btn\" type=\"button\" value=\"Remove\" class=\"btn\" disabled></div></div></template><template id=\"static-attribute-template\"><div class=\"collapse collapse-arrow mt-5 border border-base-300\"><input type=\"checkbox\" checked><div id=\"static-attribute-title\" class=\"collapse-title text-xl font-medium\">%index</div><div class=\"collapse-content\"><label class=\"form-control\"><div class=\"label\"><span class=\"label-text\">Object ID</span></div><input name=\"static_attributes[%index].object_id\" type=\"text\" placeholder=\"Type here\" class=\"input input-bordered\"></label> <label class=\"form-control\"><div class=\"label\"><span class=\"label-text\">Name</span></div><input name=\"static_attributes[%index].name\" type=\"text\" placeholder=\"Type here\" class=\"input input-bordered\" required></label> <label class=\"form-control\"><div class=\"label\"><span class=\"label-text\">Type</span></div><input name=\"static_attributes[%index].type\" type=\"text\" placeholder=\"Type here\" class=\"input input-bordered\" required></label> <label class=\"form-control\"><div class=\"label\"><span class=\"label-text\">Value</span></div><input name=\"static_attributes[%index].value\" type=\"text\" placeholder=\"Type here\" class=\"input input-bordered\" required></label>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

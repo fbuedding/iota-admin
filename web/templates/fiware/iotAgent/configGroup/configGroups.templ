@@ -16,121 +16,127 @@ type FiwareServiceToConfigGroupsWithIoTAId map[string]ConfigGroupsWithIoTAId
 type IoTAToFiwareServiceToConfigGroupsWithIoTAId map[string]FiwareServiceToConfigGroupsWithIoTAId
 
 templ ConfigGroup(sg i.ConfigGroup, iotAgentId string) {
-	<div class="container flex-col gap-5">
-		<div class="overflow-x-auto border rounded border-base-300">
-			<table class="table">
-				<tbody>
-					<tr>
-						<td>Api-Key</td>
-						<td>{ string(sg.Apikey) }</td>
-					</tr>
-					<tr>
-						<td>Service Path</td>
-						<td>{ sg.ServicePath }</td>
-					</tr>
-					<tr>
-						<td>Resource</td>
-						<td>{ string(sg.Resource) } </td>
-					</tr>
-					<tr>
-						<td>Timestamp</td>
-						<td>
-							if sg.Timestamp != nil {
-								{ fmt.Sprintf("%t", *sg.Timestamp) }
-							} else {
-								false  
-							}
-						</td>
-					</tr>
-					<tr>
-						<td>Entity Type</td>
-						<td>{ sg.EntityType } </td>
-					</tr>
-					<tr>
-						<td>Trust Token</td>
-						<td>{ sg.Trust } </td>
-					</tr>
-					<tr>
-						<td>Context Broker</td>
-						<td>{ sg.CbHost } </td>
-					</tr>
-					<tr>
-						<td>Attributes</td>
-						<td>
-							@components.WrapArrIfNotEmpty(attributes.Attributes, sg.Attributes)
-						</td>
-					</tr>
-					<tr>
-						<td>Lazy Attributes</td>
-						<td>
-							@components.WrapArrIfNotEmpty(attributes.LazyAttributes, sg.Lazy)
-						</td>
-					</tr>
-					<tr>
-						<td>Commands</td>
-						<td>
-							@components.WrapArrIfNotEmpty(attributes.Commands, sg.Commands)
-						</td>
-					</tr>
-					<tr>
-						<td>Static Attributes</td>
-						<td>
-							@components.WrapArrIfNotEmpty(attributes.StaticAttributes, sg.StaticAttributes)
-						</td>
-					</tr>
-					<tr>
-						<td>Internal Attributes</td>
-						<td>
-							@components.WrapArrIfNotEmpty(attributes.InternalAttributes, sg.InternalAttributes)
-						</td>
-					</tr>
-					<tr>
-						<td>Explicit Attributes</td>
-						<td>{ sg.ExplicitAttrs } </td>
-					</tr>
-					<tr>
-						<td>Entitiy Name Expression</td>
-						<td>{ sg.EntityNameExp } </td>
-					</tr>
-					<tr>
-						<td>NGSI Version</td>
-						<td>{ sg.NgsiVersion } </td>
-					</tr>
-					<tr>
-						<td>Default entity name conjunction</td>
-						<td>{ sg.DefaultEntityNameConjunction } </td>
-					</tr>
-					<tr>
-						<td>Autoprovision</td>
-						<td>{ fmt.Sprint(sg.Autoprovision) } </td>
-					</tr>
-					<tr>
-						<td>Payload type</td>
-						<td>{ sg.PayloadType } </td>
-					</tr>
-					<tr>
-						<td>Transport</td>
-						<td>{ sg.Transport } </td>
-					</tr>
-					<tr>
-						<td>Endpoint</td>
-						<td>{ sg.Endpoint } </td>
-					</tr>
-					<tr>
-						<td>
-							<button
-								type="button"
-								class="btn btn-xs btn-error"
-								hx-target="closest .container"
-								hx-swap="outerHTML"
-								hx-delete={ fmt.Sprintf("/configGroups?apiKey=%v&resource=%v&service=%v&servicePath=%v&iotAgentId=%s", sg.Apikey, sg.Resource, sg.Service, sg.ServicePath, iotAgentId) }
-								hx-confirm={ fmt.Sprintf("Do you want to delete the Config Group: \nApi Key: %v \nResource: %v\n In service: \nService: %v\nservicePath: %v", sg.Apikey, sg.Resource, sg.Service, sg.ServicePath) }
-							>Delete</button>
-						</td>
-						<td></td>
-					</tr>
-				</tbody>
-			</table>
+	<div class="collapse collapse-plus">
+		<input type="checkbox"/>
+		<div class="collapse-title font-medium">
+			API-Key: { string(sg.Apikey) }
+		</div>
+		<div class="container flex-col gap-5 collapse-content">
+			<div class="overflow-x-auto border rounded border-base-300">
+				<table class="table">
+					<tbody>
+						<tr>
+							<td>Api-Key</td>
+							<td>{ string(sg.Apikey) }</td>
+						</tr>
+						<tr>
+							<td>Service Path</td>
+							<td>{ sg.ServicePath }</td>
+						</tr>
+						<tr>
+							<td>Resource</td>
+							<td>{ string(sg.Resource) } </td>
+						</tr>
+						<tr>
+							<td>Timestamp</td>
+							<td>
+								if sg.Timestamp != nil {
+									{ fmt.Sprintf("%t", *sg.Timestamp) }
+								} else {
+									false  
+								}
+							</td>
+						</tr>
+						<tr>
+							<td>Entity Type</td>
+							<td>{ sg.EntityType } </td>
+						</tr>
+						<tr>
+							<td>Trust Token</td>
+							<td>{ sg.Trust } </td>
+						</tr>
+						<tr>
+							<td>Context Broker</td>
+							<td>{ sg.CbHost } </td>
+						</tr>
+						<tr>
+							<td>Attributes</td>
+							<td>
+								@components.WrapArrIfNotEmpty(attributes.Attributes, sg.Attributes)
+							</td>
+						</tr>
+						<tr>
+							<td>Lazy Attributes</td>
+							<td>
+								@components.WrapArrIfNotEmpty(attributes.LazyAttributes, sg.Lazy)
+							</td>
+						</tr>
+						<tr>
+							<td>Commands</td>
+							<td>
+								@components.WrapArrIfNotEmpty(attributes.Commands, sg.Commands)
+							</td>
+						</tr>
+						<tr>
+							<td>Static Attributes</td>
+							<td>
+								@components.WrapArrIfNotEmpty(attributes.StaticAttributes, sg.StaticAttributes)
+							</td>
+						</tr>
+						<tr>
+							<td>Internal Attributes</td>
+							<td>
+								@components.WrapArrIfNotEmpty(attributes.InternalAttributes, sg.InternalAttributes)
+							</td>
+						</tr>
+						<tr>
+							<td>Explicit Attributes</td>
+							<td>{ sg.ExplicitAttrs } </td>
+						</tr>
+						<tr>
+							<td>Entitiy Name Expression</td>
+							<td>{ sg.EntityNameExp } </td>
+						</tr>
+						<tr>
+							<td>NGSI Version</td>
+							<td>{ sg.NgsiVersion } </td>
+						</tr>
+						<tr>
+							<td>Default entity name conjunction</td>
+							<td>{ sg.DefaultEntityNameConjunction } </td>
+						</tr>
+						<tr>
+							<td>Autoprovision</td>
+							<td>{ fmt.Sprint(sg.Autoprovision) } </td>
+						</tr>
+						<tr>
+							<td>Payload type</td>
+							<td>{ sg.PayloadType } </td>
+						</tr>
+						<tr>
+							<td>Transport</td>
+							<td>{ sg.Transport } </td>
+						</tr>
+						<tr>
+							<td>Endpoint</td>
+							<td>{ sg.Endpoint } </td>
+						</tr>
+						<tr>
+							<td>
+								<button
+									type="button"
+									class="btn btn-xs btn-error"
+									hx-target="closest .container"
+									hx-swap="outerHTML"
+									hx-delete={ fmt.Sprintf("/configGroups?apiKey=%v&resource=%v&service=%v&servicePath=%v&iotAgentId=%s", sg.Apikey, sg.Resource, sg.Service, sg.ServicePath, iotAgentId) }
+									hx-confirm={ fmt.Sprintf("Do you want to delete the Config Group: \nApi Key: %v \nResource: %v\n In service: \nService: %v\nservicePath: %v", sg.Apikey, sg.Resource, sg.Service, sg.ServicePath) }
+								>Delete</button>
+							</td>
+							<td></td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
 		</div>
 	</div>
 }

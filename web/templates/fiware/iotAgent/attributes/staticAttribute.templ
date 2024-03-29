@@ -25,6 +25,10 @@ templ StaticAttributes(sas []iotagentsdk.StaticAttribute) {
 						<td>{ sa.Type }</td>
 					</tr>
 					<tr>
+						<td>Value</td>
+						<td>{ fmt.Sprintf("%v", sa.Value) }</td>
+					</tr>
+					<tr>
 						<td>Object ID</td>
 						<td>{ sa.ObjectID }</td>
 					</tr>
@@ -79,6 +83,12 @@ templ StaticAttributeTemplate() {
 						<span class="label-text">Type</span>
 					</div>
 					<input name="static_attributes[%index].type" type="text" placeholder="Type here" class="input input-bordered" required/>
+				</label>
+				<label class="form-control">
+					<div class="label">
+						<span class="label-text">Value</span>
+					</div>
+					<input name="static_attributes[%index].value" type="text" placeholder="Type here" class="input input-bordered" required/>
 				</label>
 				@MetdataInput("static_attributes")
 			</div>
