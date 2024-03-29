@@ -159,6 +159,7 @@ templ IoTAgents(ifsds IoTAToFiwareServiceToDevicesWithIoTAId) {
 		for alias, fsds := range ifsds {
 			<div class="underline text-xl">{ alias }</div>
 			@FiwareServices(fsds)
+			<div class="divider last-of-type:hidden"></div>
 		}
 	</div>
 	<div>

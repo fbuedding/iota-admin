@@ -1,4 +1,4 @@
-FROM --platform=linux/amd64 golang:1.21-alpine
+FROM --platform=linux/amd64 golang:1.22-alpine
 FROM cosmtrek/air:latest
 
 WORKDIR /app
