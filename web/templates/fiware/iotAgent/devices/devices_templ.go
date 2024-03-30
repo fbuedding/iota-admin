@@ -233,9 +233,9 @@ func Device(d i.Device, iotAgentId string) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var13 string
-		templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(d.ExplicitAttrs)
+		templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%v", d.ExplicitAttrs))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/templates/fiware/iotAgent/devices/devices.templ`, Line: 107, Col: 28}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/templates/fiware/iotAgent/devices/devices.templ`, Line: 107, Col: 46}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
 		if templ_7745c5c3_Err != nil {

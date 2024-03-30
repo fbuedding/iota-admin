@@ -18,10 +18,10 @@ import (
 )
 
 type DevicDeleteRequest struct {
-	DeviceId    i.DeciveId `formam:"deviceId"`
-	Service     string     `formam:"service"`
-	ServicePath string     `formam:"servicePath"`
-	IoTAgentId  string     `formam:"iotAgentId"`
+	DeviceId    i.DeciveId `form:"deviceId"`
+	Service     string     `form:"service"`
+	ServicePath string     `form:"servicePath"`
+	IoTAgentId  string     `form:"iotAgentId"`
 }
 
 func Devices(repo fr.FiwareRepo) chi.Router {
@@ -87,6 +87,7 @@ func Devices(repo fr.FiwareRepo) chi.Router {
 		}
 		var d i.Device
 		err = helpers.Decode(r.PostForm, &d)
+		log.Trace().Type("device_types", d).Any("device", d).Msg("Decoded device post request")
 		if err != nil {
 			log.Error().Err(err).Send()
 			templates.HandleError(r.Context(), w, err, http.StatusBadRequest)

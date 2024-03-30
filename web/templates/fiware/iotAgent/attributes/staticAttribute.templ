@@ -3,6 +3,7 @@ package attributes
 import "github.com/fbuedding/fiware-iot-agent-sdk"
 import "fmt"
 import "github.com/fbuedding/iota-admin/web/templates/components"
+import "encoding/json"
 
 templ StaticAttributes(sas []iotagentsdk.StaticAttribute) {
 	for i, sa := range(sas) {
@@ -26,7 +27,7 @@ templ StaticAttributes(sas []iotagentsdk.StaticAttribute) {
 					</tr>
 					<tr>
 						<td>Value</td>
-						<td>{ fmt.Sprintf("%v", sa.Value) }</td>
+						<td><pre>{ prettyValue(sa.Value) }</pre></td>
 					</tr>
 					<tr>
 						<td>Object ID</td>
@@ -42,6 +43,14 @@ templ StaticAttributes(sas []iotagentsdk.StaticAttribute) {
 			</table>
 		</div>
 	}
+}
+
+func prettyValue(value any) string {
+	bytes, err := json.MarshalIndent(value, "", " ")
+	if err == nil {
+		return string(bytes)
+	}
+	return fmt.Sprintf("%v", value)
 }
 
 templ StaticAttributesInput() {

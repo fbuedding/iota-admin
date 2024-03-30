@@ -9,7 +9,7 @@ import (
 var decoder *formam.Decoder = nil
 
 func Decode(values url.Values, dst interface{}) (err error) {
-	decoder = formam.NewDecoder(&formam.DecoderOptions{TagName: "formam"})
+	decoder = formam.NewDecoder(&formam.DecoderOptions{TagName: "form"})
 	err = decoder.Decode(values, dst)
 	return
 }

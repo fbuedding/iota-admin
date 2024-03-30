@@ -11,3 +11,12 @@
 .textarea-bordered:ivalid{
 @apply required:input-secondary !important;
 }
+.view-indicator{
+        display:none;
+}
+.htmx-request .view-indicator{
+    display:flex;
+}
+.htmx-request.view-indicator{
+    display:flex;
+}

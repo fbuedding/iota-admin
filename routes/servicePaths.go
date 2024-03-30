@@ -11,8 +11,8 @@ import (
 )
 
 type servicePathsGetQueryParams struct {
-	Service  string `formam:"service"`
-	IotAgent string `formam:"iotAgent"`
+	Service  string `form:"service"`
+	IotAgent string `form:"iotAgent"`
 }
 
 func ServicePaths(repo fr.FiwareRepo) chi.Router {
@@ -33,7 +33,9 @@ func ServicePaths(repo fr.FiwareRepo) chi.Router {
 		iota, err := repo.GetIota(params.IotAgent)
 		if err != nil {
 			templates.HandleError(r.Context(), w, err, http.StatusInternalServerError)
-			log.Error().Err(err).Msgf("Could not get IoT-Agent for id: %s", params.IotAgent)
+			log.Error().
+				Err(err).
+				Msgf("Could not get IoT-Agent for id: %s", params.IotAgent)
 			return
 		}
 		servicePaths, err := iota.GetAllServicePathsForService(params.Service)

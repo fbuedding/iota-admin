@@ -7,7 +7,7 @@ import "github.com/fbuedding/iota-admin/web/templates/fiware/iotAgent/devices"
 
 templ Main(content templ.Component) {
 	<!DOCTYPE html>
-	<html lang="en">
+	<html lang="en" class="h-full">
 		<head>
 			<meta charset="UTF-8"/>
 			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -17,7 +17,7 @@ templ Main(content templ.Component) {
 			<link rel="icon" type="image/x-icon" href="/assets/images/favicon.ico"/>
 			<script src="/assets/js/htmx.min.js"></script>
 			<script src="/assets/js/htmx.response-target.js"></script>
-      <script src="https://unpkg.com/htmx.org@1.9.11/dist/ext/remove-me.js"></script>
+			<script src="https://unpkg.com/htmx.org@1.9.11/dist/ext/remove-me.js"></script>
 			@configgroup.AddConfigGroupFormTemplate()
 			@devices.AddDeviceFormTemplate()
 			@attributes.AttributeTemplate()
@@ -31,8 +31,12 @@ templ Main(content templ.Component) {
 			hx-boost="true"
 			hx-ext="response-targets"
 			hx-target-error="#alerts"
+      class="h-full"
 		>
-			<header class="p-5 w-full flex flex-row gap-5 items-end bg-primary text-primary-content">
+			<header
+				class="p-5 w-full flex flex-row gap-5 items-end bg-primary text-primary-content"
+				hx-indicator="#view-loading"
+			>
 				<div class="w-fit" hx-boost="true">
 					<a href="index" class="text-4xl leaading-normal" hx-target="#views" hx-swap="innerHTML">IoTA-Admin</a>
 				</div>
@@ -46,12 +50,17 @@ templ Main(content templ.Component) {
 					</button>
 				</div>
 			</header>
-			<div id="views" class="p-5 flex flex-col gap-5 max-w-6xl m-auto">
-				// Content
-				@content
-			</div>
-			@components.Alerts() {
-			}
+			<article class="relative">
+				<div id="views" class="p-5 flex flex-col gap-5 max-w-6xl m-auto">
+					// Content
+					@content
+				</div>
+				<div class="z-50 absolute left-0 top-0 w-full h-full bg-base-100 bg-opacity-80 backdrop-blur-sm view-indicator flex justify-center items-center" id="view-loading">
+					<span class="loading loading-spinner loading-lg"></span>
+				</div>
+				@components.Alerts() {
+				}
+			</article>
 		</body>
 	</html>
 }
@@ -68,13 +77,13 @@ templ Login(content templ.Component) {
 			<link rel="icon" type="image/x-icon" href="/assets/images/favicon.ico"/>
 			<script src="/assets/js/htmx.min.js"></script>
 			<script src="/assets/js/htmx.response-target.js"></script>
-      <script src="https://unpkg.com/htmx.org@1.9.11/dist/ext/remove-me.js"></script>
+			<script src="https://unpkg.com/htmx.org@1.9.11/dist/ext/remove-me.js"></script>
 		</head>
 		<body
 			hx-boost="true"
 			hx-ext="response-targets"
 			hx-target-error="#alerts"
-      class="h-screen flex flex-row"
+			class="h-screen flex flex-row"
 		>
 			<div id="views" class="p-5 flex flex-col gap-5 max-w-6xl m-auto">
 				// Content
@@ -86,8 +95,5 @@ templ Login(content templ.Component) {
 	</html>
 }
 
-templ html(){
-
-
-
+templ html() {
 }

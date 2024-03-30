@@ -18,11 +18,11 @@ import (
 )
 
 type ConfigGroupDeleteRequest struct {
-	IoTAgentId  string     `formam:"iotAgentId"`
-	ApiKey      i.Apikey   `formam:"apiKey"`
-	Rescource   i.Resource `formam:"resource"`
-	Service     string     `formam:"service"`
-	ServicePath string     `formam:"servicePath"`
+	IoTAgentId  string     `form:"iotAgentId"`
+	ApiKey      i.Apikey   `form:"apiKey"`
+	Rescource   i.Resource `form:"resource"`
+	Service     string     `form:"service"`
+	ServicePath string     `form:"servicePath"`
 }
 
 func ConfigGroups(repo fr.FiwareRepo) chi.Router {

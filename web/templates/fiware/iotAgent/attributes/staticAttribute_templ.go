@@ -13,6 +13,7 @@ import "bytes"
 import "github.com/fbuedding/fiware-iot-agent-sdk"
 import "fmt"
 import "github.com/fbuedding/iota-admin/web/templates/components"
+import "encoding/json"
 
 func StaticAttributes(sas []iotagentsdk.StaticAttribute) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
@@ -35,7 +36,7 @@ func StaticAttributes(sas []iotagentsdk.StaticAttribute) templ.Component {
 			var templ_7745c5c3_Var2 string
 			templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprint(i + 1))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/templates/fiware/iotAgent/attributes/staticAttribute.templ`, Line: 14, Col: 31}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/templates/fiware/iotAgent/attributes/staticAttribute.templ`, Line: 15, Col: 31}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 			if templ_7745c5c3_Err != nil {
@@ -48,7 +49,7 @@ func StaticAttributes(sas []iotagentsdk.StaticAttribute) templ.Component {
 			var templ_7745c5c3_Var3 string
 			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(sa.Name)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/templates/fiware/iotAgent/attributes/staticAttribute.templ`, Line: 21, Col: 19}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/templates/fiware/iotAgent/attributes/staticAttribute.templ`, Line: 22, Col: 19}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 			if templ_7745c5c3_Err != nil {
@@ -61,33 +62,33 @@ func StaticAttributes(sas []iotagentsdk.StaticAttribute) templ.Component {
 			var templ_7745c5c3_Var4 string
 			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(sa.Type)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/templates/fiware/iotAgent/attributes/staticAttribute.templ`, Line: 25, Col: 19}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/templates/fiware/iotAgent/attributes/staticAttribute.templ`, Line: 26, Col: 19}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</td></tr><tr><td>Value</td><td>")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</td></tr><tr><td>Value</td><td><pre>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var5 string
-			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%v", sa.Value))
+			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(prettyValue(sa.Value))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/templates/fiware/iotAgent/attributes/staticAttribute.templ`, Line: 29, Col: 39}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/templates/fiware/iotAgent/attributes/staticAttribute.templ`, Line: 30, Col: 38}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</td></tr><tr><td>Object ID</td><td>")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</pre></td></tr><tr><td>Object ID</td><td>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var6 string
 			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(sa.ObjectID)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/templates/fiware/iotAgent/attributes/staticAttribute.templ`, Line: 33, Col: 23}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/templates/fiware/iotAgent/attributes/staticAttribute.templ`, Line: 34, Col: 23}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 			if templ_7745c5c3_Err != nil {
@@ -111,6 +112,14 @@ func StaticAttributes(sas []iotagentsdk.StaticAttribute) templ.Component {
 		}
 		return templ_7745c5c3_Err
 	})
+}
+
+func prettyValue(value any) string {
+	bytes, err := json.MarshalIndent(value, "", " ")
+	if err == nil {
+		return string(bytes)
+	}
+	return fmt.Sprintf("%v", value)
 }
 
 func StaticAttributesInput() templ.Component {

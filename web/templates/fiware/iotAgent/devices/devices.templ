@@ -104,7 +104,7 @@ templ Device(d i.Device, iotAgentId string) {
 						</tr>
 						<tr>
 							<td>Explicit Attributes</td>
-							<td>{ d.ExplicitAttrs } </td>
+							<td>{ fmt.Sprintf("%v",d.ExplicitAttrs) } </td>
 						</tr>
 						<tr>
 							<td>NGSI Version</td>

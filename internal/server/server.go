@@ -6,6 +6,7 @@ import (
 	"runtime/debug"
 	"time"
 
+	"github.com/fbuedding/iota-admin/internal/globals"
 	"github.com/fbuedding/iota-admin/internal/pkg/auth"
 	bruteforceprotection "github.com/fbuedding/iota-admin/internal/pkg/bruteForceProtection"
 	fr "github.com/fbuedding/iota-admin/internal/pkg/fiwareRepository"
@@ -27,7 +28,13 @@ type Server struct {
 	R             chi.Router
 }
 
-func New(a auth.Authenticator, st sessionStore.SessionStore, bfp bruteforceprotection.BrutForceProtection, repo fr.FiwareRepo, port int) *Server {
+func New(
+	a auth.Authenticator,
+	st sessionStore.SessionStore,
+	bfp bruteforceprotection.BrutForceProtection,
+	repo fr.FiwareRepo,
+	port int,
+) *Server {
 	var s Server
 
 	s.Authenticator = a
@@ -37,6 +44,9 @@ func New(a auth.Authenticator, st sessionStore.SessionStore, bfp bruteforceprote
 	r.Use(middleware.RequestID)
 	r.Use(middleware.Recoverer)
 	r.Use(LoggerMiddleware(&log.Logger))
+	if globals.Conf.AppEnv == "development" {
+		//r.Use(MakeSlow)
+	}
 
 	// Public Routes
 	r.Group(func(r chi.Router) {
@@ -132,4 +142,12 @@ func LoggerMiddleware(logger *zerolog.Logger) func(next http.Handler) http.Handl
 		}
 		return http.HandlerFunc(fn)
 	}
+}
+
+func MakeSlow(next http.Handler) http.Handler {
+	log.Warn().Msg("Endpoints are slowed")
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		time.Sleep(500 * time.Millisecond)
+		next.ServeHTTP(w, r)
+	})
 }

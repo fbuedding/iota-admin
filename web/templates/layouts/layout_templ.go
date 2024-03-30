@@ -28,7 +28,7 @@ func Main(content templ.Component) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<!doctype html><html lang=\"en\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><meta http-equiv=\"X-UA-Compatible\" content=\"ie=edge\"><title>IoTA-Admin</title><link rel=\"stylesheet\" href=\"/assets/css/style.css\"><link rel=\"icon\" type=\"image/x-icon\" href=\"/assets/images/favicon.ico\"><script src=\"/assets/js/htmx.min.js\"></script><script src=\"/assets/js/htmx.response-target.js\"></script><script src=\"https://unpkg.com/htmx.org@1.9.11/dist/ext/remove-me.js\"></script>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<!doctype html><html lang=\"en\" class=\"h-full\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><meta http-equiv=\"X-UA-Compatible\" content=\"ie=edge\"><title>IoTA-Admin</title><link rel=\"stylesheet\" href=\"/assets/css/style.css\"><link rel=\"icon\" type=\"image/x-icon\" href=\"/assets/images/favicon.ico\"><script src=\"/assets/js/htmx.min.js\"></script><script src=\"/assets/js/htmx.response-target.js\"></script><script src=\"https://unpkg.com/htmx.org@1.9.11/dist/ext/remove-me.js\"></script>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -64,20 +64,20 @@ func Main(content templ.Component) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</head><body hx-boost=\"true\" hx-ext=\"response-targets\" hx-target-error=\"#alerts\"><header class=\"p-5 w-full flex flex-row gap-5 items-end bg-primary text-primary-content\"><div class=\"w-fit\" hx-boost=\"true\"><a href=\"index\" class=\"text-4xl leaading-normal\" hx-target=\"#views\" hx-swap=\"innerHTML\">IoTA-Admin</a></div><div class=\"flex flex-row gap-5\"><a href=\"/configGroups\" hx-target=\"#views\" hx-swap=\"innerHTML\">Config Groups</a> <a href=\"/devices\" hx-target=\"#views\" hx-swap=\"innerHTML\">Devices</a></div><div class=\"ml-auto\"><button hx-delete=\"/auth/login\" hx-target-error=\"#alerts\">Logout (")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</head><body hx-boost=\"true\" hx-ext=\"response-targets\" hx-target-error=\"#alerts\" class=\"h-full\"><header class=\"p-5 w-full flex flex-row gap-5 items-end bg-primary text-primary-content\" hx-indicator=\"#view-loading\"><div class=\"w-fit\" hx-boost=\"true\"><a href=\"index\" class=\"text-4xl leaading-normal\" hx-target=\"#views\" hx-swap=\"innerHTML\">IoTA-Admin</a></div><div class=\"flex flex-row gap-5\"><a href=\"/configGroups\" hx-target=\"#views\" hx-swap=\"innerHTML\">Config Groups</a> <a href=\"/devices\" hx-target=\"#views\" hx-swap=\"innerHTML\">Devices</a></div><div class=\"ml-auto\"><button hx-delete=\"/auth/login\" hx-target-error=\"#alerts\">Logout (")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var2 string
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(ctx.Value("user").(string))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/templates/layouts/layout.templ`, Line: 45, Col: 42}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/templates/layouts/layout.templ`, Line: 49, Col: 42}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(")</button></div></header><div id=\"views\" class=\"p-5 flex flex-col gap-5 max-w-6xl m-auto\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(")</button></div></header><article class=\"relative\"><div id=\"views\" class=\"p-5 flex flex-col gap-5 max-w-6xl m-auto\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -85,7 +85,7 @@ func Main(content templ.Component) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div><div class=\"z-50 absolute left-0 top-0 w-full h-full bg-base-100 bg-opacity-80 backdrop-blur-sm view-indicator flex justify-center items-center\" id=\"view-loading\"><span class=\"loading loading-spinner loading-lg\"></span></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -104,7 +104,7 @@ func Main(content templ.Component) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</body></html>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</article></body></html>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
